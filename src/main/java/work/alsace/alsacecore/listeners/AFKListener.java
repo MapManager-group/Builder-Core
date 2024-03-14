@@ -5,9 +5,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
 import work.alsace.alsacecore.AlsaceCore;
 
 import java.util.HashMap;
@@ -20,12 +21,13 @@ public class AFKListener implements Listener {
 
     public AFKListener(AlsaceCore plugin) {
         this.plugin = plugin;
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                checkAFKPlayers();
-            }
-        }.runTaskTimer(plugin, 20 * 60, 20 * 60);
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+
+        startAFKCheckTask();
+    }
+
+    private void startAFKCheckTask() {
+        Bukkit.getScheduler().runTaskTimer(plugin, this::checkAFKPlayers, 20 * 60, 20 * 60);
     }
 
     @EventHandler
@@ -36,15 +38,26 @@ public class AFKListener implements Listener {
         cancelAFK(player);
     }
 
+    @EventHandler
+    public void beforePlayerJoin(AsyncPlayerPreLoginEvent loggingEvent) {
+        UUID uuid = loggingEvent.getUniqueId();
+        lastActivity.put(uuid, System.currentTimeMillis());
+    }
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event){
+        Player player=event.getPlayer();
+        cancelAFK(player);
+    }
+
     private void checkAFKPlayers() {
-        long afkThreshold = plugin.getConfig().getLong("afk.threshold", 300);
+        final long AFK_TIMEOUT_SECONDS = plugin.getConfig().getLong("afk.threshold", 300);
         long currentTime = System.currentTimeMillis();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             UUID playerId = player.getUniqueId();
             long lastActiveTime = lastActivity.getOrDefault(playerId, currentTime);
 
-            if (currentTime - lastActiveTime > afkThreshold * 1000) {
+            if (currentTime - lastActiveTime > AFK_TIMEOUT_SECONDS * 1000) {
                 if (!player.hasPermission("alsace.afk.bypass")) {
                     handleAFK(player);
                 }
