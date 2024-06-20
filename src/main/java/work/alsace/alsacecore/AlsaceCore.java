@@ -43,7 +43,7 @@ public class AlsaceCore extends JavaPlugin {
     public static AlsaceCore instance;
     public Map<String, Boolean> hasIgnored = new HashMap<>();
     public Map<String, Boolean> hasAgree = new HashMap<>();
-    public Boolean agreement;
+    public boolean agreement;
     public HashMap<UUID, HomeDataLoader> homeProfiles = new HashMap<UUID, HomeDataLoader>();
     public HashMap<String, WarpDataLoader> warpProfiles = new HashMap<String, WarpDataLoader>();
     private TPAHandler tpaHandler;
@@ -217,10 +217,10 @@ public class AlsaceCore extends JavaPlugin {
             boolean hasAgreed = databaseManager.hasPlayerAgreed(playerUUID);
             if (hasAgreed) {
                 // 如果数据库中有同意记录，将其标记为已同意
-                this.hasAgree.put(player.getName(), false);
+                this.hasAgree.put(player.getName(), Boolean.FALSE);
             } else {
                 // 如果数据库中没有同意记录，将其标记为待同意
-                this.hasAgree.put(player.getName(), true);
+                this.hasAgree.put(player.getName(), Boolean.TRUE);
             }
         }
     }
