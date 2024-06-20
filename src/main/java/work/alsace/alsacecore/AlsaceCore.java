@@ -44,8 +44,8 @@ public class AlsaceCore extends JavaPlugin {
     public Map<String, Boolean> hasIgnored = new HashMap<>();
     public Map<String, Boolean> hasAgree = new HashMap<>();
     public boolean agreement;
-    public HashMap<UUID, HomeDataLoader> homeProfiles = new HashMap<UUID, HomeDataLoader>();
-    public HashMap<String, WarpDataLoader> warpProfiles = new HashMap<String, WarpDataLoader>();
+    public HashMap<UUID, HomeDataLoader> homeProfiles = new HashMap<>();
+    public HashMap<String, WarpDataLoader> warpProfiles = new HashMap<>();
     private TPAHandler tpaHandler;
 
     public List<String> illegalCharacters = new ArrayList<>();
@@ -69,9 +69,7 @@ public class AlsaceCore extends JavaPlugin {
         }
         registerCommands();
         registerListeners();
-        Bukkit.getScheduler().runTaskTimer(this, () -> {
-            new NoClipUtil().checkBlock();
-        }, 1L, 1L);
+        Bukkit.getScheduler().runTaskTimer(this, () -> new NoClipUtil().checkBlock(), 1L, 1L);
         getLogger().info("插件已完全加载完成");
     }
 
