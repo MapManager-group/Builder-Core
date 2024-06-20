@@ -170,3 +170,6 @@ commands:
   tphere:
     description: 将指定玩家传送到你的位置
     permission: alsace.commands.tphere
+  reach:
+    description: 修改自己的方块交互距离
+    permission: alsace.commands.reach

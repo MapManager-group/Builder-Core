@@ -102,6 +102,7 @@ public class AlsaceCore extends JavaPlugin {
         registerCommand("debugstick", new DebugStickCommand());
         registerCommand("slab", new SlabCommand());
         registerCommand("noclip", new NoClipCommand());
+        registerCommand("reach", new ReachCommand());
 
         registerCommand("/convex", new ConvexCommand());
         registerCommand("/derot", new DerotCommand());
