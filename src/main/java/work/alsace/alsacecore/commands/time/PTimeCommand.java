@@ -2,10 +2,7 @@ package work.alsace.alsacecore.commands.time;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -13,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class PTimeCommand implements CommandExecutor, TabCompleter {
+public class PTimeCommand implements TabExecutor {
 
     private final String error = ChatColor.GRAY + "正确指令:\n§f/ptime <时间> §7- 设置你自己的客户端时间\n§f/ptime <时间> <玩家> §7- 设置指定玩家的客户端时间";
     private static final List<String> times = Arrays.asList("day", "night", "sunrise", "morning", "noon", "afternoon", "sunset", "midnight", "reset");

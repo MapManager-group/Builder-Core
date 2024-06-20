@@ -4,10 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import work.alsace.alsacecore.AlsaceCore;
 import work.alsace.alsacecore.service.HomeDataLoader;
@@ -15,7 +12,7 @@ import work.alsace.alsacecore.service.HomeDataLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeCommand implements CommandExecutor, TabCompleter {
+public class HomeCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
