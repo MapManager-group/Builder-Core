@@ -103,6 +103,7 @@ public class AlsaceCore extends JavaPlugin {
         registerCommand("slab", new SlabCommand());
         registerCommand("noclip", new NoClipCommand());
         registerCommand("reach", new ReachCommand());
+        registerCommand("scale", new PlayerScaleCommand());
 
         registerCommand("/convex", new ConvexCommand());
         registerCommand("/derot", new DerotCommand());

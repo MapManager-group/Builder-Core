@@ -173,3 +173,6 @@ commands:
   reach:
     description: 修改自己的方块交互距离
     permission: alsace.commands.reach
+  scale:
+    description: 修改自己的尺寸倍数
+    permission: alsace.commands.scale
