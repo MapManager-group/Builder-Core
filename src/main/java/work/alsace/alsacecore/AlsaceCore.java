@@ -1,6 +1,8 @@
 package work.alsace.alsacecore;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -87,74 +89,72 @@ public class AlsaceCore extends JavaPlugin {
 
     private void registerCommands() {
         AlsaceCore.instance = this;
-        Objects.requireNonNull(getCommand("fly")).setExecutor(new FlyCommand());
-        Objects.requireNonNull(getCommand("speed")).setExecutor(new SpeedCommand());
-        Objects.requireNonNull(getCommand("speed")).setTabCompleter(new SpeedCommand());
-        Objects.requireNonNull(getCommand("gamemode")).setExecutor(new GameModeCommand());
-        Objects.requireNonNull(getCommand("gamemode")).setTabCompleter(new GameModeCommand());
-        Objects.requireNonNull(getCommand("time")).setExecutor(new TimeCommand());
-        Objects.requireNonNull(getCommand("time")).setTabCompleter(new TimeCommand());
-        Objects.requireNonNull(getCommand("weather")).setExecutor(new WeatherCommand());
-        Objects.requireNonNull(getCommand("weather")).setTabCompleter(new WeatherCommand());
-        Objects.requireNonNull(getCommand("ptime")).setExecutor(new PTimeCommand());
-        Objects.requireNonNull(getCommand("ptime")).setTabCompleter(new PTimeCommand());
-        Objects.requireNonNull(getCommand("pweather")).setExecutor(new PWeatherCommand());
-        Objects.requireNonNull(getCommand("pweather")).setTabCompleter(new PWeatherCommand());
-        Objects.requireNonNull(getCommand("head")).setExecutor(new HeadCommand());
-        Objects.requireNonNull(getCommand("night")).setExecutor(new NightvisionCommand());
-        Objects.requireNonNull(getCommand("advfly")).setExecutor(new AdvanceFlyCommand());
-        Objects.requireNonNull(getCommand("debugstick")).setExecutor(new DebugStickCommand());
-        Objects.requireNonNull(getCommand("slab")).setExecutor(new SlabCommand());
-        Objects.requireNonNull(getCommand("noclip")).setExecutor(new NoClipCommand());
+        registerCommand("fly", new FlyCommand());
+        registerCommand("speed", new SpeedCommand());
+        registerCommand("gamemode", new GameModeCommand());
+        registerCommand("time", new TimeCommand());
+        registerCommand("weather", new WeatherCommand());
+        registerCommand("ptime", new PTimeCommand());
+        registerCommand("pweather", new PWeatherCommand());
+        registerCommand("head", new HeadCommand());
+        registerCommand("night", new NightvisionCommand());
+        registerCommand("advfly", new AdvanceFlyCommand());
+        registerCommand("debugstick", new DebugStickCommand());
+        registerCommand("slab", new SlabCommand());
+        registerCommand("noclip", new NoClipCommand());
 
-        Objects.requireNonNull(getCommand("/convex")).setExecutor(new ConvexCommand());
-        Objects.requireNonNull(getCommand("/derot")).setExecutor(new DerotCommand());
-        Objects.requireNonNull(getCommand("/cuboid")).setExecutor(new CuboidCommand());
-        Objects.requireNonNull(getCommand("/twist")).setExecutor(new TwistCommand());
-        Objects.requireNonNull(getCommand("/scale")).setExecutor(new ScaleCommand());
-        Objects.requireNonNull(getCommand("undo")).setExecutor(new UndoCommand());
+        registerCommand("/convex", new ConvexCommand());
+        registerCommand("/derot", new DerotCommand());
+        registerCommand("/cuboid", new CuboidCommand());
+        registerCommand("/twist", new TwistCommand());
+        registerCommand("/scale", new ScaleCommand());
+        registerCommand("undo", new UndoCommand());
 
-        Objects.requireNonNull(getCommand("hat")).setExecutor(new HatCommand());
-        Objects.requireNonNull(getCommand("back")).setExecutor(new BackCommand(this));
-        Objects.requireNonNull(getCommand("afk")).setExecutor(new AFKCommand(this));
+        registerCommand("hat", new HatCommand());
+        registerCommand("back", new BackCommand(this));
+        registerCommand("afk", new AFKCommand(this));
 
-        Objects.requireNonNull(getCommand("tp")).setExecutor(new TPCommand(this));
-        Objects.requireNonNull(getCommand("tphere")).setExecutor(new TPHereCommand());
-        Objects.requireNonNull(getCommand("tpignore")).setExecutor(new TPIgnoreCommand(this));
-        Objects.requireNonNull(getCommand("tpahere")).setExecutor(new TPACommand(this));
-        Objects.requireNonNull(getCommand("tpaccept")).setExecutor(new TPACommand(this));
-        Objects.requireNonNull(getCommand("tpdeny")).setExecutor(new TPACommand(this));
+        registerCommand("tp", new TPCommand(this));
+        registerCommand("tphere", new TPHereCommand());
+        registerCommand("tpignore", new TPIgnoreCommand(this));
+        registerCommand("tpahere", new TPACommand(this));
+        registerCommand("tpaccept", new TPACommand(this));
+        registerCommand("tpdeny", new TPACommand(this));
 
-        Objects.requireNonNull(getCommand("home")).setExecutor(new HomeCommand());
-        Objects.requireNonNull(getCommand("home")).setTabCompleter(new HomeCommand());
-        Objects.requireNonNull(getCommand("homes")).setExecutor(new HomesCommand());
-        Objects.requireNonNull(getCommand("sethome")).setExecutor(new SetHomeCommand());
-        Objects.requireNonNull(getCommand("delhome")).setExecutor(new DelHomeCommand());
-        Objects.requireNonNull(getCommand("delhome")).setTabCompleter(new DelHomeCommand());
+        registerCommand("home", new HomeCommand());
+        registerCommand("homes", new HomesCommand());
+        registerCommand("sethome", new SetHomeCommand());
+        registerCommand("delhome", new DelHomeCommand());
 
-        Objects.requireNonNull(getCommand("warp")).setExecutor(new WarpCommand());
-        Objects.requireNonNull(getCommand("warp")).setTabCompleter(new WarpCommand());
-        Objects.requireNonNull(getCommand("warps")).setExecutor(new WarpsCommand());
-        Objects.requireNonNull(getCommand("setwarp")).setExecutor(new SetWarpCommand());
-        Objects.requireNonNull(getCommand("delwarp")).setExecutor(new DelWarpCommand());
-        Objects.requireNonNull(getCommand("delwarp")).setTabCompleter(new DelWarpCommand());
+        registerCommand("warp", new WarpCommand());
+        registerCommand("warps", new WarpsCommand());
+        registerCommand("setwarp", new SetWarpCommand());
+        registerCommand("delwarp", new DelWarpCommand());
 
 
         if (agreement) {
-            Objects.requireNonNull(getCommand("agree")).setExecutor(new AgreeCommand(this));
-            Objects.requireNonNull(getCommand("disagree")).setExecutor(new DisagreeCommand(this));
+            registerCommand("agree", new AgreeCommand(this));
+            registerCommand("disagree", new DisagreeCommand(this));
         }
 
-        Objects.requireNonNull(getCommand("alsacecore")).setExecutor(new AlsaceCoreCommand(this));
-        Objects.requireNonNull(getCommand("alsacecore")).setTabCompleter(new AlsaceCoreCommand(this));
+        registerCommand("alsacecore", new AlsaceCoreCommand(this));
 
-        Objects.requireNonNull(getCommand("whois")).setExecutor(new WhoisCommand());
-        Objects.requireNonNull(getCommand("itemname")).setExecutor(new ItemNameCommand());
-        Objects.requireNonNull(getCommand("itemnbt")).setExecutor(new ItemNbtCommand());
-        Objects.requireNonNull(getCommand("itemcolor")).setExecutor(new ItemColorCommand());
+        registerCommand("whois", new WhoisCommand());
+        registerCommand("itemname", new ItemNameCommand());
+        registerCommand("itemnbt", new ItemNbtCommand());
+        registerCommand("itemcolor", new ItemColorCommand());
 
         blockedCommands = Arrays.asList("/plugins", "/?", "/help", "/bukkit");
         getLogger().info("指令注册完成");
+    }
+
+    private void registerCommand(String command, CommandExecutor executor) {
+        Objects.requireNonNull(getCommand(command)).setExecutor(executor);
+    }
+
+    private void registerCommand(String command, TabExecutor executor) {
+        Objects.requireNonNull(getCommand(command)).setExecutor(executor);
+        Objects.requireNonNull(getCommand(command)).setTabCompleter(executor);
     }
 
     private void registerListeners() {
