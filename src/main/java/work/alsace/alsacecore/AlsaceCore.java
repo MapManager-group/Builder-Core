@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import work.alsace.alsacecore.Utils.DataBaseManager;
 import work.alsace.alsacecore.Utils.NoClipUtil;
@@ -25,6 +26,7 @@ import work.alsace.alsacecore.commands.teleport.*;
 import work.alsace.alsacecore.commands.time.PTimeCommand;
 import work.alsace.alsacecore.commands.time.TimeCommand;
 import work.alsace.alsacecore.commands.tools.AlsaceCoreCommand;
+import work.alsace.alsacecore.commands.tools.VanishCommand;
 import work.alsace.alsacecore.commands.tools.WhoisCommand;
 import work.alsace.alsacecore.commands.warp.DelWarpCommand;
 import work.alsace.alsacecore.commands.warp.SetWarpCommand;
@@ -145,6 +147,7 @@ public class AlsaceCore extends JavaPlugin {
         registerCommand("itemname", new ItemNameCommand());
         registerCommand("itemnbt", new ItemNbtCommand());
         registerCommand("itemcolor", new ItemColorCommand());
+        registerCommand("vanish", new VanishCommand());
 
         blockedCommands = Arrays.asList("/plugins", "/?", "/help", "/bukkit");
         getLogger().info("指令注册完成");
@@ -161,15 +164,18 @@ public class AlsaceCore extends JavaPlugin {
 
     private void registerListeners() {
         AlsaceCore.instance = this;
-        getServer().getPluginManager().registerEvents(new Protect(), this);
-        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
-        getServer().getPluginManager().registerEvents(new BlockListener(), this);
-        getServer().getPluginManager().registerEvents(new Misc(), this);
-        getServer().getPluginManager().registerEvents(new AdvanceFlyCommand(), this);
-        getServer().getPluginManager().registerEvents(new SpawnListener(), this);
-        getServer().getPluginManager().registerEvents(new CatListener(), this);
-        getServer().getPluginManager().registerEvents(new HorseListener(), this);
-        getServer().getPluginManager().registerEvents(new FoxListener(), this);
+        PluginManager manager = Bukkit.getPluginManager();
+        manager.registerEvents(new Protect(), this);
+        manager.registerEvents(new PlayerListener(this), this);
+        manager.registerEvents(new BlockListener(), this);
+        manager.registerEvents(new Misc(), this);
+        manager.registerEvents(new AdvanceFlyCommand(), this);
+        manager.registerEvents(new SpawnListener(), this);
+        manager.registerEvents(new CatListener(), this);
+        manager.registerEvents(new HorseListener(), this);
+        manager.registerEvents(new FoxListener(), this);
+        manager.registerEvents(new VanishListener(), this);
+
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new Placeholder(this).register();

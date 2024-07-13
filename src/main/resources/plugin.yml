@@ -176,3 +176,6 @@ commands:
   scale:
     description: 修改自己的尺寸倍数
     permission: alsace.commands.scale
+  vanish:
+    description: 进入隐身状态
+    permission: alsace.commands.vanish
