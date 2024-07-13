@@ -68,7 +68,6 @@ public class PlayerListener implements Listener {
             AdvanceFlyCommand.enabledPlayers.remove(event.getPlayer());
             BlockListener.slabs.remove(event.getPlayer());
         }
-        event.getPlayer().removeMetadata("afk", plugin);
     }
 
     @EventHandler
