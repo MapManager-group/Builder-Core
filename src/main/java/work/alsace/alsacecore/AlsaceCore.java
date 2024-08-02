@@ -7,9 +7,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import work.alsace.alsacecore.Utils.DataBaseManager;
-import work.alsace.alsacecore.Utils.NoClipUtil;
-import work.alsace.alsacecore.Utils.Placeholder;
+import work.alsace.alsacecore.commands.tools.*;
+import work.alsace.alsacecore.utils.DataBaseManager;
+import work.alsace.alsacecore.utils.NoClipUtil;
+import work.alsace.alsacecore.utils.Placeholder;
 import work.alsace.alsacecore.commands.agree.AgreeCommand;
 import work.alsace.alsacecore.commands.agree.DisagreeCommand;
 import work.alsace.alsacecore.commands.alias.*;
@@ -25,9 +26,6 @@ import work.alsace.alsacecore.commands.players.*;
 import work.alsace.alsacecore.commands.teleport.*;
 import work.alsace.alsacecore.commands.time.PTimeCommand;
 import work.alsace.alsacecore.commands.time.TimeCommand;
-import work.alsace.alsacecore.commands.tools.AlsaceCoreCommand;
-import work.alsace.alsacecore.commands.tools.VanishCommand;
-import work.alsace.alsacecore.commands.tools.WhoisCommand;
 import work.alsace.alsacecore.commands.warp.DelWarpCommand;
 import work.alsace.alsacecore.commands.warp.SetWarpCommand;
 import work.alsace.alsacecore.commands.warp.WarpCommand;
@@ -50,6 +48,7 @@ public class AlsaceCore extends JavaPlugin {
     public boolean agreement;
     public HashMap<UUID, HomeDataLoader> homeProfiles = new HashMap<>();
     public HashMap<String, WarpDataLoader> warpProfiles = new HashMap<>();
+    public final Set<UUID> openChests = new HashSet<>();
     private TPAHandler tpaHandler;
 
     public List<String> illegalCharacters = new ArrayList<>();
@@ -107,6 +106,7 @@ public class AlsaceCore extends JavaPlugin {
         registerCommand("reach", new ReachCommand());
         registerCommand("scale", new PlayerScaleCommand());
 
+
         registerCommand("/convex", new ConvexCommand());
         registerCommand("/derot", new DerotCommand());
         registerCommand("/cuboid", new CuboidCommand());
@@ -148,6 +148,8 @@ public class AlsaceCore extends JavaPlugin {
         registerCommand("itemnbt", new ItemNbtCommand());
         registerCommand("itemcolor", new ItemColorCommand());
         registerCommand("vanish", new VanishCommand());
+        registerCommand("invsee", new InvseeCommand());
+        registerCommand("endersee", new EnderseeCommand());
 
         blockedCommands = Arrays.asList("/plugins", "/?", "/help", "/bukkit");
         getLogger().info("指令注册完成");
@@ -175,6 +177,7 @@ public class AlsaceCore extends JavaPlugin {
         manager.registerEvents(new HorseListener(), this);
         manager.registerEvents(new FoxListener(), this);
         manager.registerEvents(new VanishListener(), this);
+        manager.registerEvents(new ChestListener(), this);
 
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
