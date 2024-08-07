@@ -36,6 +36,7 @@ import work.alsace.alsacecore.listeners.*;
 import work.alsace.alsacecore.service.HomeDataLoader;
 import work.alsace.alsacecore.service.TPAHandler;
 import work.alsace.alsacecore.service.WarpDataLoader;
+import work.alsace.alsacecore.service.VelocityMessenger;
 
 import java.io.File;
 import java.util.*;
@@ -73,6 +74,13 @@ public class AlsaceCore extends JavaPlugin {
         registerCommands();
         registerListeners();
         Bukkit.getScheduler().runTaskTimer(this, () -> new NoClipUtil().checkBlock(), 1L, 1L);
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new VelocityMessenger();
+        } else {
+            getLogger().warning("前置插件 PlaceholderAPI 不存在，Tab列表扩展功能失效");
+        }
+
         getLogger().info("插件已完全加载完成");
     }
 
