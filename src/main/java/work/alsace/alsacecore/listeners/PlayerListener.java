@@ -16,8 +16,8 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import work.alsace.alsacecore.AlsaceCore;
-import work.alsace.alsacecore.Utils.DataBaseManager;
-import work.alsace.alsacecore.Utils.NoClipUtil;
+import work.alsace.alsacecore.utils.DataBaseManager;
+import work.alsace.alsacecore.utils.NoClipUtil;
 import work.alsace.alsacecore.commands.builderTools.AdvanceFlyCommand;
 import work.alsace.alsacecore.commands.teleport.BackCommand;
 import work.alsace.alsacecore.service.HomeDataLoader;
@@ -61,14 +61,14 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
-        this.plugin.hasIgnored.remove(event.getPlayer().getName());
-        plugin.homeProfiles.remove(event.getPlayer().getUniqueId());
-        if (NoClipUtil.noclip.contains(event.getPlayer()) || AdvanceFlyCommand.enabledPlayers.contains(event.getPlayer()) || BlockListener.slabs.contains(event.getPlayer())) {
-            NoClipUtil.noclip.remove(event.getPlayer());
-            AdvanceFlyCommand.enabledPlayers.remove(event.getPlayer());
-            BlockListener.slabs.remove(event.getPlayer());
+        Player player = event.getPlayer();
+        this.plugin.hasIgnored.remove(player.getName());
+        plugin.homeProfiles.remove(player.getUniqueId());
+        if (NoClipUtil.noclip.contains(player) || AdvanceFlyCommand.enabledPlayers.contains(player) || BlockListener.slabs.contains(player)) {
+            NoClipUtil.noclip.remove(player);
+            AdvanceFlyCommand.enabledPlayers.remove(player);
+            BlockListener.slabs.remove(player);
         }
-        event.getPlayer().removeMetadata("afk", plugin);
     }
 
     @EventHandler

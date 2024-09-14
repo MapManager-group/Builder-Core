@@ -2,10 +2,7 @@ package work.alsace.alsacecore.commands.players;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -13,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SpeedCommand implements CommandExecutor, TabCompleter {
+public class SpeedCommand implements TabExecutor {
 
     private final String error = ChatColor.GRAY + "正确指令:\n§f/speed <速度> §7- 设置你的飞行或步行速度(0.1~10)\n§f/speed <类型> <速度> [玩家] §7- 设置指定玩家的指定类型速度";
     private static final List<String> types = Arrays.asList("walk", "fly", "1", "1.5", "1.75", "2");

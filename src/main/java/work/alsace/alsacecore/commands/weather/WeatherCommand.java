@@ -2,17 +2,14 @@ package work.alsace.alsacecore.commands.weather;
 
 import org.bukkit.ChatColor;
 import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class WeatherCommand implements CommandExecutor, TabCompleter {
+public class WeatherCommand implements TabExecutor {
 
     private final String error = ChatColor.GRAY + "正确指令:\n§f/weather <天气> §7- 设置你当前世界的天气";
     private static final List<String> weathers = Arrays.asList("clear", "rain", "thunder");

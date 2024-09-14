@@ -1,4 +1,4 @@
-package work.alsace.alsacecore.Utils;
+package work.alsace.alsacecore.utils;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

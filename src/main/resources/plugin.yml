@@ -170,3 +170,18 @@ commands:
   tphere:
     description: 将指定玩家传送到你的位置
     permission: alsace.commands.tphere
+  reach:
+    description: 修改自己的方块交互距离
+    permission: alsace.commands.reach
+  scale:
+    description: 修改自己的尺寸倍数
+    permission: alsace.commands.scale
+  vanish:
+    description: 进入隐身状态
+    permission: alsace.commands.vanish
+  invsee:
+    description: 查看目标玩家的背包
+    permission: alsace.commands.invsee
+  endersee:
+    description: 查看目标目标玩家的末影箱
+    permission: alsace.commands.endersee

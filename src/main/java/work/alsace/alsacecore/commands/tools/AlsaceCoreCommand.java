@@ -1,17 +1,14 @@
 package work.alsace.alsacecore.commands.tools;
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
+import org.bukkit.command.*;
 import work.alsace.alsacecore.AlsaceCore;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AlsaceCoreCommand implements CommandExecutor, TabCompleter {
+public class AlsaceCoreCommand implements TabExecutor {
     private final AlsaceCore plugin;
 
     private static final List<String> commands = Arrays.asList("reload", "info");

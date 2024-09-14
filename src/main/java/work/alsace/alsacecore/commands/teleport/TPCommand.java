@@ -65,7 +65,6 @@ public class TPCommand implements TabExecutor {
                         }
 
                         teleportAfterDelay(commander, player);
-                        commander.sendMessage(ChatColor.GRAY + "正在传送至" + name);
                     } else if (commander.hasPermission("alsace.commands.tp") && commander.hasPermission("multiverse.access." + player.getWorld().getName())) {
                         if (this.plugin.hasIgnored.get(name) != null && this.plugin.hasIgnored.get(name)) {
                             sender.sendMessage(ChatColor.RED + "玩家" + name + "已屏蔽强制传送");
@@ -217,7 +216,9 @@ public class TPCommand implements TabExecutor {
 
     private void teleportAfterDelay(Player fromPlayer, Player toPlayer) {
         fromPlayer.sendMessage(ChatColor.GRAY + "正在传送至" + ChatColor.WHITE + toPlayer.getName());
-        toPlayer.sendMessage(fromPlayer.getName() + ChatColor.GRAY + " 正在传送到你身边...");
+        if (!fromPlayer.hasMetadata("vanish")) {
+            toPlayer.sendMessage(fromPlayer.getName() + ChatColor.GRAY + " 正在传送到你身边...");
+        }
         new BukkitRunnable() {
             @Override
             public void run() {

@@ -45,8 +45,7 @@ public class AFKListener implements Listener {
     }
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event){
-        Player player=event.getPlayer();
-        cancelAFK(player);
+        event.getPlayer().removeMetadata("afk", plugin);
     }
 
     private void checkAFKPlayers() {

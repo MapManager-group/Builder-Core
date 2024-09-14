@@ -1,4 +1,4 @@
-package work.alsace.alsacecore.Utils;
+package work.alsace.alsacecore.utils;
 
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;

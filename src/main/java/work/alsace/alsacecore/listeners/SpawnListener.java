@@ -30,7 +30,7 @@ public class SpawnListener implements Listener {
     private void spawnBaby(PlayerInteractEvent event) {
         EntityType entityType;
         if (event.getItem().getType().toString().contains("MOOSHROOM")) {
-            entityType = EntityType.MUSHROOM_COW;
+            entityType = EntityType.MOOSHROOM;
         } else {
             entityType = EntityType.valueOf(event.getItem().getType().toString().replace("_SPAWN_EGG",""));
         }
@@ -53,7 +53,7 @@ public class SpawnListener implements Listener {
     private void spawnDefault(PlayerInteractEvent event) {
         EntityType entityType;
         if (event.getItem().getType().toString().contains("MOOSHROOM")) {
-            entityType = EntityType.MUSHROOM_COW;
+            entityType = EntityType.MOOSHROOM;
         } else {
             entityType = EntityType.valueOf(event.getItem().getType().toString().replace("_SPAWN_EGG",""));
         }
