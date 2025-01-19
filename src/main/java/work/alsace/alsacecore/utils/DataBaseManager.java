@@ -3,10 +3,7 @@ package work.alsace.alsacecore.utils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.UUID;
 
 public class DataBaseManager {
@@ -21,6 +18,7 @@ public class DataBaseManager {
 
         dataSource = new HikariDataSource(config);
         createTable();
+        createInventoryTables();
     }
 
     private void createTable() {
@@ -31,6 +29,17 @@ public class DataBaseManager {
                              "player_uuid VARCHAR(36) NOT NULL," +
                              "agreed BOOLEAN NOT NULL);")) {
             statement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createInventoryTables() {
+        String sql = "CREATE TABLE IF NOT EXISTS player_inventories (" +
+                "uuid VARCHAR(36) PRIMARY KEY, " +
+                "inventory TEXT);";
+        try (Statement statement = dataSource.getConnection().createStatement()) {
+            statement.executeUpdate(sql);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -76,5 +85,29 @@ public class DataBaseManager {
         if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
         }
+    }
+
+    public void savePlayerInventory(String uuid, String inventoryData) throws SQLException {
+        String sql = "INSERT INTO player_inventories (uuid, inventory) " +
+                "VALUES (?, ?) " +
+                "ON DUPLICATE KEY UPDATE inventory = VALUES(inventory);";
+        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(sql)) {
+            statement.setString(1, uuid);
+            statement.setString(2, inventoryData);
+            statement.executeUpdate();
+        }
+    }
+
+    public String loadPlayerInventory(String uuid) throws SQLException {
+        String sql = "SELECT inventory FROM player_inventories WHERE uuid = ?;";
+        try (PreparedStatement statement = dataSource.getConnection().prepareStatement(sql)) {
+            statement.setString(1, uuid);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("inventory");
+                }
+            }
+        }
+        return null;
     }
 }

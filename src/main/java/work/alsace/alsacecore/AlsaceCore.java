@@ -37,6 +37,7 @@ import work.alsace.alsacecore.service.HomeDataLoader;
 import work.alsace.alsacecore.service.TPAHandler;
 import work.alsace.alsacecore.service.WarpDataLoader;
 import work.alsace.alsacecore.service.VelocityMessenger;
+import work.alsace.alsacecore.utils.SerializeInventory;
 
 import java.io.File;
 import java.util.*;
@@ -63,10 +64,13 @@ public class AlsaceCore extends JavaPlugin {
     public static String afkPrefix;
     public static List<String> blockedCommands;
 
+    private SerializeInventory serializeInventory;
+
     @Override
     public void onEnable() {
         loadConfig();
         tpaHandler = new TPAHandler(this);
+        serializeInventory = new SerializeInventory();
         if (agreement) {
             databaseManager = new DataBaseManager(host, dataBase, userName, password);
             loadPlayerAgreementStatus();
@@ -186,6 +190,7 @@ public class AlsaceCore extends JavaPlugin {
         manager.registerEvents(new FoxListener(), this);
         manager.registerEvents(new VanishListener(), this);
         manager.registerEvents(new ChestListener(), this);
+        manager.registerEvents(new InventoryListener(this),this);
 
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -244,6 +249,10 @@ public class AlsaceCore extends JavaPlugin {
 
     public TPAHandler getTPAHandler() {
         return tpaHandler;
+    }
+
+    public SerializeInventory getSerializeInventory() {
+        return serializeInventory;
     }
 
 }
