@@ -27,13 +27,13 @@ public class InventoryListener implements Listener {
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                String inventory = plugin.getDatabaseManager().loadPlayerInventory(uuid);
+                String inventory = plugin.getLiteDataBaseManager().loadPlayerInventory(uuid);
                 if (inventory != null) {
                     ItemStack[] inventoryContents = plugin.getSerializeInventory().deserializeInventory(inventory);
                     player.getInventory().setContents(inventoryContents);
                 }
             } catch (IOException | SQLException e) {
-                plugin.getLogger().severe("加载玩家背包数据失败: " + player.getName() + ": " + e.getMessage());
+                plugin.getLogger().severe("[背包同步] 加载玩家背包数据失败: " + player.getName() + ": " + e.getMessage());
             }
         });
     }
@@ -47,9 +47,9 @@ public class InventoryListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 String inventory = plugin.getSerializeInventory().serializeInventory(inventoryContents);
-                plugin.getDatabaseManager().savePlayerInventory(uuid, inventory);
+                plugin.getLiteDataBaseManager().savePlayerInventory(uuid, inventory);
             } catch (IOException | SQLException e) {
-                plugin.getLogger().severe("保存玩家背包数据失败: " + player.getName() + ": " + e.getMessage());
+                plugin.getLogger().severe("[背包同步] 保存玩家背包数据失败: " + player.getName() + ": " + e.getMessage());
             }
         });
     }
