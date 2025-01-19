@@ -1,5 +1,8 @@
 package work.alsace.alsacecore.utils;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import work.alsace.alsacecore.AlsaceCore;
 
 import java.sql.*;
@@ -36,8 +39,19 @@ public class LiteDataBaseManager {
         String sql = "CREATE TABLE IF NOT EXISTS player_inventories (" +
                 "uuid TEXT PRIMARY KEY, " +
                 "inventory TEXT);";
+
+        String sqlLocation = "CREATE TABLE IF NOT EXISTS player_locations (" +
+                "uuid TEXT PRIMARY KEY, " +
+                "world TEXT, " +
+                "x DOUBLE, " +
+                "y DOUBLE, " +
+                "z DOUBLE, " +
+                "yaw FLOAT, " +
+                "pitch FLOAT);";
+
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sql);
+            statement.executeUpdate(sqlLocation);
         }
     }
 
@@ -57,6 +71,45 @@ public class LiteDataBaseManager {
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
                     return resultSet.getString("inventory");
+                }
+            }
+        }
+        return null;
+    }
+
+    public void savePlayerLocation(String uuid, Location location) throws SQLException {
+        String sql = "REPLACE INTO player_locations (uuid, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, uuid);
+            statement.setString(2, location.getWorld().getName());
+            statement.setDouble(3, location.getX());
+            statement.setDouble(4, location.getY());
+            statement.setDouble(5, location.getZ());
+            statement.setFloat(6, location.getYaw());
+            statement.setFloat(7, location.getPitch());
+            statement.executeUpdate();
+        }
+    }
+
+    public Location loadPlayerLocation(String uuid) throws SQLException {
+        String sql = "SELECT world, x, y, z, yaw, pitch FROM player_locations WHERE uuid = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, uuid);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    String worldName = resultSet.getString("world");
+                    double x = resultSet.getDouble("x");
+                    double y = resultSet.getDouble("y");
+                    double z = resultSet.getDouble("z");
+                    float yaw = resultSet.getFloat("yaw");
+                    float pitch = resultSet.getFloat("pitch");
+
+                    World world = Bukkit.getWorld(worldName);
+                    if (world != null) {
+                        return new Location(world, x, y, z, yaw, pitch);
+                    }
                 }
             }
         }
