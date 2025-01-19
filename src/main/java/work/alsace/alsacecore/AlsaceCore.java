@@ -8,9 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import work.alsace.alsacecore.commands.tools.*;
-import work.alsace.alsacecore.utils.DataBaseManager;
-import work.alsace.alsacecore.utils.NoClipUtil;
-import work.alsace.alsacecore.utils.Placeholder;
+import work.alsace.alsacecore.utils.*;
 import work.alsace.alsacecore.commands.agree.AgreeCommand;
 import work.alsace.alsacecore.commands.agree.DisagreeCommand;
 import work.alsace.alsacecore.commands.alias.*;
@@ -37,7 +35,6 @@ import work.alsace.alsacecore.service.HomeDataLoader;
 import work.alsace.alsacecore.service.TPAHandler;
 import work.alsace.alsacecore.service.WarpDataLoader;
 import work.alsace.alsacecore.service.VelocityMessenger;
-import work.alsace.alsacecore.utils.SerializeInventory;
 
 import java.io.File;
 import java.util.*;
@@ -65,15 +62,18 @@ public class AlsaceCore extends JavaPlugin {
     public static List<String> blockedCommands;
 
     private SerializeInventory serializeInventory;
+    private LiteDataBaseManager liteDataBaseManager;
 
     @Override
     public void onEnable() {
         loadConfig();
         tpaHandler = new TPAHandler(this);
         serializeInventory = new SerializeInventory();
+        liteDataBaseManager = new LiteDataBaseManager(this);
         if (agreement) {
             databaseManager = new DataBaseManager(host, dataBase, userName, password);
             loadPlayerAgreementStatus();
+            liteDataBaseManager.connect();
         }
         registerCommands();
         registerListeners();
@@ -96,6 +96,7 @@ public class AlsaceCore extends JavaPlugin {
             if (databaseManager != null) {
                 databaseManager.closeDataSource();
             }
+            liteDataBaseManager.disconnect();
         }
         getLogger().info("插件已卸载");
     }
@@ -253,6 +254,10 @@ public class AlsaceCore extends JavaPlugin {
 
     public SerializeInventory getSerializeInventory() {
         return serializeInventory;
+    }
+
+    public LiteDataBaseManager getLiteDataBaseManager() {
+        return liteDataBaseManager;
     }
 
 }
