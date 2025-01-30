@@ -15,6 +15,10 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.geysermc.cumulus.form.CustomForm;
+import org.geysermc.floodgate.api.FloodgateApi;
+import org.geysermc.floodgate.api.player.FloodgatePlayer;
 import work.alsace.alsacecore.AlsaceCore;
 import work.alsace.alsacecore.utils.DataBaseManager;
 import work.alsace.alsacecore.utils.NoClipUtil;
@@ -49,6 +53,18 @@ public class PlayerListener implements Listener {
                     Bukkit.broadcastMessage("§a欢迎新玩家 §f" + event.getPlayer().getName() + " §a加入§f阿尔萨斯§a服务器");
                 }
                 sendAgreementMessage(player);
+
+                if (plugin.hasFloodgate()) {
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            if (player.isOnline()) {
+                                sendBedrockAgreementMessage(player);
+                            }
+                        }
+                    }.runTaskLater(plugin, 60);
+                }
+
                 plugin.hasAgree.put(player.getName(), true); //disagree
             } else {
                 plugin.hasAgree.put(player.getName(), false); //agree
@@ -88,6 +104,10 @@ public class PlayerListener implements Listener {
                 if (!message.startsWith("/agree") && !message.startsWith("/disagree")) {
                     event.setCancelled(true);
                     player.sendMessage(ChatColor.RED + "你必须先同意用户协议才能使用命令！");
+
+                    if (plugin.hasFloodgate()) {
+                        sendBedrockAgreementMessage(player);
+                    }
                 }
             }
         }
@@ -113,6 +133,10 @@ public class PlayerListener implements Listener {
             if (!databaseManager.hasPlayerAgreed(player.getUniqueId())) {
                 event.setCancelled(true);
                 player.sendMessage(ChatColor.RED + "你必须先阅读并同意用户协议才能聊天！");
+
+                if (plugin.hasFloodgate()) {
+                    sendBedrockAgreementMessage(player);
+                }
             }
         }
     }
@@ -193,6 +217,28 @@ public class PlayerListener implements Listener {
         welcomeComponent.addExtra(disagreeButton);
 
         player.spigot().sendMessage(welcomeComponent);
+    }
+
+    private void sendBedrockAgreementMessage(Player player) {
+        FloodgateApi floodgateApi = FloodgateApi.getInstance();
+        if (!floodgateApi.isFloodgatePlayer(player.getUniqueId())) { return; }
+
+        FloodgatePlayer floodgatePlayer = floodgateApi.getPlayer(player.getUniqueId());
+        floodgatePlayer.sendForm(getAgreementForm(player));
+    }
+
+    private CustomForm.Builder getAgreementForm(Player player) {
+        return CustomForm.builder()
+                .title("工业园用户协议")
+                .label("您必须阅读并同意《工业园用户协议》才可以正常使用工业园的服务。")
+                .label("§e链接地址: https://alsaceteam.feishu.cn/wiki/F8AHwoD18iq45fk3ieSc6pcGnYy")
+                .label("§r请点击下方提交按钮§a同意§r 或 点击右上角关闭按钮§c拒绝§r")
+                .validResultHandler(response -> player.performCommand("agree"))
+                .closedResultHandler(response -> {
+                    if (!plugin.getDatabaseManager().hasPlayerAgreed(player.getUniqueId())) {
+                        player.performCommand("disagree");
+                    }
+                });
     }
 
 }

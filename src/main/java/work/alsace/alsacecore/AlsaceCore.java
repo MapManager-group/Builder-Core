@@ -64,6 +64,8 @@ public class AlsaceCore extends JavaPlugin {
     private SerializeInventory serializeInventory;
     private LiteDataBaseManager liteDataBaseManager;
 
+    private boolean hasFloodgate = false;
+
     @Override
     public void onEnable() {
         loadConfig();
@@ -74,6 +76,7 @@ public class AlsaceCore extends JavaPlugin {
             databaseManager = new DataBaseManager(host, dataBase, userName, password);
             loadPlayerAgreementStatus();
             liteDataBaseManager.connect();
+            hasFloodgate = Bukkit.getPluginManager().isPluginEnabled("floodgate");
         }
         registerCommands();
         registerListeners();
@@ -258,6 +261,10 @@ public class AlsaceCore extends JavaPlugin {
 
     public LiteDataBaseManager getLiteDataBaseManager() {
         return liteDataBaseManager;
+    }
+
+    public boolean hasFloodgate() {
+        return hasFloodgate;
     }
 
 }
