@@ -6,6 +6,7 @@ import org.bukkit.block.Lectern;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -14,6 +15,7 @@ import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
 
@@ -171,6 +173,15 @@ public class Protect implements Listener {
         if (player != null && e.getEntity().getType().toString().toUpperCase().contains("ARMOR_STAND") && !player.hasPermission("alsace.protect.armor_stand")) {
             e.setCancelled(true);
             player.sendMessage(ChatColor.RED + "你没有权限破坏盔甲架");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onPlayerInteractSword(PlayerInteractEvent event) {
+        ItemStack item = event.getItem();
+        if (item == null || item.getType() == Material.AIR) { return; }
+        if (item.getType().name().contains("_SWORD")) {
+            event.setCancelled(true);
         }
     }
 }
