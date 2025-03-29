@@ -20,11 +20,11 @@ import org.geysermc.cumulus.form.CustomForm;
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 import work.alsace.alsacecore.AlsaceCore;
-import work.alsace.alsacecore.utils.DataBaseManager;
-import work.alsace.alsacecore.utils.NoClipUtil;
 import work.alsace.alsacecore.commands.builderTools.AdvanceFlyCommand;
 import work.alsace.alsacecore.commands.teleport.BackCommand;
 import work.alsace.alsacecore.service.HomeDataLoader;
+import work.alsace.alsacecore.utils.DataBaseManager;
+import work.alsace.alsacecore.utils.NoClipUtil;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -52,9 +52,9 @@ public class PlayerListener implements Listener {
                 if (!event.getPlayer().hasPlayedBefore()) {
                     Bukkit.broadcastMessage("§a欢迎新玩家 §f" + event.getPlayer().getName() + " §a加入§f阿尔萨斯§a服务器");
                 }
-                sendAgreementMessage(player);
-
-                if (plugin.hasFloodgate()) {
+                if (!plugin.hasFloodgate()) {
+                    sendAgreementMessage(player);
+                } else {
                     new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -209,12 +209,16 @@ public class PlayerListener implements Listener {
         TextComponent disagreeButton = new TextComponent(ChatColor.RED + "[不同意]");
         disagreeButton.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/disagree"));
 
+        TextComponent welcomeComponent2 = new TextComponent(ChatColor.GRAY + "若按钮无法点击，请输入 /agree 命令");
+
+
         welcomeComponent.addExtra(agreementLink);
         welcomeComponent.addExtra(welcomeComponent1);
         welcomeComponent.addExtra("\n");
         welcomeComponent.addExtra(agreeButton);
         welcomeComponent.addExtra(" ");
         welcomeComponent.addExtra(disagreeButton);
+        welcomeComponent.addExtra(welcomeComponent2);
 
         player.spigot().sendMessage(welcomeComponent);
     }
