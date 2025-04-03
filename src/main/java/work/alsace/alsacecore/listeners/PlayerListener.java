@@ -103,7 +103,7 @@ public class PlayerListener implements Listener {
                 String message = event.getMessage().toLowerCase();
                 if (!message.startsWith("/agree") && !message.startsWith("/disagree")) {
                     event.setCancelled(true);
-                    player.sendMessage(ChatColor.RED + "你必须先同意用户协议才能使用命令！");
+                    player.sendMessage(ChatColor.RED + "你必须先同意用户协议才能使用命令，输入 /agree 进行同意。");
 
                     if (plugin.hasFloodgate()) {
                         sendBedrockAgreementMessage(player);
@@ -132,7 +132,7 @@ public class PlayerListener implements Listener {
         if (plugin.agreement) {
             if (!databaseManager.hasPlayerAgreed(player.getUniqueId())) {
                 event.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "你必须先阅读并同意用户协议才能聊天！");
+                player.sendMessage(ChatColor.RED + "你必须先阅读并同意用户协议才能聊天，输入 /agree 进行同意。");
 
                 if (plugin.hasFloodgate()) {
                     sendBedrockAgreementMessage(player);
