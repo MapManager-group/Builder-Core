@@ -70,6 +70,11 @@ public class Protect implements Listener {
 
     @EventHandler
     public void onSignChange(SignChangeEvent e) {
+        if (isSword(e.getPlayer())) {
+            e.setCancelled(true);
+            return;
+        }
+
         if (!e.getPlayer().hasPermission("alsace.protect.sign")) {
             e.setCancelled(true);
             e.getPlayer().sendMessage(ChatColor.RED + "你没有权限修改告示牌内容");
@@ -95,9 +100,17 @@ public class Protect implements Listener {
                 player = (Player)projectile.getShooter();
             }
         }
-        if (player != null && !player.hasPermission("alsace.protect.item_frame")) {
-            e.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "你没有权限破坏展示框");
+
+        if (player != null) {
+            if (isSword(player)) {
+                e.setCancelled(true);
+                return;
+            }
+
+            if (!player.hasPermission("alsace.protect.item_frame")) {
+                e.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "你没有权限破坏展示框");
+            }
         }
     }
 
@@ -112,9 +125,16 @@ public class Protect implements Listener {
                 player = (Player) projectile.getShooter();
             }
         }
-        if (player != null && e.getEntity().getType().toString().toUpperCase().contains("ITEM_FRAME") && !player.hasPermission("alsace.protect.item_frame")) {
-            e.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "你没有权限破坏展示框");
+        if (player != null) {
+            if (isSword(player)) {
+                e.setCancelled(true);
+                return;
+            }
+
+            if (e.getEntity().getType().toString().toUpperCase().contains("ITEM_FRAME") && !player.hasPermission("alsace.protect.item_frame")) {
+                e.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "你没有权限破坏展示框");
+            }
         }
     }
 
@@ -145,6 +165,11 @@ public class Protect implements Listener {
 
     @EventHandler
     public void onPlayerArmorStandManipulate(PlayerArmorStandManipulateEvent e) {
+        if (isSword(e.getPlayer())) {
+            e.setCancelled(true);
+            return;
+        }
+
         if (!e.getPlayer().hasPermission("alsace.protect.armor_stand")) {
             e.setCancelled(true);
             e.getPlayer().sendMessage(ChatColor.RED + "你没有权限修改盔甲架");
@@ -153,6 +178,11 @@ public class Protect implements Listener {
 
     @EventHandler
     public void onArmorPlayerInteract(PlayerInteractEvent e) {
+        if (isSword(e.getPlayer())) {
+            e.setCancelled(true);
+            return;
+        }
+
         if (!e.getPlayer().hasPermission("alsace.protect.armor_stand") && e.getPlayer().getInventory().getItemInMainHand().getType() == Material.ARMOR_STAND) {
             e.setCancelled(true);
             e.getPlayer().sendMessage(ChatColor.RED + "你没有权限使用盔甲架");
@@ -170,18 +200,29 @@ public class Protect implements Listener {
                 player = (Player) projectile.getShooter();
             }
         }
-        if (player != null && e.getEntity().getType().toString().toUpperCase().contains("ARMOR_STAND") && !player.hasPermission("alsace.protect.armor_stand")) {
-            e.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "你没有权限破坏盔甲架");
+        if (player != null) {
+            if (isSword(player)) {
+                e.setCancelled(true);
+                return;
+            }
+
+            if (e.getEntity().getType().toString().toUpperCase().contains("ARMOR_STAND") && !player.hasPermission("alsace.protect.armor_stand")) {
+                e.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "你没有权限破坏盔甲架");
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractSword(PlayerInteractEvent event) {
-        ItemStack item = event.getItem();
-        if (item == null || item.getType() == Material.AIR) { return; }
-        if (item.getType().name().contains("_SWORD")) {
+        Player player = event.getPlayer();
+        if (isSword(player)) {
             event.setCancelled(true);
         }
+    }
+
+    private boolean isSword(Player player) {
+        ItemStack item = player.getInventory().getItemInMainHand();
+        return item.getType().name().contains("_SWORD");
     }
 }
