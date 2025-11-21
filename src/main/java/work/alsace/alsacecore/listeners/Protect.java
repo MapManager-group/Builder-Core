@@ -1,6 +1,7 @@
 package work.alsace.alsacecore.listeners;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.block.Lectern;
 import org.bukkit.entity.Player;
@@ -25,7 +26,7 @@ public class Protect implements Listener {
     public void onBreak(BlockBreakEvent e) {
         if (!e.getPlayer().hasPermission("alsace.protect.break")) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "你没有权限破坏方块");
+            e.getPlayer().sendMessage(Component.text("你没有权限破坏方块").color(NamedTextColor.RED));
         }
     }
 
@@ -33,17 +34,17 @@ public class Protect implements Listener {
     public void onPlace(BlockPlaceEvent e) {
         if (!e.getPlayer().hasPermission("alsace.protect.place")) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "你没有权限放置方块");
+            e.getPlayer().sendMessage(Component.text("你没有权限放置方块").color(NamedTextColor.RED));
         }
     }
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK) { return; }
-        if (e.getClickedBlock().getState() instanceof Lectern) { return; }
+        if (e.getClickedBlock() != null && e.getClickedBlock().getState() instanceof Lectern) { return; }
         if (!e.getPlayer().hasPermission("alsace.protect.interact")) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "你没有权限与方块交互");
+            e.getPlayer().sendMessage(Component.text("你没有权限与方块交互").color(NamedTextColor.RED));
         }
     }
 
@@ -64,7 +65,7 @@ public class Protect implements Listener {
         Player player = e.getPlayer();
         if (player != null && !player.hasPermission("alsace.protect.ignite")) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "你没有权限点燃方块");
+            e.getPlayer().sendMessage(Component.text("你没有权限点燃方块").color(NamedTextColor.RED));
         }
     }
 
@@ -77,7 +78,7 @@ public class Protect implements Listener {
 
         if (!e.getPlayer().hasPermission("alsace.protect.sign")) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "你没有权限修改告示牌内容");
+            e.getPlayer().sendMessage(Component.text("你没有权限修改告示牌内容").color(NamedTextColor.RED));
         }
     }
 
@@ -85,7 +86,7 @@ public class Protect implements Listener {
     public void onHangingPlace(HangingPlaceEvent e) {
         if (e.getPlayer() != null && !e.getPlayer().hasPermission("alsace.protect.item_frame")) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "你没有权限放置展示框");
+            e.getPlayer().sendMessage(Component.text("你没有权限放置展示框").color(NamedTextColor.RED));
         }
     }
 
@@ -94,8 +95,7 @@ public class Protect implements Listener {
         Player player = null;
         if (e.getRemover() instanceof Player) {
             player = (Player)e.getRemover();
-        } else if (e.getRemover() instanceof Projectile) {
-            Projectile projectile = (Projectile)e.getRemover();
+        } else if (e.getRemover() instanceof Projectile projectile) {
             if (projectile.getShooter() instanceof Player) {
                 player = (Player)projectile.getShooter();
             }
@@ -109,7 +109,7 @@ public class Protect implements Listener {
 
             if (!player.hasPermission("alsace.protect.item_frame")) {
                 e.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "你没有权限破坏展示框");
+                player.sendMessage(Component.text("你没有权限破坏展示框").color(NamedTextColor.RED));
             }
         }
     }
@@ -119,8 +119,7 @@ public class Protect implements Listener {
         Player player = null;
         if (e.getDamager() instanceof Player) {
             player = (Player) e.getDamager();
-        } else if (e.getDamager() instanceof Projectile) {
-            Projectile projectile = (Projectile) e.getDamager();
+        } else if (e.getDamager() instanceof Projectile projectile) {
             if (projectile.getShooter() instanceof Player) {
                 player = (Player) projectile.getShooter();
             }
@@ -133,7 +132,7 @@ public class Protect implements Listener {
 
             if (e.getEntity().getType().toString().toUpperCase().contains("ITEM_FRAME") && !player.hasPermission("alsace.protect.item_frame")) {
                 e.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "你没有权限破坏展示框");
+                player.sendMessage(Component.text("你没有权限破坏展示框").color(NamedTextColor.RED));
             }
         }
     }
@@ -142,7 +141,7 @@ public class Protect implements Listener {
     public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
         if (!e.getPlayer().hasPermission("alsace.protect.item_frame") && e.getRightClicked().getType().toString().toUpperCase().contains("ITEM_FRAME")) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "你没有权限放置展示框");
+            e.getPlayer().sendMessage(Component.text("你没有权限放置展示框").color(NamedTextColor.RED));
         }
     }
 
@@ -156,10 +155,20 @@ public class Protect implements Listener {
     @EventHandler
     public void onPlayerInteractP(PlayerInteractEvent e) {
         if (e.getAction() == Action.PHYSICAL && !e.getPlayer().hasPermission("alsace.protect.farmland")) {
+            if (e.getClickedBlock() == null) { return; }
+
             Material blockType = e.getClickedBlock().getType();
             if (blockType == Material.FARMLAND) {
                 e.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerBodyInteract(PlayerInteractEvent e) {
+        if (e.getAction() == Action.PHYSICAL && !e.getPlayer().hasPermission("alsace.protect.interact")) {
+            if (e.getClickedBlock() == null) { return; }
+            e.setCancelled(true);
         }
     }
 
@@ -172,7 +181,7 @@ public class Protect implements Listener {
 
         if (!e.getPlayer().hasPermission("alsace.protect.armor_stand")) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "你没有权限修改盔甲架");
+            e.getPlayer().sendMessage(Component.text("你没有权限修改盔甲架").color(NamedTextColor.RED));
         }
     }
 
@@ -185,7 +194,7 @@ public class Protect implements Listener {
 
         if (!e.getPlayer().hasPermission("alsace.protect.armor_stand") && e.getPlayer().getInventory().getItemInMainHand().getType() == Material.ARMOR_STAND) {
             e.setCancelled(true);
-            e.getPlayer().sendMessage(ChatColor.RED + "你没有权限使用盔甲架");
+            e.getPlayer().sendMessage(Component.text("你没有权限使用盔甲架").color(NamedTextColor.RED));
         }
     }
 
@@ -194,8 +203,7 @@ public class Protect implements Listener {
         Player player = null;
         if (e.getDamager() instanceof Player) {
             player = (Player) e.getDamager();
-        } else if (e.getDamager() instanceof Projectile) {
-            Projectile projectile = (Projectile) e.getDamager();
+        } else if (e.getDamager() instanceof Projectile projectile) {
             if (projectile.getShooter() instanceof Player) {
                 player = (Player) projectile.getShooter();
             }
@@ -208,7 +216,7 @@ public class Protect implements Listener {
 
             if (e.getEntity().getType().toString().toUpperCase().contains("ARMOR_STAND") && !player.hasPermission("alsace.protect.armor_stand")) {
                 e.setCancelled(true);
-                player.sendMessage(ChatColor.RED + "你没有权限破坏盔甲架");
+                player.sendMessage(Component.text("你没有权限破坏盔甲架").color(NamedTextColor.RED));
             }
         }
     }

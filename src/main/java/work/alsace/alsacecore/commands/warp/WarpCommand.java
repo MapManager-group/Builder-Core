@@ -1,5 +1,6 @@
 package work.alsace.alsacecore.commands.warp;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -35,7 +36,7 @@ public class WarpCommand implements TabExecutor {
                 return false;
             }
             World warpWorld = location.getWorld();
-            if (warpWorld != null) {
+            if (warpWorld != null && Bukkit.getWorld(warpWorld.getName()) != null) {
                 if (sender.hasPermission("multiverse.access." + warpWorld.getName())) {
                     Player player = (Player) sender;
                     player.teleport(location);
@@ -45,7 +46,8 @@ public class WarpCommand implements TabExecutor {
                     return false;
                 }
             } else {
-                sender.sendMessage(ChatColor.RED + "世界" + warpWorld + "不存在");
+                sender.sendMessage(ChatColor.RED + "世界不存在或未加载");
+                warpDataLoader.delWarp(warpName);
                 return false;
             }
         } else {

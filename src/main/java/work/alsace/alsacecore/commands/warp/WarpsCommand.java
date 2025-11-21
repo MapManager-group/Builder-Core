@@ -5,7 +5,9 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -61,7 +63,14 @@ public class WarpsCommand implements CommandExecutor {
     private Map<String, List<String>> getWorldWarps(Player sender) {
         Map<String, List<String>> worldWarps = new HashMap<>();
         AlsaceCore.instance.warpProfiles.get("warps").getWarps().forEach(warp -> {
-            String worldName = AlsaceCore.instance.warpProfiles.get("warps").getWarpWorld(warp).getName();
+            World world = AlsaceCore.instance.warpProfiles.get("warps").getWarpWorld(warp);
+
+            if (world == null || Bukkit.getWorld(world.getName()) == null) {
+                AlsaceCore.instance.warpProfiles.get("warps").delWarp(warp);
+                return;
+            }
+
+            String worldName = world.getName();
             String alias = AlsaceCore.instance.warpProfiles.get("warps").getWarpAlias(warp);
 
             if (sender.hasPermission("multiverse.access." + worldName)) {

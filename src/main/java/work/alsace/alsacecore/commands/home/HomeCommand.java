@@ -42,8 +42,8 @@ public class HomeCommand implements TabExecutor {
                 homeName = homeName.replaceFirst(user + ":", "");
                 Location location = homeDataLoaderProfile.getHome(homeName);
                 if (homeDataLoaderProfile.getHome(homeName) != null) {
-                    if (location.getWorld() == null) {
-                        sender.sendMessage(ChatColor.RED + "世界" + location.getWorld() + "不存在");
+                    if (location.getWorld() == null || Bukkit.getWorld(location.getWorld().getName()) == null) {
+                        sender.sendMessage(ChatColor.RED + "世界不存在或未加载");
                         return false;
                     }
                     player.teleport(location);
@@ -59,8 +59,8 @@ public class HomeCommand implements TabExecutor {
                     sender.sendMessage(ChatColor.RED + "你没有传送点" + homeName);
                     return false;
                 } else {
-                    if (loc.getWorld() == null) {
-                        sender.sendMessage(ChatColor.RED + "世界" + loc.getWorld() + "不存在");
+                    if (loc.getWorld() == null || Bukkit.getWorld(loc.getWorld().getName()) == null) {
+                        sender.sendMessage(ChatColor.RED + "世界不存在或未加载");
                         return false;
                     }
                     player.teleport(loc);
