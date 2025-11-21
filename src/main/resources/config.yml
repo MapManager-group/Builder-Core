@@ -6,8 +6,8 @@ agreement: false
 backHistory: 5
 #用户协议数据库配置
 database:
-  host: "your_mysql_host"
-  port: 3306
+  host: "your_mysql_host:3306"
+  #port: 3306
   database: "your_database"
   username: "your_username"
   password: "your_password"
