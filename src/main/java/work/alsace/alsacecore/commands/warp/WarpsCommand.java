@@ -66,7 +66,7 @@ public class WarpsCommand implements CommandExecutor {
             World world = AlsaceCore.instance.warpProfiles.get("warps").getWarpWorld(warp);
 
             if (world == null || Bukkit.getWorld(world.getName()) == null) {
-                AlsaceCore.instance.warpProfiles.get("warps").delWarp(warp);
+                //AlsaceCore.instance.warpProfiles.get("warps").delWarp(warp);
                 return;
             }
 

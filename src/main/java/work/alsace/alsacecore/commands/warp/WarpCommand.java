@@ -47,7 +47,7 @@ public class WarpCommand implements TabExecutor {
                 }
             } else {
                 sender.sendMessage(ChatColor.RED + "世界不存在或未加载");
-                warpDataLoader.delWarp(warpName);
+                //warpDataLoader.delWarp(warpName);
                 return false;
             }
         } else {
