@@ -16,7 +16,7 @@ public class ReachCommand implements CommandExecutor {
             sender.sendMessage(Component.text("该命令仅限玩家执行").color(NamedTextColor.RED));
             return true;
         }
-        if (!sender.hasPermission("alsace.commands.reach")) {
+        if (!sender.hasPermission("buildercore.commands.reach")) {
             sender.sendMessage(Component.text("你没有使用该命令的权限").color(NamedTextColor.RED));
             return true;
         }

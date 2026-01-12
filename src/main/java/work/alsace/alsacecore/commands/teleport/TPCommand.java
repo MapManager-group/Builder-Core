@@ -54,7 +54,7 @@ public class TPCommand implements TabExecutor {
 
                     String name = player.getName();
                     if (commander.getWorld().equals(player.getWorld())) {
-                        if (!sender.hasPermission("alsace.commands.tp")) {
+                        if (!sender.hasPermission("buildercore.commands.tp")) {
                             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                             return true;
                         }
@@ -65,7 +65,7 @@ public class TPCommand implements TabExecutor {
                         }
 
                         teleportAfterDelay(commander, player);
-                    } else if (commander.hasPermission("alsace.commands.tp") && commander.hasPermission("multiverse.access." + player.getWorld().getName())) {
+                    } else if (commander.hasPermission("buildercore.commands.tp") && commander.hasPermission("multiverse.access." + player.getWorld().getName())) {
                         if (this.plugin.hasIgnored.get(name) != null && this.plugin.hasIgnored.get(name)) {
                             sender.sendMessage(ChatColor.RED + "玩家" + name + "已屏蔽强制传送");
                             return true;
@@ -84,11 +84,11 @@ public class TPCommand implements TabExecutor {
             //tp玩家到玩家
             case 2 -> {
                 if (sender instanceof Player) {
-                    if (!sender.hasPermission("alsace.commands.tp")) {
+                    if (!sender.hasPermission("buildercore.commands.tp")) {
                         sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                         return false;
                     }
-                    if (!sender.hasPermission("alsace.commands.tp.other")) {
+                    if (!sender.hasPermission("buildercore.commands.tp.other")) {
                         sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                         return false;
                     } else {
@@ -112,7 +112,7 @@ public class TPCommand implements TabExecutor {
             //tp到坐标
             case 3 -> {
                 if (sender instanceof Player commander) {
-                    if (!sender.hasPermission("alsace.commands.tp.location")) {
+                    if (!sender.hasPermission("buildercore.commands.tp.location")) {
                         sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                         return true;
                     }
@@ -136,20 +136,20 @@ public class TPCommand implements TabExecutor {
             //tp玩家到坐标
             case 4 -> {
                 if (sender instanceof Player commander) {
-                    if (!sender.hasPermission("alsace.commands.tp.location")) {
+                    if (!sender.hasPermission("buildercore.commands.tp.location")) {
                         sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                         return true;
                     }
                     commander = args[0].equals("@s") ? (Player) sender : Bukkit.getPlayer(args[0]);
                     if (commander == null) {
-                        if (!sender.hasPermission("alsace.commands.tp.other")) {
+                        if (!sender.hasPermission("buildercore.commands.tp.other")) {
                             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                             return true;
                         }
 
                         sender.sendMessage(ChatColor.RED + "玩家" + args[0] + "不在线");
                         return true;
-                    } else if (!sender.getName().equals(commander.getName()) && !sender.hasPermission("alsace.commands.tp.other")) {
+                    } else if (!sender.getName().equals(commander.getName()) && !sender.hasPermission("buildercore.commands.tp.other")) {
                         sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                         return true;
                     } else {

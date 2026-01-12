@@ -19,7 +19,7 @@ public class AlsaceCoreCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
-        if (!sender.hasPermission("alsace.admin")) {
+        if (!sender.hasPermission("buildercore.admin")) {
             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
             return false;
         }
@@ -44,7 +44,7 @@ public class AlsaceCoreCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String s, String[] args) {
-        if (args.length == 1 && sender.hasPermission("alsace.admin")) {
+        if (args.length == 1 && sender.hasPermission("buildercore.admin")) {
             return commands;
         }
         return new ArrayList<>(0);

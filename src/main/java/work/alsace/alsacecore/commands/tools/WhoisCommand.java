@@ -17,7 +17,7 @@ public class WhoisCommand implements CommandExecutor {
     private final String error = ChatColor.GRAY + "正确指令:\n§f/whois <玩家> §7- 查询指定玩家信息";
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (strings.length == 1 && sender.hasPermission("alsace.commands.whois")) {
+        if (strings.length == 1 && sender.hasPermission("buildercore.commands.whois")) {
             Player player = sender.getServer().getPlayer(strings[0]);
             if (player == null) {
                 sender.sendMessage(ChatColor.RED + "指定的玩家不在线或不存在");

@@ -19,7 +19,7 @@ public class SpeedCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (strings.length == 1 && sender instanceof Player player) {
-            if (!player.hasPermission("alsace.commands.speed")) {
+            if (!player.hasPermission("buildercore.commands.speed")) {
                 player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -44,7 +44,7 @@ public class SpeedCommand implements TabExecutor {
         }
 
         if (strings.length == 2 && sender instanceof Player player) {
-            if (!player.hasPermission("alsace.commands.speed")) {
+            if (!player.hasPermission("buildercore.commands.speed")) {
                 player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -87,7 +87,7 @@ public class SpeedCommand implements TabExecutor {
         }
 
         if (strings.length == 3) {
-            if (!sender.hasPermission("alsace.commands.speed.other")) {
+            if (!sender.hasPermission("buildercore.commands.speed.other")) {
                 sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -143,13 +143,13 @@ public class SpeedCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] strings) {
-        if (strings.length == 1 && sender.hasPermission("alsace.commands.speed")) {
+        if (strings.length == 1 && sender.hasPermission("buildercore.commands.speed")) {
             return types;
         }
-        if (strings.length == 2 && sender.hasPermission("alsace.commands.speed")) {
+        if (strings.length == 2 && sender.hasPermission("buildercore.commands.speed")) {
             return speeds;
         }
-        if (strings.length == 3 && sender.hasPermission("alsace.commands.speed.other")) {
+        if (strings.length == 3 && sender.hasPermission("buildercore.commands.speed.other")) {
             List<String> list = new ArrayList<>();
             for (Player p : Bukkit.getOnlinePlayers()) {
                 list.add(p.getName());

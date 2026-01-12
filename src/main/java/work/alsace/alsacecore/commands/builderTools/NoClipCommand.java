@@ -11,7 +11,7 @@ public class NoClipCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (!(sender instanceof Player)) {
             return false;
-        } else if (!sender.hasPermission("alsace.commands.noclip")) {
+        } else if (!sender.hasPermission("buildercore.commands.noclip")) {
             return false;
         } else {
             Player player = (Player) sender;

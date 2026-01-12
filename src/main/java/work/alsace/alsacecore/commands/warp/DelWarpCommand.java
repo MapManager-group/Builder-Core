@@ -19,7 +19,7 @@ public class DelWarpCommand implements TabExecutor {
             sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
             return false;
         }
-        if (!sender.hasPermission("alsace.commands.delwarp")) {
+        if (!sender.hasPermission("buildercore.commands.delwarp")) {
             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
             return false;
         }

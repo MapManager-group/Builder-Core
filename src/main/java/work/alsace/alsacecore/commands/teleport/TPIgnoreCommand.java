@@ -18,7 +18,7 @@ public class TPIgnoreCommand implements CommandExecutor {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "该指令仅限玩家使用");
             return true;
-        } else if (!sender.hasPermission("alsace.commands.tpignore")) {
+        } else if (!sender.hasPermission("buildercore.commands.tpignore")) {
             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
             return true;
         } else {

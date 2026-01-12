@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>work.alsace</groupId>
-    <artifactId>AlsaceCore</artifactId>
-    <version>1.0.5-snapshot</version>
+    <artifactId>BuilderCore</artifactId>
+    <version>1.0.6-snapshot</version>
     <packaging>jar</packaging>
 
     <name>AlsaceCore</name>

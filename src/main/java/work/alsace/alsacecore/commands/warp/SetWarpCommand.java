@@ -18,7 +18,7 @@ public class SetWarpCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
             return false;
         }
-        if (!sender.hasPermission("alsace.commands.setwarp")) {
+        if (!sender.hasPermission("buildercore.commands.setwarp")) {
             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
             return false;
         }

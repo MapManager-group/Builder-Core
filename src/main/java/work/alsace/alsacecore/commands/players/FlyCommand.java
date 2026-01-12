@@ -11,7 +11,7 @@ public class FlyCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (strings.length == 0 && sender instanceof Player player) {
-            if (!player.hasPermission("alsace.commands.fly")) {
+            if (!player.hasPermission("buildercore.commands.fly")) {
                 player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -26,7 +26,7 @@ public class FlyCommand implements CommandExecutor {
         }
 
         if (strings.length == 1) {
-            if (!sender.hasPermission("alsace.commands.fly.other")) {
+            if (!sender.hasPermission("buildercore.commands.fly.other")) {
                 sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }

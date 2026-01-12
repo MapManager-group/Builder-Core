@@ -20,7 +20,7 @@ public class ItemNbtCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] strings) {
         if (sender instanceof Player player) {
-            if (!sender.hasPermission("alsace.commands.itemnbt")) {
+            if (!sender.hasPermission("buildercore.commands.itemnbt")) {
                 sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }

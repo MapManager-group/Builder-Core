@@ -16,7 +16,7 @@ public class HeadCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] strings) {
         if (strings.length == 1 && sender instanceof Player player) {
-            if (!player.hasPermission("alsace.commands.head")) {
+            if (!player.hasPermission("buildercore.commands.head")) {
                 player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }

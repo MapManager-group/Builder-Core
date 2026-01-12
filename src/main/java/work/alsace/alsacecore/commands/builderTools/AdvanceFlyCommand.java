@@ -25,7 +25,7 @@ public class AdvanceFlyCommand implements CommandExecutor, Listener {
         if (!(sender instanceof Player)) {
             return false;
         }
-        if (!sender.hasPermission("alsace.commands.advfly")) {
+        if (!sender.hasPermission("buildercore.commands.advfly")) {
             return false;
         }
 

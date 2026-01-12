@@ -20,14 +20,14 @@ public class HomeCommand implements TabExecutor {
             sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
             return false;
         }
-        if (!sender.hasPermission("alsace.commands.home")) {
+        if (!sender.hasPermission("buildercore.commands.home")) {
             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
             return false;
         }
         if (args.length == 1) {
             String homeName = args[0];
             Player player = (Player) sender;
-            if (homeName.contains(":") && sender.hasPermission("alsace.commands.home.other")) {
+            if (homeName.contains(":") && sender.hasPermission("buildercore.commands.home.other")) {
                 String user = homeName.split(":", 2)[0];
                 OfflinePlayer i = Bukkit.getServer().getOfflinePlayer(player.getUniqueId());
                 HomeDataLoader homeDataLoaderProfile;

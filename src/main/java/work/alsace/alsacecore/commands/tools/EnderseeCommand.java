@@ -20,7 +20,7 @@ public class EnderseeCommand implements CommandExecutor {
             return true;
         }
         if (args.length == 0) {
-            if (!sender.hasPermission("alsace.commands.endersee.self")) {
+            if (!sender.hasPermission("buildercore.commands.endersee.self")) {
                 sender.sendMessage(Component.text("你没有使用该命令的权限").color(NamedTextColor.RED));
                 return true;
             }
@@ -29,7 +29,7 @@ public class EnderseeCommand implements CommandExecutor {
             player.openInventory(player.getEnderChest());
             AlsaceCore.instance.openChests.add(player.getUniqueId());
         } else {
-            if (!sender.hasPermission("alsace.commands.endersee.other")) {
+            if (!sender.hasPermission("buildercore.commands.endersee.other")) {
                 sender.sendMessage(Component.text("你没有使用该命令的权限").color(NamedTextColor.RED));
                 return true;
             }
