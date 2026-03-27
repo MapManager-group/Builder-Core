@@ -12,7 +12,7 @@ public class DataBaseManager {
 
     public DataBaseManager(String host, String database, String username, String password) {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://" + host + "/" + database + "?useSSL=false");
+        config.setJdbcUrl("jdbc:mysql://" + host + "/" + database + "?useSSL=false&allowPublicKeyRetrieval=true");
         config.setUsername(username);
         config.setPassword(password);
 
