@@ -1,7 +1,6 @@
-main: work.alsace.alsacecore.AlsaceCore
+main: work.alsace.buildercore.BuilderCore
 name: BuilderCore
 authors:
-  - "Usine d' Alsace"
   - 'PuddingKC'
   - 'Hanamizu_'
   - 'CHuNan'
@@ -9,7 +8,7 @@ version: ${version}
 softdepend:
   - 'PlaceholderAPI'
   - 'floodgate'
-description: 阿尔萨斯工业基础插件
+description: 建筑服基础插件
 api-version: '1.20'
 permissions:
   buildercore.afk.bypass:
