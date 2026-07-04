@@ -22,7 +22,7 @@ public class TimeCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (strings.length == 1 && sender instanceof Player player) {
-            if (!player.hasPermission("alsace.commands.time")) {
+            if (!player.hasPermission("buildercore.commands.time")) {
                 player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -41,7 +41,7 @@ public class TimeCommand implements TabExecutor {
             Player player = (Player) sender;
             switch (strings[0]) {
                 case "set" -> {
-                    if (!player.hasPermission("alsace.commands.time")) {
+                    if (!player.hasPermission("buildercore.commands.time")) {
                         player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                         return false;
                     }
@@ -55,7 +55,7 @@ public class TimeCommand implements TabExecutor {
                     return true;
                 }
                 case "add" -> {
-                    if (!player.hasPermission("alsace.commands.time")) {
+                    if (!player.hasPermission("buildercore.commands.time")) {
                         player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                         return false;
                     }
@@ -70,7 +70,7 @@ public class TimeCommand implements TabExecutor {
                     return true;
                 }
             }
-            if (!sender.hasPermission("alsace.commands.time.other")) {
+            if (!sender.hasPermission("buildercore.commands.time.other")) {
                 sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -130,18 +130,18 @@ public class TimeCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] strings) {
-        if (strings.length == 1 && sender.hasPermission("alsace.commands.time")) {
+        if (strings.length == 1 && sender.hasPermission("buildercore.commands.time")) {
             return times0;
         }
-        if (strings.length == 2 && strings[0].equals("set") && sender.hasPermission("alsace.commands.time")) {
+        if (strings.length == 2 && strings[0].equals("set") && sender.hasPermission("buildercore.commands.time")) {
             return times1;
         }
-        if (strings.length == 2 && strings[0].equals("add") && sender.hasPermission("alsace.commands.time")) {
+        if (strings.length == 2 && strings[0].equals("add") && sender.hasPermission("buildercore.commands.time")) {
             List<String> list = new ArrayList<>();
             list.add("1000");
             return list;
         }
-        if (strings.length == 2 && sender.hasPermission("alsace.commands.time.other")) {
+        if (strings.length == 2 && sender.hasPermission("buildercore.commands.time.other")) {
             List<String> list = new ArrayList<>();
             for (World w : Bukkit.getWorlds()) {
                 list.add(w.getName());

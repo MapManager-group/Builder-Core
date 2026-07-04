@@ -19,7 +19,7 @@ public class DelHomeCommand implements TabExecutor {
             sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
             return false;
         }
-        if (!sender.hasPermission("alsace.commands.delhome")) {
+        if (!sender.hasPermission("buildercore.commands.delhome")) {
             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
             return false;
         }
@@ -27,7 +27,7 @@ public class DelHomeCommand implements TabExecutor {
             HomeDataLoader homeDataLoader;
             String homeName;
             Player player = (Player) sender;
-            if (args[0].contains(":") && (sender.hasPermission("alsace.commands.delhome.other"))) {
+            if (args[0].contains(":") && (sender.hasPermission("buildercore.commands.delhome.other"))) {
                 String username = args[0].split(":", 2)[0];
                 homeName = args[0].replaceFirst(username + ":", "");
                 OfflinePlayer i = Bukkit.getServer().getOfflinePlayer(player.getUniqueId());

@@ -20,7 +20,7 @@ public class SetHomeCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
             return false;
         }
-        if (!sender.hasPermission("alsace.commands.sethome")) {
+        if (!sender.hasPermission("buildercore.commands.sethome")) {
             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
             return false;
         }
@@ -28,7 +28,7 @@ public class SetHomeCommand implements CommandExecutor {
             String homeName = args[0];
             HomeDataLoader homeDataLoader;
             Player player = (Player) sender;
-            if (homeName.contains(":") && sender.hasPermission("alsace.commands.sethome.other")) {
+            if (homeName.contains(":") && sender.hasPermission("buildercore.commands.sethome.other")) {
                 String username = args[0].split(":", 2)[0];
                 homeName = args[0].replaceFirst(username + ":", "");
                 OfflinePlayer i = Bukkit.getServer().getOfflinePlayer(player.getUniqueId());
@@ -47,7 +47,7 @@ public class SetHomeCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "已经存在传送点" + homeName);
                 return false;
             }
-            if (homeDataLoader.getHomes().size() >= homeDataLoader.getMaxHomes() && !player.hasPermission("alsace.commands.sethome.other")) {
+            if (homeDataLoader.getHomes().size() >= homeDataLoader.getMaxHomes() && !player.hasPermission("buildercore.commands.sethome.other")) {
                 sender.sendMessage(ChatColor.RED + "你的家已经达到最大传送点数量");
                 return false;
             }

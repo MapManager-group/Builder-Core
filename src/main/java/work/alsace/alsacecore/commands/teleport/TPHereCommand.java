@@ -14,7 +14,7 @@ public class TPHereCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (sender instanceof Player player && args.length == 1) {
-            if (!sender.hasPermission("alsace.commands.tphere")) {
+            if (!sender.hasPermission("buildercore.commands.tphere")) {
                 sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }

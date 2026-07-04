@@ -30,7 +30,7 @@ public class GameModeCommand implements TabExecutor {
 
         Player targetPlayer;
         if (strings.length == 2) {
-            if (!sender.hasPermission("alsace.commands.gamemode.other")) {
+            if (!sender.hasPermission("buildercore.commands.gamemode.other")) {
                 sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -42,7 +42,7 @@ public class GameModeCommand implements TabExecutor {
             }
         } else {
             targetPlayer = (Player) sender;
-            if (!targetPlayer.hasPermission("alsace.commands.gamemode")) {
+            if (!targetPlayer.hasPermission("buildercore.commands.gamemode")) {
                 targetPlayer.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -76,10 +76,10 @@ public class GameModeCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] strings) {
-        if (strings.length == 1 && sender.hasPermission("alsace.commands.gamemode")) {
+        if (strings.length == 1 && sender.hasPermission("buildercore.commands.gamemode")) {
             return modes;
         }
-        if (strings.length == 2 && sender.hasPermission("alsace.commands.gamemode.other")) {
+        if (strings.length == 2 && sender.hasPermission("buildercore.commands.gamemode.other")) {
             List<String> list = new ArrayList<>();
             for (Player p : Bukkit.getOnlinePlayers()) {
                 list.add(p.getName());

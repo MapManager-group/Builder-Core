@@ -20,7 +20,7 @@ public class VanishCommand implements CommandExecutor {
             sender.sendMessage(Component.text("该命令仅限玩家执行").color(NamedTextColor.RED));
             return true;
         }
-        if (!sender.hasPermission("alsace.commands.vanish")) {
+        if (!sender.hasPermission("buildercore.commands.vanish")) {
             sender.sendMessage(Component.text("你没有使用该命令的权限").color(NamedTextColor.RED));
             return true;
         }

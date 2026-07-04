@@ -13,7 +13,7 @@ public class DebugStickCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (!(sender instanceof Player)) {
             return false;
-        } else if (!sender.hasPermission("alsace.commands.debugstick")) {
+        } else if (!sender.hasPermission("buildercore.commands.debugstick")) {
             return false;
         } else {
             Player player = (Player) sender;

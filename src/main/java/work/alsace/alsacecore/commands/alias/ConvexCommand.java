@@ -12,7 +12,7 @@ public class ConvexCommand implements CommandExecutor {
 
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (sender instanceof Player player) {
-            if (!player.hasPermission("alsace.aliases")) {
+            if (!player.hasPermission("buildercore.aliases")) {
                 player.sendMessage(error);
                 return false;
             }

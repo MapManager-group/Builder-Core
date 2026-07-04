@@ -45,7 +45,7 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
             return false;
         }
 
-        if (player.hasPermission("alsace.commands.vote")) {
+        if (player.hasPermission("buildercore.commands.vote")) {
             player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
             return false;
         }

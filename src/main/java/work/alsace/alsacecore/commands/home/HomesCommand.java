@@ -22,7 +22,7 @@ public class HomesCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
             return false;
         }
-        if (!sender.hasPermission("alsace.commands.homes")) {
+        if (!sender.hasPermission("buildercore.commands.homes")) {
             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
             return false;
         }

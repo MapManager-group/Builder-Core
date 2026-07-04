@@ -16,7 +16,7 @@ public class WeatherCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (strings.length == 1 && sender instanceof Player player) {
-            if (!player.hasPermission("alsace.commands.weather")) {
+            if (!player.hasPermission("buildercore.commands.weather")) {
                 player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -52,7 +52,7 @@ public class WeatherCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] strings) {
-        if (strings.length == 1 && sender.hasPermission("alsace.commands.weather")) {
+        if (strings.length == 1 && sender.hasPermission("buildercore.commands.weather")) {
             return weathers;
         }
         return Collections.emptyList();

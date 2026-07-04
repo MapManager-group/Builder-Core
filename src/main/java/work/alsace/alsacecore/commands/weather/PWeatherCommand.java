@@ -20,7 +20,7 @@ public class PWeatherCommand implements TabExecutor {
             return false;
         }
 
-        if (!cmdSender.hasPermission("alsace.commands.pweather")) {
+        if (!cmdSender.hasPermission("buildercore.commands.pweather")) {
             cmdSender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
             return false;
         }
@@ -72,7 +72,7 @@ public class PWeatherCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender cmdSender, @NotNull Command cmd, @NotNull String s, String[] args) {
-        if (args.length == 1 && cmdSender.hasPermission("alsace.commands.pweather")) {
+        if (args.length == 1 && cmdSender.hasPermission("buildercore.commands.pweather")) {
             return weathers;
         }
         return Collections.emptyList();

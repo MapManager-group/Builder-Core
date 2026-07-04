@@ -14,7 +14,7 @@ public class SlabCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (!(sender instanceof Player)) {
             return false;
-        } else if (!sender.hasPermission("alsace.commands.slab")) {
+        } else if (!sender.hasPermission("buildercore.commands.slab")) {
             return false;
         } else {
             Player player = (Player) sender;

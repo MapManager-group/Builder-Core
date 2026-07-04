@@ -29,7 +29,7 @@ public class PTimeCommand implements TabExecutor {
 
         Player targetPlayer;
         if (strings.length == 2) {
-            if (!sender.hasPermission("alsace.commands.ptime.other")) {
+            if (!sender.hasPermission("buildercore.commands.ptime.other")) {
                 sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -41,7 +41,7 @@ public class PTimeCommand implements TabExecutor {
             }
         } else {
             targetPlayer = (Player) sender;
-            if (!targetPlayer.hasPermission("alsace.commands.ptime")) {
+            if (!targetPlayer.hasPermission("buildercore.commands.ptime")) {
                 targetPlayer.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
@@ -87,10 +87,10 @@ public class PTimeCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] strings) {
-        if (strings.length == 1 && sender.hasPermission("alsace.commands.ptime")) {
+        if (strings.length == 1 && sender.hasPermission("buildercore.commands.ptime")) {
             return times;
         }
-        if (strings.length == 2 && sender.hasPermission("alsace.commands.ptime.other")) {
+        if (strings.length == 2 && sender.hasPermission("buildercore.commands.ptime.other")) {
             List<String> list = new ArrayList<>();
             for (Player p : Bukkit.getOnlinePlayers()) {
                 list.add(p.getName());

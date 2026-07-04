@@ -3,14 +3,11 @@ package work.alsace.alsacecore;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import work.alsace.alsacecore.commands.tools.*;
 import work.alsace.alsacecore.utils.*;
-import work.alsace.alsacecore.commands.agree.AgreeCommand;
-import work.alsace.alsacecore.commands.agree.DisagreeCommand;
 import work.alsace.alsacecore.commands.alias.*;
 import work.alsace.alsacecore.commands.builderTools.*;
 import work.alsace.alsacecore.commands.home.DelHomeCommand;
@@ -52,19 +49,12 @@ public class AlsaceCore extends JavaPlugin {
 
     public List<String> illegalCharacters = new ArrayList<>();
     public int backHistory;
-    private DataBaseManager databaseManager;
 
-    private String host;
-    private String dataBase;
-    private String userName;
-    private String password;
     public static String afkPrefix;
     public static List<String> blockedCommands;
 
     private SerializeInventory serializeInventory;
     private LiteDataBaseManager liteDataBaseManager;
-
-    private boolean hasFloodgate = false;
 
     @Override
     public void onEnable() {
@@ -72,12 +62,6 @@ public class AlsaceCore extends JavaPlugin {
         tpaHandler = new TPAHandler(this);
         serializeInventory = new SerializeInventory();
         liteDataBaseManager = new LiteDataBaseManager(this);
-        if (agreement) {
-            databaseManager = new DataBaseManager(host, dataBase, userName, password);
-            loadPlayerAgreementStatus();
-            liteDataBaseManager.connect();
-            hasFloodgate = Bukkit.getPluginManager().isPluginEnabled("floodgate");
-        }
         registerCommands();
         registerListeners();
         Bukkit.getScheduler().runTaskTimer(this, () -> new NoClipUtil().checkBlock(), 1L, 1L);
@@ -95,12 +79,6 @@ public class AlsaceCore extends JavaPlugin {
     public void onDisable() {
         homeProfiles.clear();
         warpProfiles.clear();
-        if (agreement) {
-            if (databaseManager != null) {
-                databaseManager.closeDataSource();
-            }
-            liteDataBaseManager.disconnect();
-        }
         getLogger().info("插件已卸载");
     }
 
@@ -151,12 +129,6 @@ public class AlsaceCore extends JavaPlugin {
         registerCommand("setwarp", new SetWarpCommand());
         registerCommand("delwarp", new DelWarpCommand());
 
-
-        if (agreement) {
-            registerCommand("agree", new AgreeCommand(this));
-            registerCommand("disagree", new DisagreeCommand(this));
-        }
-
         registerCommand("alsacecore", new AlsaceCoreCommand(this));
 
         registerCommand("whois", new WhoisCommand());
@@ -194,7 +166,7 @@ public class AlsaceCore extends JavaPlugin {
         manager.registerEvents(new FoxListener(), this);
         manager.registerEvents(new VanishListener(), this);
         manager.registerEvents(new ChestListener(), this);
-        manager.registerEvents(new InventoryListener(this),this);
+        manager.registerEvents(new InventoryListener(this), this);
 
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -223,32 +195,8 @@ public class AlsaceCore extends JavaPlugin {
             homeProfiles.put(i.getUniqueId(), new HomeDataLoader(i.getUniqueId()));
         }
         warpProfiles.put("warps", new WarpDataLoader(this));
-        agreement = this.getConfig().getBoolean("agreement");
-        ConfigurationSection dbConfig = this.getConfig().getConfigurationSection("database");
-        host = Objects.requireNonNull(dbConfig).getString("host");
-        dataBase = dbConfig.getString("database");
-        userName = dbConfig.getString("username");
-        password = dbConfig.getString("password");
         afkPrefix = Objects.requireNonNull(this.getConfig().getConfigurationSection("afk")).getString("placeholder");
         backHistory = this.getConfig().getInt("backHistory");
-    }
-
-    public DataBaseManager getDatabaseManager() {
-        return databaseManager;
-    }
-
-    private void loadPlayerAgreementStatus() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            UUID playerUUID = player.getUniqueId();
-            boolean hasAgreed = databaseManager.hasPlayerAgreed(playerUUID);
-            if (hasAgreed) {
-                // 如果数据库中有同意记录，将其标记为已同意
-                this.hasAgree.put(player.getName(), Boolean.FALSE);
-            } else {
-                // 如果数据库中没有同意记录，将其标记为待同意
-                this.hasAgree.put(player.getName(), Boolean.TRUE);
-            }
-        }
     }
 
     public TPAHandler getTPAHandler() {
@@ -261,10 +209,6 @@ public class AlsaceCore extends JavaPlugin {
 
     public LiteDataBaseManager getLiteDataBaseManager() {
         return liteDataBaseManager;
-    }
-
-    public boolean hasFloodgate() {
-        return hasFloodgate;
     }
 
 }

@@ -14,7 +14,7 @@ public class ItemNameCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] strings) {
         if (strings.length == 1 && sender instanceof Player player) {
-            if (!sender.hasPermission("alsace.commands.itemname")) {
+            if (!sender.hasPermission("buildercore.commands.itemname")) {
                 sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                 return false;
             }
