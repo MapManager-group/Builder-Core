@@ -3,9 +3,13 @@ package work.alsace.buildercore;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
+import work.alsace.buildercore.commands.agree.AgreeCommand;
+import work.alsace.buildercore.commands.agree.DisagreeCommand;
 import work.alsace.buildercore.commands.tools.*;
 import work.alsace.buildercore.utils.*;
 import work.alsace.buildercore.commands.alias.*;
@@ -42,6 +46,8 @@ public class BuilderCore extends JavaPlugin {
     public Map<String, Boolean> hasIgnored = new HashMap<>();
     public Map<String, Boolean> hasAgree = new HashMap<>();
     public boolean agreement;
+    public String url;
+    private String urlTitle;
     public HashMap<UUID, HomeDataLoader> homeProfiles = new HashMap<>();
     public HashMap<String, WarpDataLoader> warpProfiles = new HashMap<>();
     public final Set<UUID> openChests = new HashSet<>();
@@ -49,6 +55,12 @@ public class BuilderCore extends JavaPlugin {
 
     public List<String> illegalCharacters = new ArrayList<>();
     public int backHistory;
+    private DataBaseManager databaseManager;
+
+    private String host;
+    private String dataBase;
+    private String userName;
+    private String password;
 
     public static String afkPrefix;
     public static List<String> blockedCommands;
@@ -62,6 +74,11 @@ public class BuilderCore extends JavaPlugin {
         tpaHandler = new TPAHandler(this);
         serializeInventory = new SerializeInventory();
         liteDataBaseManager = new LiteDataBaseManager(this);
+        if (agreement) {
+            databaseManager = new DataBaseManager(host, dataBase, userName, password);
+            loadPlayerAgreementStatus();
+            liteDataBaseManager.connect();
+        }
         registerCommands();
         registerListeners();
         Bukkit.getScheduler().runTaskTimer(this, () -> new NoClipUtil().checkBlock(), 1L, 1L);
@@ -79,6 +96,12 @@ public class BuilderCore extends JavaPlugin {
     public void onDisable() {
         homeProfiles.clear();
         warpProfiles.clear();
+        if (agreement) {
+            if (databaseManager != null) {
+                databaseManager.closeDataSource();
+            }
+            liteDataBaseManager.disconnect();
+        }
         getLogger().info("插件已卸载");
     }
 
@@ -128,6 +151,11 @@ public class BuilderCore extends JavaPlugin {
         registerCommand("warps", new WarpsCommand());
         registerCommand("setwarp", new SetWarpCommand());
         registerCommand("delwarp", new DelWarpCommand());
+
+        if (agreement) {
+            registerCommand("agree", new AgreeCommand(this));
+            registerCommand("disagree", new DisagreeCommand(this));
+        }
 
         registerCommand("buildercore", new AlsaceCoreCommand(this));
 
@@ -195,8 +223,34 @@ public class BuilderCore extends JavaPlugin {
             homeProfiles.put(i.getUniqueId(), new HomeDataLoader(i.getUniqueId()));
         }
         warpProfiles.put("warps", new WarpDataLoader(this));
+        agreement = this.getConfig().getConfigurationSection("agree").getBoolean("agreement");
+        urlTitle = this.getConfig().getConfigurationSection("agree").getString("url-title");
+        url = this.getConfig().getConfigurationSection("agree").getString("url");
+        ConfigurationSection dbConfig = this.getConfig().getConfigurationSection("database");
+        host = Objects.requireNonNull(dbConfig).getString("host");
+        dataBase = dbConfig.getString("database");
+        userName = dbConfig.getString("username");
+        password = dbConfig.getString("password");
         afkPrefix = Objects.requireNonNull(this.getConfig().getConfigurationSection("afk")).getString("placeholder");
         backHistory = this.getConfig().getInt("backHistory");
+    }
+
+    public DataBaseManager getDatabaseManager() {
+        return databaseManager;
+    }
+
+    private void loadPlayerAgreementStatus() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            UUID playerUUID = player.getUniqueId();
+            boolean hasAgreed = databaseManager.hasPlayerAgreed(playerUUID);
+            if (hasAgreed) {
+                // 如果数据库中有同意记录，将其标记为已同意
+                this.hasAgree.put(player.getName(), Boolean.FALSE);
+            } else {
+                // 如果数据库中没有同意记录，将其标记为待同意
+                this.hasAgree.put(player.getName(), Boolean.TRUE);
+            }
+        }
     }
 
     public TPAHandler getTPAHandler() {
@@ -209,6 +263,14 @@ public class BuilderCore extends JavaPlugin {
 
     public LiteDataBaseManager getLiteDataBaseManager() {
         return liteDataBaseManager;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getUrlTitle() {
+        return urlTitle;
     }
 
 }
