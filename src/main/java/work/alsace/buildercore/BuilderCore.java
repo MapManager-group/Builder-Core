@@ -7,7 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.Nullable;
 import work.alsace.buildercore.commands.agree.AgreeCommand;
 import work.alsace.buildercore.commands.agree.DisagreeCommand;
 import work.alsace.buildercore.commands.tools.*;
@@ -194,8 +193,6 @@ public class BuilderCore extends JavaPlugin {
         manager.registerEvents(new FoxListener(), this);
         manager.registerEvents(new VanishListener(), this);
         manager.registerEvents(new ChestListener(), this);
-        manager.registerEvents(new InventoryListener(this), this);
-
 
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new Placeholder(this).register();

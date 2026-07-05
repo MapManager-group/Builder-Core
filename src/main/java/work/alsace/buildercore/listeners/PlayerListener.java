@@ -108,7 +108,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerTeleport(PlayerTeleportEvent event) {
-        if (event.getCause().equals(TeleportCause.SPECTATE) && !event.getPlayer().hasPermission("alsace.event.spectate")) {
+        if (event.getCause().equals(TeleportCause.SPECTATE) && !event.getPlayer().hasPermission("buildercore.event.spectate")) {
             event.setCancelled(true);
         }
 

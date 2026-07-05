@@ -26,7 +26,7 @@ public class ChestListener implements Listener {
         ItemStack item = event.getItem();
         if (item == null || item.getType() == Material.AIR)
             return;
-        if (!player.hasPermission("alsace.service.quickopen"))
+        if (!player.hasPermission("buildercore.service.quickopen"))
             return;
         if (item.getType().getKey().getKey().contains("shulker_box")) {
             BlockStateMeta meta = (BlockStateMeta) item.getItemMeta();

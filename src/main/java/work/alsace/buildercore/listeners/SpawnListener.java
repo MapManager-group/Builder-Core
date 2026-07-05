@@ -15,7 +15,7 @@ public class SpawnListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getPlayer().isSneaking()) {
             if (event.getItem() != null && event.getItem().getType().toString().endsWith("SPAWN_EGG") &&
-                    event.getPlayer().hasPermission("alsace.protect.place")) {
+                    event.getPlayer().hasPermission("buildercore.protect.place")) {
                 if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                     event.setCancelled(true);
                     spawnBaby(event);

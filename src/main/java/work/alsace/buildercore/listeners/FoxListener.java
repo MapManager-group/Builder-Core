@@ -11,7 +11,7 @@ public class FoxListener implements Listener {
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
-        if (player.getInventory().getItemInMainHand().getType() == Material.STICK && player.hasPermission("alsace.protect.place") && player.isSneaking()) {
+        if (player.getInventory().getItemInMainHand().getType() == Material.STICK && player.hasPermission("buildercore.protect.place") && player.isSneaking()) {
             if (event.getRightClicked() instanceof Fox fox) {
                 event.setCancelled(true);
                 switch (fox.getFoxType()) {
@@ -19,7 +19,7 @@ public class FoxListener implements Listener {
                     case RED -> fox.setFoxType(Fox.Type.SNOW);
                 }
             }
-        } else if (player.getInventory().getItemInMainHand().getType() == Material.STICK && player.hasPermission("alsace.protect.place")) {
+        } else if (player.getInventory().getItemInMainHand().getType() == Material.STICK && player.hasPermission("buildercore.protect.place")) {
             event.setCancelled(true);
             if (event.getRightClicked() instanceof Fox fox) {
                 if (fox.isSitting()) {

@@ -57,7 +57,7 @@ public class BlockListener implements Listener {
             priority = EventPriority.MONITOR
     )
     public void onBlockBreak(BlockBreakEvent e) {
-        if (!e.isCancelled() && slabs.contains(e.getPlayer()) && e.getPlayer().hasPermission("alsace.commands.slab")) {
+        if (!e.isCancelled() && slabs.contains(e.getPlayer()) && e.getPlayer().hasPermission("buildercore.commands.slab")) {
             Material type = e.getPlayer().getInventory().getItemInMainHand().getType();
             if (type.toString().toLowerCase().contains("slab")) {
                 if (e.isCancelled()) {

@@ -12,13 +12,13 @@ public class HorseListener implements Listener {
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
-        if (player.getInventory().getItemInMainHand().getType() == Material.DEBUG_STICK && player.hasPermission("alsace.protect.place") && player.isSneaking()) {
+        if (player.getInventory().getItemInMainHand().getType() == Material.DEBUG_STICK && player.hasPermission("buildercore.protect.place") && player.isSneaking()) {
             if (event.getRightClicked() instanceof Horse horse) {
                 event.setCancelled(true);
                 Horse.Color newColor = getNextHorseColor(horse.getColor());
                 horse.setColor(newColor);
             }
-        } else if (player.getInventory().getItemInMainHand().getType() == Material.DEBUG_STICK && player.hasPermission("alsace.protect.place")) {
+        } else if (player.getInventory().getItemInMainHand().getType() == Material.DEBUG_STICK && player.hasPermission("buildercore.protect.place")) {
             if (event.getRightClicked() instanceof Horse horse) {
                 event.setCancelled(true);
                 Horse.Style newStyle = getNextHorseStyle(horse.getStyle());

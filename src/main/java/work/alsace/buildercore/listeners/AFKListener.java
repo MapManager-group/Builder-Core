@@ -57,7 +57,7 @@ public class AFKListener implements Listener {
             long lastActiveTime = lastActivity.getOrDefault(playerId, currentTime);
 
             if (currentTime - lastActiveTime > AFK_TIMEOUT_SECONDS * 1000) {
-                if (!player.hasPermission("alsace.afk.bypass")) {
+                if (!player.hasPermission("buildercore.afk.bypass")) {
                     handleAFK(player);
                 }
             } else {

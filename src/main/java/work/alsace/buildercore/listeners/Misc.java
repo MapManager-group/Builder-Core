@@ -21,7 +21,7 @@ public class Misc implements Listener {
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String command = event.getMessage();
         if (blockedCommands.contains(command.toLowerCase())) {
-            if (event.getPlayer().hasPermission("alsace.blocked.bypass")) { return; }
+            if (event.getPlayer().hasPermission("buildercore.blocked.bypass")) { return; }
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.WHITE + "Unknown command. Type \"/help\" for help.");
         }
