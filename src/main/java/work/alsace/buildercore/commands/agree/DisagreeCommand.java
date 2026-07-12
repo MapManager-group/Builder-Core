@@ -26,7 +26,7 @@ public class DisagreeCommand implements CommandExecutor {
         if (sender instanceof Player player) {
             UUID playerUUID = player.getUniqueId();
             databaseManager.delPlayerAgreed(playerUUID, false);
-            player.kick(Component.text("您必须阅读并同意《阿尔萨斯工业园用户协议》才能使用工业园的服务！", NamedTextColor.RED));
+            player.kick(Component.text("您必须阅读并同意" + plugin.getUrlTitle() + "才能使用服务器的服务！", NamedTextColor.RED));
             return true;
 
         } else {

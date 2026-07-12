@@ -16,6 +16,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import work.alsace.buildercore.BuilderCore;
 import work.alsace.buildercore.commands.builderTools.AdvanceFlyCommand;
 import work.alsace.buildercore.commands.teleport.BackCommand;
@@ -175,12 +176,17 @@ public class PlayerListener implements Listener {
     private void sendAgreementMessage(Player player) {
         Component welcomeComponent = Component.text("您必须阅读并同意", NamedTextColor.GOLD);
         Component agreementLink = Component.text("《" + plugin.getUrlTitle() + "》", NamedTextColor.GREEN).clickEvent(ClickEvent.openUrl(plugin.getUrl()));
-        Component welcomeComponent1 = Component.text("才可以正常使用工业园的服务", NamedTextColor.GOLD);
+        Component welcomeComponent1 = Component.text("才可以正常使用服务器的服务", NamedTextColor.GOLD);
 
+        Component finalMessage = getComponent(welcomeComponent, agreementLink, welcomeComponent1);
+        player.sendMessage(finalMessage);
+    }
+
+    private static @NotNull Component getComponent(Component welcomeComponent, Component agreementLink, Component welcomeComponent1) {
         Component agreeButton = Component.text("[同意]", NamedTextColor.GREEN).clickEvent(ClickEvent.runCommand("/agree"));
         Component disagreeButton = Component.text("[不同意]", NamedTextColor.RED).clickEvent(ClickEvent.runCommand("/disagree"));
         Component welcomeComponent2 = Component.text("若按钮无法点击，请输入 /agree 命令", NamedTextColor.GRAY);
         Component finalMessage = welcomeComponent.append(agreementLink).append(welcomeComponent1).append(Component.newline()).append(agreeButton).append(Component.text(" ")).append(disagreeButton).append(welcomeComponent2);
-        player.sendMessage(finalMessage);
+        return finalMessage;
     }
 }
