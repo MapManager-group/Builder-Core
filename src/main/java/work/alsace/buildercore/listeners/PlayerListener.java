@@ -31,11 +31,13 @@ import java.util.regex.Pattern;
 
 public class PlayerListener implements Listener {
     private final BuilderCore plugin;
-    private final DataBaseManager databaseManager;
+    private DataBaseManager databaseManager;
 
     public PlayerListener(BuilderCore plugin) {
         this.plugin = plugin;
-        this.databaseManager = plugin.getDatabaseManager();
+        if (plugin.agreement) {
+            this.databaseManager = plugin.getDatabaseManager();
+        }
     }
 
     @EventHandler
