@@ -22,14 +22,12 @@ public class AdvanceFlyCommand implements CommandExecutor, Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player player)) {
             return false;
         }
         if (!sender.hasPermission("buildercore.commands.advfly")) {
             return false;
         }
-
-        Player player = (Player) sender;
 
         if (enabledPlayers.contains(player)) {
             enabledPlayers.remove(player);

@@ -26,6 +26,10 @@ public class BackCommand implements CommandExecutor {
             sender.sendMessage(ChatColor.RED + "该命令只能由玩家使用");
             return false;
         }
+        if (!sender.hasPermission("buildercore.commands.back")) {
+            sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+            return false;
+        }
 
         UUID playerId = player.getUniqueId();
 

@@ -11,14 +11,86 @@ softdepend:
 description: 建筑服基础插件
 api-version: '1.20'
 permissions:
+  # 权限包
+  buildercore.admin:
+    description: 管理员命令
+    default: op
+    children:
+      buildercore.commands.endersee.other: true
+      buildercore.commands.tphere: true
+      buildercore.pack.warpset: true
+      buildercore.pack.private: true
+      buildercore.commands.home.other: true
+      buildercore.commands.invsee: true
+      buildercore.commands.vanish: true
+      buildercore.commands.whois: true
   buildercore.afk.bypass:
     description: 绕过自动AFK
     default: op
   buildercore.blocked.bypass:
     description: 绕过指令限制
     default: op
+  buildercore.pack.private:
+    description: 独立世界权限，通常可用于私人地图，独立地图等
+    children:
+      buildercore.protect.*: true
+      buildercore.pack.teleport: true
+      buildercore.aliases: true
+      buildercore.commands.advfly: true
+      buildercore.commands.debugstick: true
+      buildercore.commands.head: true
+      buildercore.commands.nightvision: true
+      buildercore.commands.noclip: true
+      buildercore.commands.slab: true
+      buildercore.commands.time: true
+      buildercore.commands.weather: true
+      buildercore.commands.endersee.self: true
+      buildercore.commands.itemcolor: true
+      buildercore.commands.itemname: true
+      buildercore.commands.itemnbt: true
+      buildercore.service.quickopen: true
+
+  buildercore.pack.public:
+    description: 公共地图权限，通常用于地皮等
+    children:
+      buildercore.protect.*: true
+      buildercore.pack.teleport: true
+      buildercore.aliases: true
+      buildercore.commands.advfly: true
+      buildercore.commands.debugstick: true
+      buildercore.commands.head: true
+      buildercore.commands.nightvision: true
+      buildercore.commands.noclip: true
+      buildercore.commands.slab: true
+      buildercore.commands.endersee.self: true
+      buildercore.commands.itemcolor: true
+      buildercore.commands.itemname: true
+      buildercore.commands.itemnbt: true
+      buildercore.service.quickopen: true
+
+  buildercore.pack.teleport:
+    description: 使用传送命令
+    children:
+      buildercore.commands.delhome: true
+      buildercore.commands.home: true
+      buildercore.commands.homes: true
+      buildercore.commands.sethome: true
+      buildercore.commands.back: true
+      buildercore.commands.tp: true
+      buildercore.commands.tpignore: true
+      buildercore.commands.warp: true
+      buildercore.commands.warps: true
+
+  buildercore.pack.warpset:
+    description: 设置公共传送点
+    children:
+      buildercore.commands.delwarp: true
+      buildercore.commands.setwarp: true
+
+
+
 commands:
-  alsacecore:
+  buildercore:
     description: 主命令
     permission: buildercore.admin
   agree:
