@@ -48,12 +48,12 @@ public class HomeDataLoader {
         Player player = Bukkit.getServer().getPlayer(uuid);
         if (player != null) {
             for (PermissionAttachmentInfo i : player.getEffectivePermissions()) {
-                if (i.getPermission().equalsIgnoreCase("alsace.home.max.unlimited")) {
+                if (i.getPermission().equalsIgnoreCase("buildercore.home.max.unlimited")) {
                     maxHomes = Integer.MAX_VALUE;
                     break;
                 }
-                if (i.getPermission().startsWith("alsace.home.max.")) {
-                    int value = Integer.parseInt(i.getPermission().replace("alsace.home.max.", ""));
+                if (i.getPermission().startsWith("buildercore.home.max.")) {
+                    int value = Integer.parseInt(i.getPermission().replace("buildercore.home.max.", ""));
                     if (value > maxHomes) {
                         maxHomes = value;
                     }

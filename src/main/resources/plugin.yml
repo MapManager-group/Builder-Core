@@ -49,6 +49,11 @@ permissions:
       buildercore.commands.itemname: true
       buildercore.commands.itemnbt: true
       buildercore.service.quickopen: true
+      buildercore.commands.fly: true
+      buildercore.commands.gamemode: true
+      buildercore.commands.scale: true
+      buildercore.commands.reach: true
+      buildercore.commands.speed: true
 
   buildercore.pack.public:
     description: 公共地图权限，通常用于地皮等
@@ -67,6 +72,13 @@ permissions:
       buildercore.commands.itemname: true
       buildercore.commands.itemnbt: true
       buildercore.service.quickopen: true
+      buildercore.commands.fly: true
+      buildercore.commands.gamemode: true
+      buildercore.commands.scale: true
+      buildercore.commands.reach: true
+      buildercore.commands.speed: true
+      buildercore.commands.pweather: true
+      buildercore.commands.ptime: true
 
   buildercore.pack.teleport:
     description: 使用传送命令
@@ -80,6 +92,7 @@ permissions:
       buildercore.commands.tpignore: true
       buildercore.commands.warp: true
       buildercore.commands.warps: true
+      buildercore.commands.tp.location: true
 
   buildercore.pack.warpset:
     description: 设置公共传送点

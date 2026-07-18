@@ -21,7 +21,7 @@ public class NightvisionCommand implements CommandExecutor {
                 player.removePotionEffect(PotionEffectType.NIGHT_VISION);
                 player.sendMessage( ChatColor.GRAY + "已移除你身上的夜视药水效果");
             } else {
-                player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 999999, 3,false,false));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 3,false,false));
                 player.sendMessage( ChatColor.GRAY + "已为你添加永久夜视药水效果");
             }
             return true;
