@@ -35,6 +35,7 @@ permissions:
     children:
       buildercore.protect.*: true
       buildercore.pack.teleport: true
+      buildercore.commands.tp: true
       buildercore.aliases: true
       buildercore.commands.advfly: true
       buildercore.commands.debugstick: true
@@ -60,6 +61,7 @@ permissions:
     children:
       buildercore.protect.*: true
       buildercore.pack.teleport: true
+      buildercore.commands.tpa: true
       buildercore.aliases: true
       buildercore.commands.advfly: true
       buildercore.commands.debugstick: true
@@ -88,7 +90,6 @@ permissions:
       buildercore.commands.homes: true
       buildercore.commands.sethome: true
       buildercore.commands.back: true
-      buildercore.commands.tp: true
       buildercore.commands.tpignore: true
       buildercore.commands.warp: true
       buildercore.commands.warps: true
@@ -141,6 +142,9 @@ commands:
   tpignore:
     description: 忽略传送请求
     permission: buildercore.commands.tpignore
+  tpa:
+    description: 向玩家发送传送请求
+    permission: buildercore.commands.tp
   tpahere:
     description: 向玩家发送传送请求
     permission: buildercore.commands.tp

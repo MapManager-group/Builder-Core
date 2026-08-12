@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class AlsaceCoreCommand implements TabExecutor {
+public class BuilderCoreCommand implements TabExecutor {
     private final BuilderCore plugin;
 
     private static final List<String> commands = Arrays.asList("reload", "info");
 
-    public AlsaceCoreCommand(BuilderCore plugin) {
+    public BuilderCoreCommand(BuilderCore plugin) {
         this.plugin = plugin;
     }
 

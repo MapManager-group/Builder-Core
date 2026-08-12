@@ -137,9 +137,10 @@ public class BuilderCore extends JavaPlugin {
         registerCommand("tp", new TPCommand(this));
         registerCommand("tphere", new TPHereCommand());
         registerCommand("tpignore", new TPIgnoreCommand(this));
-        registerCommand("tpahere", new TPACommand(this));
-        registerCommand("tpaccept", new TPACommand(this));
-        registerCommand("tpdeny", new TPACommand(this));
+        registerCommand("tpa", new TPACommand(this));
+        registerCommand("tpahere", new TPAHereCommand(this));
+        registerCommand("tpaccept", new TPAcceptCommand(this));
+        registerCommand("tpdeny", new TPADenyCommand(this));
 
         registerCommand("home", new HomeCommand());
         registerCommand("homes", new HomesCommand());
@@ -156,7 +157,7 @@ public class BuilderCore extends JavaPlugin {
             registerCommand("disagree", new DisagreeCommand(this));
         }
 
-        registerCommand("buildercore", new AlsaceCoreCommand(this));
+        registerCommand("buildercore", new BuilderCoreCommand(this));
 
         registerCommand("whois", new WhoisCommand());
         registerCommand("itemname", new ItemNameCommand());
