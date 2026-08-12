@@ -6,9 +6,11 @@ import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -37,13 +39,29 @@ public class SpawnListener implements Listener {
         }
 
         if (!event.getPlayer().isSneaking()) {
-             event.getPlayer().sendMessage(ChatColor.GRAY + "请潜行(Shift)并点击方块来放置实体。");
+            event.getPlayer().sendMessage(ChatColor.GRAY + "请潜行(Shift)并点击方块来放置实体。");
             return;
         }
 
         if (!event.getPlayer().hasPermission("buildercore.protect.place")) return;
 
         spawnCustomEntity(event, action == Action.LEFT_CLICK_BLOCK);
+    }
+
+    /**
+     * 新增：监听左键攻击实体事件，用于移除生成的生物
+     */
+    @EventHandler
+    public void onEntityDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player player)) return;
+
+        if (!player.hasPermission("buildercore.protect.place")) return;
+
+        if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
+
+        event.setCancelled(true); // 取消原本的伤害计算逻辑
+        livingEntity.remove();    // 让实体直接消失
+        player.sendMessage(ChatColor.GREEN + "已成功清除该实体。");
     }
 
     /**
@@ -87,6 +105,10 @@ public class SpawnListener implements Listener {
 
         if (entity instanceof LivingEntity livingEntity) {
             livingEntity.setAI(false); // 禁用 AI
+            livingEntity.setGlowing(false);
+            livingEntity.setHealth(999.0);
+
+            livingEntity.setInvulnerable(true);
 
             // 处理幼崽逻辑
             if (isBaby && livingEntity instanceof Ageable) {
