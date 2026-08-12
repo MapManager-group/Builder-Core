@@ -1,6 +1,8 @@
 package work.alsace.buildercore;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
+import org.bukkit.World;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -86,6 +88,11 @@ public class BuilderCore extends JavaPlugin {
             new VelocityMessenger();
         } else {
             getLogger().warning("前置插件 PlaceholderAPI 不存在，Tab列表扩展功能失效");
+        }
+
+        World world = Bukkit.getWorlds().getFirst();
+        if (world != null) {
+            world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
         }
 
         getLogger().info("插件已完全加载完成");
