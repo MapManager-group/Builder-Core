@@ -54,7 +54,7 @@ public class TPCommand implements TabExecutor {
 
                     String name = player.getName();
                     if (commander.getWorld().equals(player.getWorld())) {
-                        if (!sender.hasPermission("buildercore.commands.tp")) {
+                        if (!sender.hasPermission("buildercore.commands.tp.player")) {
                             sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                             return true;
                         }
@@ -65,7 +65,7 @@ public class TPCommand implements TabExecutor {
                         }
 
                         teleportAfterDelay(commander, player);
-                    } else if (commander.hasPermission("buildercore.commands.tp") && commander.hasPermission("multiverse.access." + player.getWorld().getName())) {
+                    } else if (commander.hasPermission("buildercore.commands.tp.player") && commander.hasPermission("multiverse.access." + player.getWorld().getName())) {
                         if (this.plugin.hasIgnored.get(name) != null && this.plugin.hasIgnored.get(name)) {
                             sender.sendMessage(ChatColor.RED + "玩家" + name + "已屏蔽强制传送");
                             return true;
@@ -84,7 +84,7 @@ public class TPCommand implements TabExecutor {
             //tp玩家到玩家
             case 2 -> {
                 if (sender instanceof Player) {
-                    if (!sender.hasPermission("buildercore.commands.tp")) {
+                    if (!sender.hasPermission("buildercore.commands.tp.player")) {
                         sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
                         return false;
                     }

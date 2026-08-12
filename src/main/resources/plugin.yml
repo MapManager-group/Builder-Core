@@ -35,7 +35,8 @@ permissions:
     children:
       buildercore.protect.*: true
       buildercore.pack.teleport: true
-      buildercore.commands.tp: true
+      buildercore.commands.tp.player: true
+      buildercore.commands.tpa: true
       buildercore.aliases: true
       buildercore.commands.advfly: true
       buildercore.commands.debugstick: true
@@ -94,6 +95,7 @@ permissions:
       buildercore.commands.warp: true
       buildercore.commands.warps: true
       buildercore.commands.tp.location: true
+      buildercore.commands.tp: true
 
   buildercore.pack.warpset:
     description: 设置公共传送点
@@ -144,16 +146,16 @@ commands:
     permission: buildercore.commands.tpignore
   tpa:
     description: 向玩家发送传送请求
-    permission: buildercore.commands.tp
+    permission: buildercore.commands.tpa
   tpahere:
     description: 向玩家发送传送请求
-    permission: buildercore.commands.tp
+    permission: buildercore.commands.tpa
   tpaccept:
     description: 同意请求
-    permission: buildercore.commands.tp
+    permission: buildercore.commands.tpa
   tpdeny:
     description: 拒绝请求
-    permission: buildercore.commands.tp
+    permission: buildercore.commands.tpa
   home:
     description: 传送到指定家
     permission: buildercore.commands.home

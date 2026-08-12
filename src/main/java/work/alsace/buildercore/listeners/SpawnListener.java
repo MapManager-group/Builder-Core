@@ -38,14 +38,9 @@ public class SpawnListener implements Listener {
             return;
         }
 
-        if (!event.getPlayer().isSneaking()) {
-            event.getPlayer().sendMessage(ChatColor.GRAY + "请潜行(Shift)并点击方块来放置实体。");
-            return;
-        }
-
         if (!event.getPlayer().hasPermission("buildercore.protect.place")) return;
 
-        spawnCustomEntity(event, action == Action.LEFT_CLICK_BLOCK);
+        spawnCustomEntity(event, action == Action.LEFT_CLICK_BLOCK, !event.getPlayer().isSneaking());
     }
 
     /**
@@ -70,7 +65,7 @@ public class SpawnListener implements Listener {
      * @param event  交互事件
      * @param isBaby 是否生成幼年实体
      */
-    private void spawnCustomEntity(PlayerInteractEvent event, boolean isBaby) {
+    private void spawnCustomEntity(PlayerInteractEvent event, boolean isBaby, boolean ai) {
         String materialName = event.getItem().getType().name();
         EntityType entityType;
 
@@ -104,9 +99,9 @@ public class SpawnListener implements Listener {
         Entity entity = event.getPlayer().getWorld().spawnEntity(spawnLoc, entityType);
 
         if (entity instanceof LivingEntity livingEntity) {
-            livingEntity.setAI(false); // 禁用 AI
+            livingEntity.setAI(ai);
             livingEntity.setGlowing(false);
-            livingEntity.setHealth(999.0);
+            livingEntity.setHealth(15.0);
 
             livingEntity.setInvulnerable(true);
 
