@@ -1,105 +1,98 @@
 package work.alsace.buildercore.commands.home;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.*;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import work.alsace.buildercore.BuilderCore;
-import work.alsace.buildercore.service.HomeDataLoader;
+import work.alsace.buildercore.service.HomeTarget;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HomeCommand implements TabExecutor {
 
+    private static final MiniMessage MM = MiniMessage.miniMessage();
+    private static final String USAGE = """
+            <gray>正确指令:
+            <white>/home <传送点></white> - 传送至你的家
+            <white>/home <玩家>:<传送点></white> - 传送至指定玩家的家</gray>""";
+
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
-            return false;
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sendMsg(sender, "<red>该指令仅限玩家执行");
+            return true;
         }
-        if (!sender.hasPermission("buildercore.commands.home")) {
-            sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
-            return false;
+
+        if (!player.hasPermission("buildercore.commands.home")) {
+            sendMsg(player, "<red>你没有使用该命令的权限");
+            return true;
         }
-        if (args.length == 1) {
-            String homeName = args[0];
-            Player player = (Player) sender;
-            if (homeName.contains(":") && sender.hasPermission("buildercore.commands.home.other")) {
-                String user = homeName.split(":", 2)[0];
-                OfflinePlayer i = Bukkit.getServer().getOfflinePlayer(player.getUniqueId());
-                HomeDataLoader homeDataLoaderProfile;
-                if (i.isOnline()) {
-                    homeDataLoaderProfile = BuilderCore.instance.homeProfiles.get(i.getUniqueId());
-                } else if (!i.hasPlayedBefore()) {
-                    sender.sendMessage(ChatColor.RED + "玩家" + user + "不存在");
-                    return false;
-                } else {
-                    homeDataLoaderProfile = new HomeDataLoader(player.getUniqueId());
-                }
-                homeName = homeName.replaceFirst(user + ":", "");
-                Location location = homeDataLoaderProfile.getHome(homeName);
-                if (homeDataLoaderProfile.getHome(homeName) != null) {
-                    if (location.getWorld() == null || Bukkit.getWorld(location.getWorld().getName()) == null) {
-                        sender.sendMessage(ChatColor.RED + "世界不存在或未加载");
-                        return false;
-                    }
-                    player.teleport(location);
-                    sender.sendMessage(ChatColor.GRAY + "已传送至玩家" + user + "的家" + homeName);
-                } else {
-                    sender.sendMessage(ChatColor.RED + "玩家" + user + "没有传送点" + homeName);
-                    return false;
-                }
-            } else {
-                HomeDataLoader homeDataLoader = BuilderCore.instance.homeProfiles.get(player.getUniqueId());
-                Location loc = homeDataLoader.getHome(homeName);
-                if (loc == null) {
-                    sender.sendMessage(ChatColor.RED + "你没有传送点" + homeName);
-                    return false;
-                } else {
-                    if (loc.getWorld() == null || Bukkit.getWorld(loc.getWorld().getName()) == null) {
-                        sender.sendMessage(ChatColor.RED + "世界不存在或未加载");
-                        return false;
-                    }
-                    player.teleport(loc);
-                    sender.sendMessage(ChatColor.GRAY + "已传送至家" + homeName);
-                }
-            }
+
+        if (args.length != 1) {
+            sendMsg(player, USAGE);
+            return true;
+        }
+
+        HomeTarget target = HomeTarget.parse(player, args[0], "buildercore.commands.home.other");
+        if (target == null || target.loader() == null) {
+            sendMsg(player, "<red>无法获取指定玩家或传送点信息。");
+            return true;
+        }
+
+        Location loc = target.loader().getHome(target.homeName());
+        if (loc == null) {
+            sendMsg(player, "<red>未找到传送点 <white>" + target.homeName() + "</white>");
+            return true;
+        }
+
+        if (loc.getWorld() == null) {
+            sendMsg(player, "<red>传送失败：目标世界不存在或未加载。");
+            return true;
+        }
+
+        player.teleportAsync(loc);
+        if (target.isOther()) {
+            sendMsg(player, "<gray>已传送至玩家 <white>" + target.ownerName() + "</white> 的家 <white>" + target.homeName() + "</white>");
         } else {
-            sender.sendMessage(ChatColor.GRAY + "正确指令:\n§f/home <传送点> §7- 传送至你的家\n§f/home <玩家>:<传送点> §7- 传送至指定玩家的家");
+            sendMsg(player, "<gray>已传送至家 <white>" + target.homeName() + "</white>");
         }
 
         return true;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
-        if (args.length != 1)
-            return new ArrayList<>(0);
-        List<String> list = new ArrayList<>();
-        if (sender instanceof Player && args[0].contains(":")) {
-            String user = args[0].split(":", 2)[0];
-            OfflinePlayer i = Bukkit.getServer().getOfflinePlayer(((Player) sender).getUniqueId());
-            HomeDataLoader homeDataLoaderProfile;
-            if (i.isOnline()) {
-                homeDataLoaderProfile = BuilderCore.instance.homeProfiles.get(i.getUniqueId());
-            } else if (!i.hasPlayedBefore()) {
-                return new ArrayList<>(0);
-            } else {
-                homeDataLoaderProfile = new HomeDataLoader(i.getUniqueId());
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
+        if (args.length != 1 || !(sender instanceof Player player)) return Collections.emptyList();
+
+        String input = args[0];
+        if (input.contains(":") && player.hasPermission("buildercore.commands.home.other")) {
+            String[] parts = input.split(":", 2);
+            HomeTarget target = HomeTarget.parse(player, input, "buildercore.commands.home.other");
+            if (target != null && target.loader() != null) {
+                String prefix = parts[1].toLowerCase();
+                return target.loader().getHomes().stream()
+                        .filter(h -> h.startsWith(prefix))
+                        .map(h -> parts[0] + ":" + h)
+                        .toList();
             }
-            list.addAll(homeDataLoaderProfile.getHomes().stream().map(s1 -> user + ":" + s1).toList());
-            return list;
         } else {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                list.add(p.getName());
+            var loader = BuilderCore.instance.homeProfiles.get(player.getUniqueId());
+            if (loader != null) {
+                String prefix = input.toLowerCase();
+                return loader.getHomes().stream()
+                        .filter(h -> h.startsWith(prefix))
+                        .toList();
             }
-            if (sender instanceof Player) {
-                list.addAll(BuilderCore.instance.homeProfiles.get(((Player) sender).getUniqueId()).getHomes());
-            }
-            return list;
         }
+        return Collections.emptyList();
+    }
+
+    private void sendMsg(CommandSender sender, String text) {
+        sender.sendMessage(MM.deserialize(text));
     }
 }
