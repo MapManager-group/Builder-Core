@@ -62,6 +62,9 @@ public class SpawnListener implements Listener {
 
         if (!player.hasPermission("buildercore.protect.place")) return;
 
+        // 盔甲架和展示实体不参与二次点击清除
+        if (event.getEntity() instanceof ArmorStand || event.getEntity() instanceof Display) return;
+
         if (!(event.getEntity() instanceof LivingEntity livingEntity)) return;
 
         // 取消原有的攻击伤害逻辑
