@@ -1,86 +1,76 @@
 package work.alsace.buildercore.commands.home;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.*;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import work.alsace.buildercore.BuilderCore;
-import work.alsace.buildercore.service.HomeDataLoader;
+import org.jetbrains.annotations.NotNull;
+import work.alsace.buildercore.service.HomeTarget;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DelHomeCommand implements TabExecutor {
 
+    private static final MiniMessage MM = MiniMessage.miniMessage();
+    private static final String USAGE = """
+            <gray>正确指令:
+            <white>/delhome <传送点></white> - 删除你的传送点
+            <white>/delhome <玩家>:<传送点></white> - 删除指定玩家的传送点</gray>""";
+
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
-            return false;
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sendMsg(sender, "<red>该指令仅限玩家执行");
+            return true;
         }
-        if (!sender.hasPermission("buildercore.commands.delhome")) {
-            sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
-            return false;
+
+        if (!player.hasPermission("buildercore.commands.delhome")) {
+            sendMsg(player, "<red>你没有使用该命令的权限");
+            return true;
         }
-        if (args.length == 1) {
-            HomeDataLoader homeDataLoader;
-            String homeName;
-            Player player = (Player) sender;
-            if (args[0].contains(":") && (sender.hasPermission("buildercore.commands.delhome.other"))) {
-                String username = args[0].split(":", 2)[0];
-                homeName = args[0].replaceFirst(username + ":", "");
-                OfflinePlayer i = Bukkit.getServer().getOfflinePlayer(player.getUniqueId());
-                if (i.isOnline()) {
-                    homeDataLoader = BuilderCore.instance.homeProfiles.get(i.getUniqueId());
-                } else if (!i.hasPlayedBefore()) {
-                    sender.sendMessage(ChatColor.RED + "玩家不存在");
-                    return false;
-                } else {
-                    homeDataLoader = new HomeDataLoader(i.getUniqueId());
-                }
-            } else {
-                homeName = args[0];
-                homeDataLoader = BuilderCore.instance.homeProfiles.get(((Player) sender).getUniqueId());
-            }
-            if (homeDataLoader.getHome(homeName) != null) {
-                homeDataLoader.delHome(homeName);
-                sender.sendMessage(String.format(ChatColor.GRAY + "已删除传送点%s", homeName));
-            } else {
-                sender.sendMessage(ChatColor.RED + "不存在传送点" + homeName);
-            }
-        } else{
-            sender.sendMessage(ChatColor.GRAY + "正确指令:\n§f/delhome <传送点> §7- 删除你的传送点\n§f/delhome <玩家>:<传送点> §7- 删除指定玩家的传送点");
+
+        if (args.length != 1) {
+            sendMsg(player, USAGE);
+            return true;
         }
+
+        HomeTarget target = HomeTarget.parse(player, args[0], "buildercore.commands.delhome.other");
+        if (target == null || target.loader() == null) {
+            sendMsg(player, "<red>玩家不存在或无法获取数据");
+            return true;
+        }
+
+        String homeName = target.homeName();
+        var loader = target.loader();
+
+        if (loader.getHome(homeName) == null) {
+            sendMsg(player, "<red>不存在传送点 <white>" + homeName + "</white>");
+            return true;
+        }
+
+        loader.delHome(homeName);
+        sendMsg(player, "<gray>已成功删除传送点 <white>" + homeName + "</white>");
         return true;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String s, String[] args) {
-        if (args.length != 1)
-            return new ArrayList<>(0);
-        List<String> list = new ArrayList<>();
-        if (sender instanceof Player && args[0].contains(":")) {
-            String user = args[0].split(":", 2)[0];
-            OfflinePlayer i = Bukkit.getServer().getOfflinePlayer(((Player) sender).getUniqueId());
-            HomeDataLoader homeDataLoaderProfile;
-            if (i.isOnline()) {
-                homeDataLoaderProfile = BuilderCore.instance.homeProfiles.get(i.getUniqueId());
-            } else if (!i.hasPlayedBefore()) {
-                return new ArrayList<>(0);
-            } else {
-                homeDataLoaderProfile = new HomeDataLoader(i.getUniqueId());
-            }
-            list.addAll(homeDataLoaderProfile.getHomes().stream().map(s1 -> user + ":" + s1).toList());
-            return list;
-        } else {
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                list.add(p.getName());
-            }
-            if (sender instanceof Player) {
-                list.addAll(BuilderCore.instance.homeProfiles.get(((Player) sender).getUniqueId()).getHomes());
-            }
-            return list;
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (args.length != 1 || !(sender instanceof Player player)) return Collections.emptyList();
+
+        HomeTarget target = HomeTarget.parse(player, args[0], "buildercore.commands.delhome.other");
+        if (target != null && target.loader() != null) {
+            String prefix = target.homeName().toLowerCase();
+            return target.loader().getHomes().stream()
+                    .filter(h -> h.startsWith(prefix))
+                    .map(h -> target.isOther() ? target.ownerName() + ":" + h : h)
+                    .toList();
         }
+        return Collections.emptyList();
+    }
+
+    private void sendMsg(CommandSender sender, String text) {
+        sender.sendMessage(MM.deserialize(text));
     }
 }

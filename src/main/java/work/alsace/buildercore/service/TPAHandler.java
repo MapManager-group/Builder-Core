@@ -1,124 +1,113 @@
 package work.alsace.buildercore.service;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import work.alsace.buildercore.BuilderCore;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TPAHandler {
+
     private final BuilderCore plugin;
-    // 使用目标玩家的 UUID 作为 Key，存放他们收到的传送请求
-    private final Map<UUID, TPARequest> tpaRequests;
-    // 请求过期时间 (毫秒)，这里设置为 60 秒
-    private final long REQUEST_TIMEOUT = 60 * 1000L;
+    private final Map<UUID, TPARequest> tpaRequests = new ConcurrentHashMap<>();
+    private static final MiniMessage MM = MiniMessage.miniMessage();
+    private static final long REQUEST_TIMEOUT_MS = 60 * 1000L; // 60 秒超时
 
     public TPAHandler(BuilderCore plugin) {
         this.plugin = plugin;
-        this.tpaRequests = new HashMap<>();
     }
 
     /**
      * 发送传送请求
-     * @param sender 发送请求的玩家
-     * @param target 接收请求的玩家
-     * @param isTpaHere 是否是 TPAHere (true 表示拉人，false 表示传送到目标)
+     *
+     * @param sender    发送请求的玩家
+     * @param target    接收请求的玩家
+     * @param isTpaHere 是否是 TPAHere (true 表示邀请目标到自己这里，false 表示自己传送过去)
      */
     public void sendTPARequest(Player sender, Player target, boolean isTpaHere) {
         tpaRequests.put(target.getUniqueId(), new TPARequest(sender.getUniqueId(), isTpaHere));
 
         if (isTpaHere) {
-            sender.sendMessage(ChatColor.GRAY + "已向 " + ChatColor.AQUA + target.getName() + ChatColor.GRAY + " 发送了请求，邀请其传送到你这里。");
-            target.sendMessage(ChatColor.AQUA + sender.getName() + ChatColor.GRAY + " 想让你传送到他(她)的位置。");
+            sendMsg(sender, "<gray>已向 <aqua>" + target.getName() + "</aqua> 发送了传送邀请，邀请其传送到你这里。</gray>");
+            sendMsg(target, "<aqua>" + sender.getName() + "</aqua> <gray>邀请你传送到他/她的位置。</gray>");
         } else {
-            sender.sendMessage(ChatColor.GRAY + "已向 " + ChatColor.AQUA + target.getName() + ChatColor.GRAY + " 发送了传送请求。");
-            target.sendMessage(ChatColor.AQUA + sender.getName() + ChatColor.GRAY + " 想要传送到你这里。");
+            sendMsg(sender, "<gray>已向 <aqua>" + target.getName() + "</aqua> 发送了传送请求。</gray>");
+            sendMsg(target, "<aqua>" + sender.getName() + "</aqua> <gray>请求传送到你的位置。</gray>");
         }
 
-        target.sendMessage(ChatColor.GRAY + "输入 " + ChatColor.GREEN + "/tpaccept" + ChatColor.GRAY + " 接受，或者 " + ChatColor.RED + "/tpdeny" + ChatColor.GRAY + " 拒绝 (60秒内有效)。");
+        // MiniMessage 交互式点击按钮：点击聊天框直接触发指令
+        String interactivePrompt = """
+                <gray>请在 60 秒内响应：\
+                <green><bold><click:run_command:'/tpaccept'>[接受]</click></bold></green> \
+                <red><bold><click:run_command:'/tpdeny'>[拒绝]</click></bold></red></gray>""";
+        sendMsg(target, interactivePrompt);
     }
 
     public void acceptTPA(Player target) {
         UUID targetId = target.getUniqueId();
+        TPARequest request = tpaRequests.remove(targetId);
 
-        if (!tpaRequests.containsKey(targetId)) {
-            target.sendMessage(ChatColor.RED + "你没有待处理的传送请求。");
+        if (request == null) {
+            sendMsg(target, "<red>你没有待处理的传送请求。");
             return;
         }
 
-        TPARequest request = tpaRequests.get(targetId);
-        tpaRequests.remove(targetId); // 无论接受成功与否，处理后都移除请求
-
-        // 检查请求是否过期
-        if (System.currentTimeMillis() - request.getTimestamp() > REQUEST_TIMEOUT) {
-            target.sendMessage(ChatColor.RED + "该传送请求已过期。");
+        if (request.isExpired()) {
+            sendMsg(target, "<red>该传送请求已过期。");
             return;
         }
 
-        Player sender = Bukkit.getPlayer(request.getSenderId());
-
+        Player sender = Bukkit.getPlayer(request.senderId());
         if (sender == null || !sender.isOnline()) {
-            target.sendMessage(ChatColor.RED + "发送请求的玩家已离线。");
+            sendMsg(target, "<red>发送请求的玩家已离线。");
             return;
         }
 
-        // 根据请求类型执行传送
+        // 根据请求类型执行异步传送
         if (request.isTpaHere()) {
-            target.teleport(sender.getLocation());
-            target.sendMessage(ChatColor.GREEN + "你已接受请求，正在传送到 " + sender.getName() + " 的位置。");
-            sender.sendMessage(ChatColor.GREEN + target.getName() + " 接受了你的请求，已传送到你身边。");
+            sendMsg(target, "<green>你已接受请求，正在传送至 <white>" + sender.getName() + "</white> 身边...");
+            sendMsg(sender, "<green><white>" + target.getName() + "</white> 接受了你的邀请，正在传送...");
+
+            target.teleportAsync(sender.getLocation());
         } else {
-            sender.teleport(target.getLocation());
-            target.sendMessage(ChatColor.GREEN + "你接受了 " + sender.getName() + " 的传送请求。");
-            sender.sendMessage(ChatColor.GREEN + target.getName() + " 接受了你的传送请求，正在传送...");
+            sendMsg(target, "<green>你接受了 <white>" + sender.getName() + "</white> 的传送请求。");
+            sendMsg(sender, "<green><white>" + target.getName() + "</white> 接受了你的传送请求，正在传送...");
+
+            sender.teleportAsync(target.getLocation());
         }
     }
 
     public void denyTPA(Player target) {
         UUID targetId = target.getUniqueId();
+        TPARequest request = tpaRequests.remove(targetId);
 
-        if (!tpaRequests.containsKey(targetId)) {
-            target.sendMessage(ChatColor.RED + "你没有待处理的传送请求。");
+        if (request == null) {
+            sendMsg(target, "<red>你没有待处理的传送请求。");
             return;
         }
 
-        TPARequest request = tpaRequests.remove(targetId);
-        target.sendMessage(ChatColor.GRAY + "你拒绝了传送请求。");
+        sendMsg(target, "<gray>你拒绝了传送请求。");
 
-        // 如果发送者还在线，通知他被拒绝了
-        Player sender = Bukkit.getPlayer(request.getSenderId());
+        Player sender = Bukkit.getPlayer(request.senderId());
         if (sender != null && sender.isOnline()) {
-            sender.sendMessage(ChatColor.RED + target.getName() + " 拒绝了你的传送请求。");
+            sendMsg(sender, "<red>" + target.getName() + " 拒绝了你的传送请求。");
         }
     }
 
-    /**
-     * 内部类：用于封装和记录传送请求的信息
-     */
-    private static class TPARequest {
-        private final UUID senderId;
-        private final boolean isTpaHere;
-        private final long timestamp;
+    private void sendMsg(Player player, String miniMessageText) {
+        player.sendMessage(MM.deserialize(miniMessageText));
+    }
 
+    private record TPARequest(UUID senderId, boolean isTpaHere, long timestamp) {
         public TPARequest(UUID senderId, boolean isTpaHere) {
-            this.senderId = senderId;
-            this.isTpaHere = isTpaHere;
-            this.timestamp = System.currentTimeMillis();
+            this(senderId, isTpaHere, System.currentTimeMillis());
         }
 
-        public UUID getSenderId() {
-            return senderId;
-        }
-
-        public boolean isTpaHere() {
-            return isTpaHere;
-        }
-
-        public long getTimestamp() {
-            return timestamp;
+        public boolean isExpired() {
+            return System.currentTimeMillis() - timestamp > REQUEST_TIMEOUT_MS;
         }
     }
 }

@@ -1,7 +1,7 @@
 package work.alsace.buildercore.commands.agree;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,8 +13,10 @@ import work.alsace.buildercore.utils.DataBaseManager;
 import java.util.UUID;
 
 public class DisagreeCommand implements CommandExecutor {
+
     private final BuilderCore plugin;
     private final DataBaseManager databaseManager;
+    private static final MiniMessage MM = MiniMessage.miniMessage();
 
     public DisagreeCommand(BuilderCore plugin) {
         this.plugin = plugin;
@@ -22,17 +24,22 @@ public class DisagreeCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
-        if (sender instanceof Player player) {
-            UUID playerUUID = player.getUniqueId();
-            databaseManager.delPlayerAgreed(playerUUID, false);
-            player.kick(Component.text("您必须阅读并同意" + plugin.getUrlTitle() + "才能使用服务器的服务！", NamedTextColor.RED));
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(MM.deserialize("<red>只有玩家可以使用这个命令！"));
             return true;
-
-        } else {
-            sender.sendMessage(Component.text("只有玩家可以使用这个命令！", NamedTextColor.RED));
-            return false;
         }
-    }
 
+        UUID playerUUID = player.getUniqueId();
+
+        databaseManager.delPlayerAgreed(playerUUID).thenRun(() -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (player.isOnline()) {
+                    player.kick(MM.deserialize("<red>您必须阅读并同意 <yellow>" + plugin.getUrlTitle() + "</yellow> 才能使用服务器的服务！"));
+                }
+            });
+        });
+
+        return true;
+    }
 }

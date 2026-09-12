@@ -1,65 +1,55 @@
 package work.alsace.buildercore.commands.home;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import work.alsace.buildercore.BuilderCore;
 import work.alsace.buildercore.service.HomeDataLoader;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public class HomesCommand implements CommandExecutor {
+
+    private static final MiniMessage MM = MiniMessage.miniMessage();
+
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
-            return false;
-        }
-        if (!sender.hasPermission("buildercore.commands.homes")) {
-            sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
-            return false;
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(MM.deserialize("<red>该指令仅限玩家执行"));
+            return true;
         }
 
-        Player player = (Player) sender;
-        HomeDataLoader homeDataLoader = BuilderCore.instance.homeProfiles.get(player.getUniqueId());
-
-        List<BaseComponent> homeComponents = homeDataLoader.getHomes().stream()
-                .map(home -> createClickableHomeComponent(home))
-                .collect(Collectors.toList());
-
-        if (homeComponents.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "你没有任何传送点");
-            return false;
+        if (!player.hasPermission("buildercore.commands.homes")) {
+            sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
+            return true;
         }
 
-        //StringJoiner joiner = new StringJoiner(ChatColor.GRAY + " | ");
-        //homeComponents.forEach(component -> joiner.add(component.toLegacyText()));
-
-        //player.sendMessage(ChatColor.GRAY + "你的家: " + joiner);
-
-        TextComponent message = new TextComponent(ChatColor.GRAY + "你的家: ");
-        for (BaseComponent component : homeComponents) {
-            message.addExtra(component);
-            message.addExtra(" §7| ");
+        HomeDataLoader loader = BuilderCore.instance.homeProfiles.get(player.getUniqueId());
+        if (loader == null || loader.getHomes().isEmpty()) {
+            player.sendMessage(MM.deserialize("<red>你没有任何传送点。"));
+            return true;
         }
 
-        player.spigot().sendMessage(message);
+        Set<String> homes = loader.getHomes();
+        StringBuilder sb = new StringBuilder("<gray>你的家 (" + homes.size() + "/" + (loader.getMaxHomes() == Integer.MAX_VALUE ? "∞" : loader.getMaxHomes()) + "): ");
 
+        int count = 0;
+        for (String home : homes) {
+            sb.append("<gold><click:run_command:'/home ").append(home)
+                    .append("'><hover:show_text:'<gray>点击传送至 <white>").append(home).append("</white></gray>'>")
+                    .append(home)
+                    .append("</hover></click></gold>");
+
+            if (++count < homes.size()) {
+                sb.append("<gray> | </gray>");
+            }
+        }
+
+        player.sendMessage(MM.deserialize(sb.toString()));
         return true;
-    }
-
-    private TextComponent createClickableHomeComponent(String home) {
-        TextComponent homeComponent = new TextComponent(ChatColor.GOLD + home);
-        homeComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/home " + home));
-        TextComponent hoverText = new TextComponent("点击快捷传送");
-        homeComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hoverText}));
-        return homeComponent;
     }
 }
