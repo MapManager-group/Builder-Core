@@ -17,3 +17,40 @@ database:
 afk:
   threshold: 300 #自动afk时间
   placeholder: "[AFK]" #papi变量
+
+# 建筑环境开关；重载 /buildercore reload 后生效
+building-settings:
+  disable-redstone: false
+  disable-gravity-physics: false
+  disable-physics: false
+  disable-entity-explode: true
+  disable-block-explode: true
+  disable-leaves-decay: true
+  disable-farmland-trample: true
+  disable-dragon-egg-teleport: true
+
+# /buildertools special 展示的物品
+special-items:
+  - COMMAND_BLOCK
+  - CHAIN_COMMAND_BLOCK
+  - REPEATING_COMMAND_BLOCK
+  - COMMAND_BLOCK_MINECART
+  - JIGSAW
+  - STRUCTURE_BLOCK
+  - STRUCTURE_VOID
+  - BARRIER
+  - DEBUG_STICK
+  - TEST_BLOCK
+  - TEST_INSTANCE_BLOCK
+  - LIGHT
+  - KNOWLEDGE_BOOK
+  - ENDER_DRAGON_SPAWN_EGG
+  - WITHER_SPAWN_EGG
+  - POTION
+  - SPLASH_POTION
+  - LINGERING_POTION
+  - TIPPED_ARROW
+  - PETRIFIED_OAK_SLAB
+  - 'item_frame[entity_data={id:"item_frame",Invisible:1b},item_name="隐形物品展示框"]'
+
+worldedit-extra-aliases: true

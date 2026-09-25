@@ -1,6 +1,6 @@
 package work.alsace.buildercore.commands.warp;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.*;
@@ -12,15 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DelWarpCommand implements TabExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
+            sender.sendMessage(MM.deserialize("<red>该指令仅限玩家执行"));
             return false;
         }
         if (!sender.hasPermission("buildercore.commands.delwarp")) {
-            sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+            sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
             return false;
         }
         if (args.length == 1) {
@@ -31,17 +32,17 @@ public class DelWarpCommand implements TabExecutor {
             if (warpWorld != null) {
                 if (sender.hasPermission("multiverse.access." + warpWorld.getName())) {
                     warpDataLoader.delWarp(warpName);
-                    sender.sendMessage(String.format(ChatColor.GRAY + "已删除传送点%s", warpName));
+                    sender.sendMessage(MM.deserialize(String.format("<gray>已删除传送点%s", warpName)));
                 } else {
-                    sender.sendMessage(ChatColor.RED + "你没有权限删除" + warpName);
+                    sender.sendMessage(MM.deserialize("<red>你没有权限删除" + warpName));
                     return false;
                 }
             } else {
-                sender.sendMessage(ChatColor.RED + "传送点" + location.getWorld() + "不存在");
+                sender.sendMessage(MM.deserialize("<red>传送点" + location.getWorld() + "不存在"));
                 return false;
             }
         } else {
-            sender.sendMessage(ChatColor.GRAY + "正确指令:\n§f/delwarp <传送点> §7- 删除传送点");
+            sender.sendMessage(MM.deserialize("<gray>正确指令:\n<white>/delwarp <传送点> <gray>- 删除传送点"));
         }
         return true;
     }

@@ -1,6 +1,6 @@
 package work.alsace.buildercore.commands.builderTools;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,6 +15,7 @@ import org.bukkit.util.Vector;
 import java.util.*;
 
 public class AdvanceFlyCommand implements CommandExecutor, Listener {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
     private static final List<String> slower = new ArrayList();
     private static final List<String> slower2 = new ArrayList();
     public static Set<Player> enabledPlayers = new HashSet();
@@ -34,10 +35,10 @@ public class AdvanceFlyCommand implements CommandExecutor, Listener {
             if (player.getGameMode() == GameMode.SPECTATOR) {
                 player.setGameMode(GameMode.CREATIVE);
             }
-            player.sendMessage(ChatColor.GRAY + "已禁用进阶飞行模式");
+            player.sendMessage(MM.deserialize("<gray>已禁用进阶飞行模式"));
         } else {
             enabledPlayers.add(player);
-            player.sendMessage(ChatColor.GRAY + "已启用进阶飞行模式");
+            player.sendMessage(MM.deserialize("<gray>已启用进阶飞行模式"));
         }
 
         return true;

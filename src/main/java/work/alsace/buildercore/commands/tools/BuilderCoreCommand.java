@@ -1,6 +1,6 @@
 package work.alsace.buildercore.commands.tools;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.*;
 import work.alsace.buildercore.BuilderCore;
 
@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class BuilderCoreCommand implements TabExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
     private final BuilderCore plugin;
 
     private static final List<String> commands = Arrays.asList("reload", "info");
@@ -20,24 +21,24 @@ public class BuilderCoreCommand implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String s, String[] args) {
         if (!sender.hasPermission("buildercore.admin")) {
-            sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+            sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
             return false;
         }
         if (args.length == 1) {
             switch (args[0]) {
                 case "info" -> {
-                    sender.sendMessage(ChatColor.GRAY + "插件名称: §fAlsaceCore\n§7插件版本: §f" + plugin.getDescription().getVersion() + "\n§7插件作者: §f" + Arrays.toString(plugin.getDescription().getAuthors().toArray()));
+                    sender.sendMessage(MM.deserialize("<gray>插件名称: <white>AlsaceCore\n<gray>插件版本: <white>" + plugin.getDescription().getVersion() + "\n<gray>插件作者: <white>" + Arrays.toString(plugin.getDescription().getAuthors().toArray())));
                 }
                 case "reload" -> {
                     plugin.loadConfig();
-                    sender.sendMessage(ChatColor.GRAY + "重载成功");
+                    sender.sendMessage(MM.deserialize("<gray>重载成功"));
                 }
                 default -> {
-                    sender.sendMessage(ChatColor.GRAY + "正确指令:\n§f/buildercore info §7- 查看插件信息\n§f/buildercore reload §7- 重载插件");
+                    sender.sendMessage(MM.deserialize("<gray>正确指令:\n<white>/buildercore info <gray>- 查看插件信息\n<white>/buildercore reload <gray>- 重载插件"));
                 }
             }
         } else {
-            sender.sendMessage(ChatColor.GRAY + "正确指令:\n§f/buildercore info §7- 查看插件信息\n§f/buildercore reload §7- 重载插件");
+            sender.sendMessage(MM.deserialize("<gray>正确指令:\n<white>/buildercore info <gray>- 查看插件信息\n<white>/buildercore reload <gray>- 重载插件"));
         }
         return true;
     }

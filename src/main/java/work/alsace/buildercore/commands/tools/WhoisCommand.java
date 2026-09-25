@@ -1,10 +1,9 @@
 package work.alsace.buildercore.commands.tools;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,30 +12,30 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class WhoisCommand implements CommandExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    private final String error = ChatColor.GRAY + "正确指令:\n§f/whois <玩家> §7- 查询指定玩家信息";
+    private final Component error = MM.deserialize("<gray>正确指令:\n<white>/whois <玩家> <gray>- 查询指定玩家信息");
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (strings.length == 1 && sender.hasPermission("buildercore.commands.whois")) {
             Player player = sender.getServer().getPlayer(strings[0]);
             if (player == null) {
-                sender.sendMessage(ChatColor.RED + "指定的玩家不在线或不存在");
+                sender.sendMessage(MM.deserialize("<red>指定的玩家不在线或不存在"));
                 return false;
             }
 
             Location location = player.getLocation();
-            TextComponent Component = new TextComponent("§7UUID: §a" + player.getUniqueId());
-            Component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, player.getUniqueId().toString()));
-            TextComponent hoverText = new TextComponent("点击复制");
-            Component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hoverText}));
+            Component uuidMessage = MM.deserialize("<gray>UUID: <green>" + player.getUniqueId())
+                    .clickEvent(ClickEvent.copyToClipboard(player.getUniqueId().toString()))
+                    .hoverEvent(HoverEvent.showText(Component.text("点击复制")));
 
-            sender.sendMessage("§7用户名: §f" + player.getName());
-            sender.spigot().sendMessage(Component);
-            sender.sendMessage("§7IP地址: §f" + player.getAddress().getHostString());
-            sender.sendMessage("§7OP权限: §f" + player.isOp());
-            sender.sendMessage("§7游戏模式: §f" + player.getGameMode());
-            sender.sendMessage("§7坐标位置: §fX:" + Math.floor(location.getX()) + " Y:" + Math.floor(location.getY()) + " Z:" + Math.floor(location.getZ()));
-            sender.sendMessage("§7所在世界: §f" + player.getWorld().getName());
+            sender.sendMessage(MM.deserialize("<gray>用户名: <white>" + player.getName()));
+            sender.sendMessage(uuidMessage);
+            sender.sendMessage(MM.deserialize("<gray>IP地址: <white>" + player.getAddress().getHostString()));
+            sender.sendMessage(MM.deserialize("<gray>OP权限: <white>" + player.isOp()));
+            sender.sendMessage(MM.deserialize("<gray>游戏模式: <white>" + player.getGameMode()));
+            sender.sendMessage(MM.deserialize("<gray>坐标位置: <white>X:" + Math.floor(location.getX()) + " Y:" + Math.floor(location.getY()) + " Z:" + Math.floor(location.getZ())));
+            sender.sendMessage(MM.deserialize("<gray>所在世界: <white>" + player.getWorld().getName()));
             return true;
         }
         sender.sendMessage(error);

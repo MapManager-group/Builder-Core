@@ -33,6 +33,7 @@ import work.alsace.buildercore.commands.warp.WarpsCommand;
 import work.alsace.buildercore.commands.weather.PWeatherCommand;
 import work.alsace.buildercore.commands.weather.WeatherCommand;
 import work.alsace.buildercore.listeners.*;
+import work.alsace.buildercore.features.BuilderTools;
 import work.alsace.buildercore.service.HomeDataLoader;
 import work.alsace.buildercore.service.TPAHandler;
 import work.alsace.buildercore.service.VelocityMessenger;
@@ -42,7 +43,6 @@ import work.alsace.buildercore.utils.*;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 public class BuilderCore extends JavaPlugin {
 
@@ -68,6 +68,7 @@ public class BuilderCore extends JavaPlugin {
     private DataBaseManager databaseManager;
     private LiteDataBaseManager liteDataBaseManager;
     private SerializeInventory serializeInventory;
+    private BuilderTools builderTools;
 
     private String host;
     private String dataBase;
@@ -92,6 +93,8 @@ public class BuilderCore extends JavaPlugin {
         }
         registerCommands();
         registerListeners();
+        builderTools = new BuilderTools(this);
+        builderTools.register();
         Bukkit.getScheduler().runTaskTimer(this, () -> new NoClipUtil().checkBlock(), 1L, 1L);
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {

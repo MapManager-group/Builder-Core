@@ -1,8 +1,9 @@
 package work.alsace.buildercore.commands.time;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -13,8 +14,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class TimeCommand implements TabExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    private final String error = ChatColor.GRAY + "正确指令:\n§f/time <时间> §7- 设置你当前世界的时间\n§f/time <时间> <世界> §7- 设置指定世界的时间";
+    private final Component error = MM.deserialize("<gray>正确指令:\n<white>/time <时间> <gray>- 设置你当前世界的时间\n<white>/time <时间> <世界> <gray>- 设置指定世界的时间");
     private static final List<String> times1 = Arrays.asList("sunrise", "day", "morning", "noon", "afternoon", "sunset", "night", "midnight", "5000");
 
     private static final List<String> times0 = Arrays.asList("sunrise", "day", "morning", "noon", "afternoon", "sunset", "night", "midnight", "5000", "set", "add");
@@ -23,7 +25,7 @@ public class TimeCommand implements TabExecutor {
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (strings.length == 1 && sender instanceof Player player) {
             if (!player.hasPermission("buildercore.commands.time")) {
-                player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+                player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
                 return false;
             }
             World world = player.getWorld();
@@ -33,7 +35,7 @@ public class TimeCommand implements TabExecutor {
                 return false;
             }
             world.setTime(timeTicks);
-            player.sendMessage(ChatColor.GRAY + "已将当前世界时间设置为 §f" + timeTicks + " ticks");
+            player.sendMessage(MM.deserialize("<gray>已将当前世界时间设置为 <white>" + timeTicks + " ticks"));
             return true;
         }
 
@@ -42,7 +44,7 @@ public class TimeCommand implements TabExecutor {
             switch (strings[0]) {
                 case "set" -> {
                     if (!player.hasPermission("buildercore.commands.time")) {
-                        player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+                        player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
                         return false;
                     }
                     long timeTicks = getTimeFromKeyword(strings[1]);
@@ -51,12 +53,12 @@ public class TimeCommand implements TabExecutor {
                         return false;
                     }
                     player.getWorld().setTime(timeTicks);
-                    player.sendMessage(ChatColor.GRAY + "已将当前世界时间设置为 §f" + strings[1] + " ticks");
+                    player.sendMessage(MM.deserialize("<gray>已将当前世界时间设置为 <white>" + strings[1] + " ticks"));
                     return true;
                 }
                 case "add" -> {
                     if (!player.hasPermission("buildercore.commands.time")) {
-                        player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+                        player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
                         return false;
                     }
                     if (!StringUtils.isNumeric(strings[1])) {
@@ -66,17 +68,17 @@ public class TimeCommand implements TabExecutor {
                     long var = Long.parseLong(strings[1]);
                     long var1 = player.getWorld().getTime();
                     player.getWorld().setTime(var + var1);
-                    player.sendMessage(ChatColor.GRAY + "已将当前世界时间增加 §f" + var + " ticks");
+                    player.sendMessage(MM.deserialize("<gray>已将当前世界时间增加 <white>" + var + " ticks"));
                     return true;
                 }
             }
             if (!sender.hasPermission("buildercore.commands.time.other")) {
-                sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+                sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
                 return false;
             }
             World world = Bukkit.getWorld(strings[1]);
             if (world == null) {
-                sender.sendMessage(ChatColor.RED + "指定的世界不存在");
+                sender.sendMessage(MM.deserialize("<red>指定的世界不存在"));
                 return false;
             }
             long timeTicks = getTimeFromKeyword(strings[0]);
@@ -85,7 +87,7 @@ public class TimeCommand implements TabExecutor {
                 return false;
             }
             world.setTime(timeTicks);
-            sender.sendMessage(ChatColor.GRAY + "已将世界 §f" + strings[1] + " §7的时间设置为 §f" + timeTicks + " ticks");
+            sender.sendMessage(MM.deserialize("<gray>已将世界 <white>" + strings[1] + " <gray>的时间设置为 <white>" + timeTicks + " ticks"));
             return true;
         }
         sender.sendMessage(error);

@@ -1,6 +1,6 @@
 package work.alsace.buildercore.commands.builderTools;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 public class DebugStickCommand implements CommandExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (!(sender instanceof Player)) {
@@ -19,7 +20,7 @@ public class DebugStickCommand implements CommandExecutor {
             Player player = (Player) sender;
             ItemStack itemStack = new ItemStack(Material.DEBUG_STICK, 1);
             player.getInventory().addItem(itemStack);
-            player.sendMessage(ChatColor.GRAY + "你获得了一个调试棒");
+            player.sendMessage(MM.deserialize("<gray>你获得了一个调试棒"));
             return true;
         }
     }

@@ -1,7 +1,7 @@
 package work.alsace.buildercore.listeners;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AFKListener implements Listener {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
     private final BuilderCore plugin;
     private final Map<UUID, Long> lastActivity = new HashMap<>();
 
@@ -62,9 +63,9 @@ public class AFKListener implements Listener {
                 }
             } else {
                 if (player.hasMetadata("afk")) {
-//                    player.sendMessage(ChatColor.GRAY + "你已取消暂离状态");
+//                    player.sendMessage(MM.deserialize("<gray>你已取消暂离状态"));
                     player.removeMetadata("afk", plugin);
-//                    Bukkit.broadcastMessage("§7玩家 §f" + player.getName() + " §7回来了");
+//                    Bukkit.broadcastMessage(MM.deserialize("<gray>玩家 <white>" + player.getName() + " <gray>回来了"));
                 }
             }
         }
@@ -72,17 +73,17 @@ public class AFKListener implements Listener {
 
     private void handleAFK(Player player) {
         if (!player.hasMetadata("afk")) {
-//            player.sendMessage(ChatColor.GRAY + "你已进入暂离状态");
+//            player.sendMessage(MM.deserialize("<gray>你已进入暂离状态"));
             player.setMetadata("afk", new FixedMetadataValue(plugin, true));
-//            Bukkit.broadcastMessage("§7玩家 §f" + player.getName() + " §7暂时离开了");
+//            Bukkit.broadcastMessage(MM.deserialize("<gray>玩家 <white>" + player.getName() + " <gray>暂时离开了"));
         }
     }
 
     private void cancelAFK(Player player) {
         if (player.hasMetadata("afk")) {
-//            player.sendMessage(ChatColor.GRAY + "你已取消暂离状态");
+//            player.sendMessage(MM.deserialize("<gray>你已取消暂离状态"));
             player.removeMetadata("afk", plugin);
-//            Bukkit.broadcastMessage("§7玩家 §f" + player.getName() + " §7回来了");
+//            Bukkit.broadcastMessage(MM.deserialize("<gray>玩家 <white>" + player.getName() + " <gray>回来了"));
         }
     }
 }
