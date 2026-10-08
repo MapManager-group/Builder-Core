@@ -38,14 +38,9 @@ public class WarpCommand implements TabExecutor {
             }
             World warpWorld = location.getWorld();
             if (warpWorld != null && Bukkit.getWorld(warpWorld.getName()) != null) {
-                if (sender.hasPermission("multiverse.access." + warpWorld.getName())) {
-                    Player player = (Player) sender;
-                    player.teleport(location);
-                    sender.sendMessage(MM.deserialize("<gray>已传送至" + warpName));
-                } else {
-                    sender.sendMessage(MM.deserialize("<red>你没有权限传送至" + warpName));
-                    return false;
-                }
+                Player player = (Player) sender;
+                player.teleport(location);
+                sender.sendMessage(MM.deserialize("<gray>已传送至" + warpName));
             } else {
                 sender.sendMessage(MM.deserialize("<red>世界不存在或未加载"));
                 //warpDataLoader.delWarp(warpName);
@@ -71,9 +66,7 @@ public class WarpCommand implements TabExecutor {
             Location location = BuilderCore.instance.warpProfiles.get("warps").getWarp(warp);
             World world = location.getWorld();
             if (world != null) {
-                if (sender.hasPermission("multiverse.access." + world.getName())) {
-                    warps.add(warp);
-                }
+                warps.add(warp);
             }
         });
         return warps;

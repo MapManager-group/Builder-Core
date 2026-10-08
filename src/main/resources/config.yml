@@ -5,6 +5,10 @@ agree:
   agreement: false
   url-title: "洛林·方屿服务器用户协议"
   url: "https://xxxxx.xxx.xxx"
+# TP/TPA 的 MMC v4 权限检查；/buildercore reload 后生效。
+# 关闭或未安装 MMC：只检查命令权限；开启：TP 需建筑角色，TPA 需进入权限。
+teleport:
+  check-mmc-permissions: true
 #可以返回的位置
 backHistory: 5
 #用户协议数据库配置

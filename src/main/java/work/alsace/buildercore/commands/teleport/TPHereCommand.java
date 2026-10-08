@@ -7,6 +7,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import work.alsace.buildercore.BuilderCore;
+import work.alsace.buildercore.service.TeleportAccess;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,12 +20,13 @@ public class TPHereCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
-        if (args.length != 1 || !(sender instanceof Player)) {
+        if (args.length != 1 || !(sender instanceof Player player)) {
             return Collections.emptyList();
         }
 
         String prefix = args[0].toLowerCase();
         return Bukkit.getOnlinePlayers().stream()
+                .filter(target -> TeleportAccess.canTeleport(BuilderCore.instance, target, player.getWorld(), true))
                 .map(Player::getName)
                 .filter(name -> name.toLowerCase().startsWith(prefix))
                 .toList();
@@ -54,6 +57,11 @@ public class TPHereCommand implements TabExecutor {
 
         if (target.equals(commander)) {
             sendMsg(commander, "<red>你不能将自己传送给自己");
+            return true;
+        }
+
+        if (!TeleportAccess.canTeleport(BuilderCore.instance, target, commander.getWorld(), true)) {
+            sendMsg(commander, "<red>目标玩家没有目标世界的建筑权限，无法直接传送");
             return true;
         }
 

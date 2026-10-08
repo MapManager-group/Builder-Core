@@ -9,6 +9,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import work.alsace.buildercore.BuilderCore;
+import work.alsace.buildercore.service.TeleportAccess;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -66,13 +67,6 @@ public class TPCommand implements TabExecutor {
             return;
         }
 
-        // 世界权限检查
-        boolean isSameWorld = commander.getWorld().equals(target.getWorld());
-        if (!isSameWorld && !commander.hasPermission("multiverse.access." + target.getWorld().getName())) {
-            sendMsg(commander, "<red>你没有前往目标世界的权限");
-            return;
-        }
-
         // 屏蔽传送检查
         if (isIgnored(target.getName())) {
             sendMsg(commander, "<red>玩家 " + target.getName() + " 已屏蔽强制传送");
@@ -101,8 +95,9 @@ public class TPCommand implements TabExecutor {
             return;
         }
 
-        teleportAfterDelay(commander, target);
-        sendMsg(sender, "<gray>已将 <white>" + commander.getName() + "</white> 传送至 <white>" + target.getName() + "</white>");
+        if (teleportAfterDelay(commander, target)) {
+            sendMsg(sender, "<gray>已将 <white>" + commander.getName() + "</white> 传送至 <white>" + target.getName() + "</white>");
+        }
     }
 
     // 3. /tp <x> <y> <z>
@@ -119,6 +114,10 @@ public class TPCommand implements TabExecutor {
 
         parseLocation(commander, commander, xStr, yStr, zStr).ifPresentOrElse(
                 loc -> {
+                    if (!TeleportAccess.canTeleport(plugin, commander, loc.getWorld(), true)) {
+                        sendMsg(commander, "<red>你没有目标世界的建筑权限，无法直接传送");
+                        return;
+                    }
                     commander.teleportAsync(loc);
                     sendMsg(commander, String.format("<gray>已将 %s 传送至 (%.2f, %.2f, %.2f)", commander.getName(), loc.getX(), loc.getY(), loc.getZ()));
                 },
@@ -151,6 +150,10 @@ public class TPCommand implements TabExecutor {
 
         parseLocation(baseSender, target, xStr, yStr, zStr).ifPresentOrElse(
                 loc -> {
+                    if (!TeleportAccess.canTeleport(plugin, target, loc.getWorld(), true)) {
+                        sendMsg(sender, "<red>目标玩家没有目标世界的建筑权限，无法直接传送");
+                        return;
+                    }
                     target.teleportAsync(loc);
                     sendMsg(sender, String.format("<gray>已将 %s 传送至 (%.2f, %.2f, %.2f)", target.getName(), loc.getX(), loc.getY(), loc.getZ()));
                 },
@@ -189,14 +192,17 @@ public class TPCommand implements TabExecutor {
     private List<Player> getAccessPlayers(Player sender) {
         List<Player> players = new ArrayList<>();
         Bukkit.getOnlinePlayers().forEach((player) -> {
-            player.getWorld();
-            if (sender.hasPermission("multiverse.access." + player.getWorld().getName()))
+            if (TeleportAccess.canTeleport(plugin, sender, player.getWorld(), true))
                 players.add(player);
         });
         return players;
     }
 
-    private void teleportAfterDelay(Player fromPlayer, Player toPlayer) {
+    private boolean teleportAfterDelay(Player fromPlayer, Player toPlayer) {
+        if (!TeleportAccess.canTeleport(plugin, fromPlayer, toPlayer.getWorld(), true)) {
+            sendMsg(fromPlayer, "<red>你没有目标世界的建筑权限，无法直接传送");
+            return false;
+        }
         sendMsg(fromPlayer, "<gray>正在传送至 <white>" + toPlayer.getName() + "</white>...");
 
         if (!fromPlayer.hasMetadata("vanish")) {
@@ -206,6 +212,10 @@ public class TPCommand implements TabExecutor {
         // 延迟 1 秒后使用异步传送 API
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             if (fromPlayer.isOnline() && toPlayer.isOnline()) {
+                if (!TeleportAccess.canTeleport(plugin, fromPlayer, toPlayer.getWorld(), true)) {
+                    sendMsg(fromPlayer, "<red>你没有目标世界的建筑权限，无法直接传送");
+                    return;
+                }
                 fromPlayer.teleportAsync(toPlayer.getLocation()).thenAccept(success -> {
                     if (success) {
                         sendMsg(fromPlayer, "<gray>你已成功传送到 <white>" + toPlayer.getName() + "</white> 身边！");
@@ -213,6 +223,7 @@ public class TPCommand implements TabExecutor {
                 });
             }
         }, 20L);
+        return true;
     }
 
     private void sendMsg(CommandSender sender, String miniMessageText) {

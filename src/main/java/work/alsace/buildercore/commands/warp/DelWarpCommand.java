@@ -30,13 +30,8 @@ public class DelWarpCommand implements TabExecutor {
             Location location = warpDataLoader.getWarp(warpName);
             World warpWorld = location.getWorld();
             if (warpWorld != null) {
-                if (sender.hasPermission("multiverse.access." + warpWorld.getName())) {
-                    warpDataLoader.delWarp(warpName);
-                    sender.sendMessage(MM.deserialize(String.format("<gray>已删除传送点%s", warpName)));
-                } else {
-                    sender.sendMessage(MM.deserialize("<red>你没有权限删除" + warpName));
-                    return false;
-                }
+                warpDataLoader.delWarp(warpName);
+                sender.sendMessage(MM.deserialize(String.format("<gray>已删除传送点%s", warpName)));
             } else {
                 sender.sendMessage(MM.deserialize("<red>传送点" + location.getWorld() + "不存在"));
                 return false;
@@ -60,9 +55,7 @@ public class DelWarpCommand implements TabExecutor {
             Location location = BuilderCore.instance.warpProfiles.get("warps").getWarp(warp);
             World world = location.getWorld();
             if (world != null) {
-                if (sender.hasPermission("multiverse.access." + world.getName())) {
-                    warps.add(warp);
-                }
+                warps.add(warp);
             }
         });
         return warps;

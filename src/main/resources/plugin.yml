@@ -4,10 +4,11 @@ authors:
   - 'PuddingKC'
   - 'Hanamizu_'
   - 'CHuNan'
-version: ${version}
+version: ${project.version}
 softdepend:
   - 'PlaceholderAPI'
   - 'floodgate'
+  - 'MapManager-Core'
 description: 建筑服基础插件
 api-version: '1.20'
 permissions:
@@ -106,6 +107,8 @@ permissions:
       buildercore.ability.terracotta: true
       buildercore.commands.pweather: true
       buildercore.commands.ptime: true
+      buildercore.commands.hat: true
+
 
   buildercore.pack.teleport:
     description: 使用传送命令

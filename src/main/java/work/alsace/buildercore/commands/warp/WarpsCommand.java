@@ -73,9 +73,7 @@ public class WarpsCommand implements CommandExecutor {
             String worldName = world.getName();
             String alias = BuilderCore.instance.warpProfiles.get("warps").getWarpAlias(warp);
 
-            if (sender.hasPermission("multiverse.access." + worldName)) {
-                worldWarps.computeIfAbsent(worldName, k -> new ArrayList<>()).add(alias != null ? alias : warp);
-            }
+            worldWarps.computeIfAbsent(worldName, k -> new ArrayList<>()).add(alias != null ? alias : warp);
         });
         return worldWarps;
     }
