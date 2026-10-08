@@ -25,6 +25,30 @@ permissions:
       buildercore.commands.invsee: true
       buildercore.commands.vanish: true
       buildercore.commands.whois: true
+      buildercore.commands.tp.other: true
+      buildercore.commands.fly.other: true
+      buildercore.commands.gamemode.other: true
+      buildercore.commands.speed.other: true
+      buildercore.commands.time.other: true
+      buildercore.commands.ptime.other: true
+      buildercore.commands.sethome.other: true
+      buildercore.commands.delhome.other: true
+      buildercore.commands.endersee.*: true
+      buildercore.commands.rc: true
+      buildercore.afk.bypass: true
+      buildercore.blocked.bypass: true
+  buildercore.protect.*:
+    description: "全部建筑保护权限"
+    children:
+      buildercore.protect.break: true
+      buildercore.protect.place: true
+      buildercore.protect.interact: true
+      buildercore.protect.lectern: true
+      buildercore.protect.ignite: true
+      buildercore.protect.sign: true
+      buildercore.protect.item_frame: true
+      buildercore.protect.farmland: true
+      buildercore.protect.armor_stand: true
   buildercore.afk.bypass:
     description: 绕过自动AFK
     default: op
@@ -49,8 +73,12 @@ permissions:
       buildercore.protect.*: true
       buildercore.pack.teleport: true
       buildercore.commands.tp.player: true
-      buildercore.commands.tpa: true
       buildercore.aliases: true
+      buildercore.commands.twist: true
+      buildercore.commands.derot: true
+      buildercore.commands.cuboid: true
+      buildercore.commands.convex: true
+      buildercore.commands.undo: true
       buildercore.commands.advfly: true
       buildercore.commands.debugstick: true
       buildercore.commands.head: true
@@ -75,20 +103,28 @@ permissions:
       buildercore.menu.special: true
       buildercore.ability.irondoor: true
       buildercore.ability.terracotta: true
+      buildercore.commands.pweather: true
+      buildercore.commands.ptime: true
+      buildercore.commands.hat: true
 
   buildercore.pack.public:
     description: 公共地图权限，通常用于地皮等
     children:
       buildercore.protect.*: true
       buildercore.pack.teleport: true
-      buildercore.commands.tpa: true
       buildercore.aliases: true
+      buildercore.commands.twist: true
+      buildercore.commands.derot: true
+      buildercore.commands.cuboid: true
+      buildercore.commands.convex: true
+      buildercore.commands.undo: true
       buildercore.commands.advfly: true
       buildercore.commands.debugstick: true
       buildercore.commands.head: true
       buildercore.commands.nightvision: true
       buildercore.commands.noclip: true
       buildercore.commands.slab: true
+      buildercore.commands.endersee: true
       buildercore.commands.endersee.self: true
       buildercore.commands.itemcolor: true
       buildercore.commands.itemname: true
@@ -123,6 +159,7 @@ permissions:
       buildercore.commands.warps: true
       buildercore.commands.tp.location: true
       buildercore.commands.tp: true
+      buildercore.commands.tpa: true
 
   buildercore.pack.warpset:
     description: 设置公共传送点
