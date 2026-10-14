@@ -218,6 +218,7 @@ public class BuilderCore extends JavaPlugin {
         pm.registerEvents(new Protect(), this);
         pm.registerEvents(new PlayerListener(this), this);
         pm.registerEvents(new BlockListener(), this);
+        new CushionListener().register(this);
         pm.registerEvents(new Misc(), this);
         pm.registerEvents(new AdvanceFlyCommand(), this);
         pm.registerEvents(new SpawnListener(), this);
