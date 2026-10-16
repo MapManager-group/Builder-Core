@@ -34,6 +34,7 @@ import work.alsace.buildercore.commands.weather.PWeatherCommand;
 import work.alsace.buildercore.commands.weather.WeatherCommand;
 import work.alsace.buildercore.listeners.*;
 import work.alsace.buildercore.features.BuilderTools;
+import work.alsace.buildercore.features.cushiontools.CushionTools;
 import work.alsace.buildercore.service.HomeDataLoader;
 import work.alsace.buildercore.service.TPAHandler;
 import work.alsace.buildercore.service.VelocityMessenger;
@@ -69,6 +70,7 @@ public class BuilderCore extends JavaPlugin {
     private LiteDataBaseManager liteDataBaseManager;
     private SerializeInventory serializeInventory;
     private BuilderTools builderTools;
+    private CushionTools cushionTools;
 
     private String host;
     private String dataBase;
@@ -113,6 +115,7 @@ public class BuilderCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (cushionTools != null) cushionTools.close();
         homeProfiles.clear();
         warpProfiles.clear();
         if (agreement) {
@@ -218,7 +221,8 @@ public class BuilderCore extends JavaPlugin {
         pm.registerEvents(new Protect(), this);
         pm.registerEvents(new PlayerListener(this), this);
         pm.registerEvents(new BlockListener(), this);
-        new CushionListener().register(this);
+        cushionTools = new CushionTools(this);
+        cushionTools.register();
         pm.registerEvents(new Misc(), this);
         pm.registerEvents(new AdvanceFlyCommand(), this);
         pm.registerEvents(new SpawnListener(), this);

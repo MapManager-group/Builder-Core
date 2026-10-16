@@ -81,6 +81,7 @@ permissions:
       buildercore.commands.undo: true
       buildercore.commands.advfly: true
       buildercore.commands.debugstick: true
+      buildercore.commands.cushiontools: true
       buildercore.commands.head: true
       buildercore.commands.nightvision: true
       buildercore.commands.noclip: true
@@ -120,6 +121,7 @@ permissions:
       buildercore.commands.undo: true
       buildercore.commands.advfly: true
       buildercore.commands.debugstick: true
+      buildercore.commands.cushiontools: true
       buildercore.commands.head: true
       buildercore.commands.nightvision: true
       buildercore.commands.noclip: true
@@ -170,6 +172,9 @@ permissions:
 
 
 commands:
+  cushiontools:
+    description: 切换坐垫工具模式并恢复原背包
+    usage: /cushiontools
   /p1:
     description: WorldEdit 第一选区点快捷命令
     permission: buildercore.aliases
