@@ -29,8 +29,8 @@ permissions:
       buildercore.commands.fly.other: true
       buildercore.commands.gamemode.other: true
       buildercore.commands.speed.other: true
-      buildercore.commands.time.other: true
       buildercore.commands.ptime.other: true
+      buildercore.commands.pweather.other: true
       buildercore.commands.sethome.other: true
       buildercore.commands.delhome.other: true
       buildercore.commands.endersee.*: true
@@ -231,7 +231,7 @@ commands:
   pweather:
     permission: buildercore.commands.pweather
   time:
-    description: 设置所在世界或指定世界的时间
+    description: 设置玩家所在世界的时间
     permission: buildercore.commands.time
   ptime:
     description: 设置自己或指定玩家的客户端时间

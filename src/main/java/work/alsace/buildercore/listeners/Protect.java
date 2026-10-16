@@ -146,13 +146,6 @@ public class Protect implements Listener {
     }
 
     @EventHandler
-    public void onDragonEgg(BlockFromToEvent e) {
-        if (e.getBlock().getType() == Material.DRAGON_EGG) {
-            e.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void onPlayerInteractP(PlayerInteractEvent e) {
         if (e.getAction() == Action.PHYSICAL && !e.getPlayer().hasPermission("buildercore.protect.farmland")) {
             if (e.getClickedBlock() == null) { return; }

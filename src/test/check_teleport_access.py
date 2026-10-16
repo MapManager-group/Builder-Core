@@ -16,6 +16,10 @@ result = subprocess.run([mvn, "-o", "-X", "test-compile"], cwd=root, env=env,
 if result.returncode:
     raise SystemExit(result.stdout[-4000:])
 paths = re.search(r"\(f\) testPath = \[(.*?)\]", result.stdout).group(1).split(", ")
+subprocess.run(["java", "-ea", "-cp", ":".join(paths),
+                "work.alsace.buildercore.SelectedFixesCheck"], cwd=root, check=True)
+subprocess.run(["java", "-ea", "-cp", ":".join(paths),
+                "work.alsace.buildercore.features.cushiontools.CushionToolsCheck"], cwd=root, check=True)
 main = "work.alsace.buildercore.service.TeleportAccessCheck"
 subprocess.run(["java", "-ea", "-cp", ":".join(paths), main], cwd=root, check=True)
 # Also exercise disabled/missing MMC with its API completely absent from the classpath.

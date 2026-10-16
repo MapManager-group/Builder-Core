@@ -27,7 +27,7 @@ public class SpeedCommand implements TabExecutor {
             }
             try {
                 float speed = Float.parseFloat(strings[0]);
-                if (speed > 10 || speed < 0.1) {
+                if (!Float.isFinite(speed) || speed > 10 || speed < 0.1F) {
                     player.sendMessage(error);
                     return false;
                 }
@@ -54,7 +54,7 @@ public class SpeedCommand implements TabExecutor {
                 case "walk" -> {
                     try {
                         float speed = Float.parseFloat(strings[1]);
-                        if (speed > 15 || speed < 0.1) {
+                        if (!Float.isFinite(speed) || speed > 10 || speed < 0.1F) {
                             player.sendMessage(error);
                             return false;
                         }
@@ -69,7 +69,7 @@ public class SpeedCommand implements TabExecutor {
                 case "fly" -> {
                     try {
                         float speed = Float.parseFloat(strings[1]);
-                        if (speed > 10 || speed < 0.1) {
+                        if (!Float.isFinite(speed) || speed > 10 || speed < 0.1F) {
                             player.sendMessage(error);
                             return false;
                         }
@@ -104,7 +104,7 @@ public class SpeedCommand implements TabExecutor {
                 case "walk" -> {
                     try {
                         float speed = Float.parseFloat(strings[1]);
-                        if (speed > 10 || speed < 0.1) {
+                        if (!Float.isFinite(speed) || speed > 10 || speed < 0.1F) {
                             sender.sendMessage(error);
                             return false;
                         }
@@ -120,7 +120,7 @@ public class SpeedCommand implements TabExecutor {
                 case "fly" -> {
                     try {
                         float speed = Float.parseFloat(strings[1]);
-                        if (speed > 10 || speed < 0.1) {
+                        if (!Float.isFinite(speed) || speed > 10 || speed < 0.1F) {
                             sender.sendMessage(error);
                             return false;
                         }

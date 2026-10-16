@@ -27,7 +27,7 @@ public class BuilderCoreCommand implements TabExecutor {
         if (args.length == 1) {
             switch (args[0]) {
                 case "info" -> {
-                    sender.sendMessage(MM.deserialize("<gray>插件名称: <white>AlsaceCore\n<gray>插件版本: <white>" + plugin.getDescription().getVersion() + "\n<gray>插件作者: <white>" + Arrays.toString(plugin.getDescription().getAuthors().toArray())));
+                    sender.sendMessage(MM.deserialize("<gray>插件名称: <white>" + plugin.getDescription().getName() + "\n<gray>插件版本: <white>" + plugin.getDescription().getVersion() + "\n<gray>插件作者: <white>" + Arrays.toString(plugin.getDescription().getAuthors().toArray())));
                 }
                 case "reload" -> {
                     plugin.loadConfig();

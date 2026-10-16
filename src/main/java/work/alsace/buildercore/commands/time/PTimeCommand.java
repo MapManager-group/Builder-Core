@@ -49,35 +49,21 @@ public class PTimeCommand implements TabExecutor {
             }
         }
 
-        long time;
-        switch (strings[0].toLowerCase()) {
-            case "day" -> time = 0;
-            case "night" -> time = 14000;
-            case "sunrise" -> time = 23000;
-            case "morning" -> time = 1000;
-            case "noon" -> time = 6000;
-            case "afternoon" -> time = 9000;
-            case "sunset" -> time = 12000;
-            case "midnight" -> time = 18000;
-            case "reset" -> {
-                targetPlayer.resetPlayerTime();
-                targetPlayer.sendMessage(MM.deserialize("<gray>已将你的客户端时间重置"));
-                if (strings.length == 2) {
-                    sender.sendMessage(MM.deserialize("<gray>已将玩家 <white>" + targetPlayer.getName() + " <gray>的客户端时间重置"));
-                }
-                return true;
+        if (strings[0].equalsIgnoreCase("reset")) {
+            targetPlayer.resetPlayerTime();
+            targetPlayer.sendMessage(MM.deserialize("<gray>已将你的客户端时间重置"));
+            if (strings.length == 2) {
+                sender.sendMessage(MM.deserialize("<gray>已将玩家 <white>" + targetPlayer.getName() + " <gray>的客户端时间重置"));
             }
-            default -> {
-                try {
-                    time = Long.parseLong(strings[0]);
-                } catch (NumberFormatException e) {
-                    sender.sendMessage(error);
-                    return false;
-                }
-            }
+            return true;
+        }
+        long time = TimeCommand.getTimeFromKeyword(strings[0]);
+        if (time == -1) {
+            sender.sendMessage(error);
+            return false;
         }
 
-        targetPlayer.setPlayerTime(time, true);
+        targetPlayer.setPlayerTime(time, false);
         targetPlayer.sendMessage(MM.deserialize("<gray>已将你的客户端时间设置为 <white>" + time + " ticks"));
 
         if (strings.length == 2) {

@@ -37,7 +37,7 @@ public class WeatherCommand implements TabExecutor {
                     return true;
                 }
                 case "thunder" -> {
-                    world.setStorm(false);
+                    world.setStorm(true);
                     world.setThundering(true);
                     player.sendMessage(MM.deserialize("已将当前世界天气设置为 <white>雷暴"));
                     return true;
