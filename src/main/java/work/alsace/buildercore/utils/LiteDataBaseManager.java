@@ -18,10 +18,11 @@ public class LiteDataBaseManager {
 
     public void connect() {
         try {
+            Class.forName("org.sqlite.JDBC");
             connection = DriverManager.getConnection("jdbc:sqlite:" + plugin.getDataFolder()+ "/inventory.db");
             createTables();
-        } catch (SQLException e) {
-            plugin.getLogger().severe("[背包同步] 数据库连接错误");
+        } catch (SQLException | ClassNotFoundException e) {
+            plugin.getLogger().log(java.util.logging.Level.SEVERE, "[背包同步] 数据库连接错误", e);
         }
     }
 
