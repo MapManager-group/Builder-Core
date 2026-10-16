@@ -27,20 +27,16 @@ public class WarpCommand implements TabExecutor {
         if (args.length == 1) {
             String warpName = args[0];
             WarpDataLoader warpDataLoader = BuilderCore.instance.warpProfiles.get("warps");
-            if (warpName == null) {
-                sender.sendMessage(MM.deserialize("<red>传送点" + warpName + "不存在"));
-                return false;
-            }
             Location location = warpDataLoader.getWarp(warpName);
             if (location == null) {
-                sender.sendMessage(MM.deserialize("<red>传送点" + warpName + "不存在"));
+                sender.sendMessage(MM.deserialize("<red>传送点" + MM.escapeTags(warpName) + "不存在"));
                 return false;
             }
             World warpWorld = location.getWorld();
             if (warpWorld != null && Bukkit.getWorld(warpWorld.getName()) != null) {
                 Player player = (Player) sender;
                 player.teleport(location);
-                sender.sendMessage(MM.deserialize("<gray>已传送至" + warpName));
+                sender.sendMessage(MM.deserialize("<gray>已传送至" + MM.escapeTags(warpName)));
             } else {
                 sender.sendMessage(MM.deserialize("<red>世界不存在或未加载"));
                 //warpDataLoader.delWarp(warpName);

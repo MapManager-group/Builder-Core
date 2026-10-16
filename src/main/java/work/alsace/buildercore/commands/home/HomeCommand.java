@@ -46,7 +46,7 @@ public class HomeCommand implements TabExecutor {
 
         Location loc = target.loader().getHome(target.homeName());
         if (loc == null) {
-            sendMsg(player, "<red>未找到传送点 <white>" + target.homeName() + "</white>");
+            sendMsg(player, "<red>未找到传送点 <white>" + MM.escapeTags(target.homeName()) + "</white>");
             return true;
         }
 
@@ -57,9 +57,9 @@ public class HomeCommand implements TabExecutor {
 
         player.teleportAsync(loc);
         if (target.isOther()) {
-            sendMsg(player, "<gray>已传送至玩家 <white>" + target.ownerName() + "</white> 的家 <white>" + target.homeName() + "</white>");
+            sendMsg(player, "<gray>已传送至玩家 <white>" + target.ownerName() + "</white> 的家 <white>" + MM.escapeTags(target.homeName()) + "</white>");
         } else {
-            sendMsg(player, "<gray>已传送至家 <white>" + target.homeName() + "</white>");
+            sendMsg(player, "<gray>已传送至家 <white>" + MM.escapeTags(target.homeName()) + "</white>");
         }
 
         return true;

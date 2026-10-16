@@ -35,21 +35,17 @@ public class HomesCommand implements CommandExecutor {
         }
 
         Set<String> homes = loader.getHomes();
-        StringBuilder sb = new StringBuilder("<gray>你的家 (" + homes.size() + "/" + (loader.getMaxHomes() == Integer.MAX_VALUE ? "∞" : loader.getMaxHomes()) + "): ");
-
+        Component message = MM.deserialize("<gray>你的家 (" + homes.size() + "/" + (loader.getMaxHomes() == Integer.MAX_VALUE ? "∞" : loader.getMaxHomes()) + "): ");
         int count = 0;
         for (String home : homes) {
-            sb.append("<gold><click:run_command:'/home ").append(home)
-                    .append("'><hover:show_text:'<gray>点击传送至 <white>").append(home).append("</white></gray>'>")
-                    .append(home)
-                    .append("</hover></click></gold>");
-
+            message = message.append(Component.text(home, net.kyori.adventure.text.format.NamedTextColor.GOLD)
+                    .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/home " + home))
+                    .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("点击传送至 " + home))));
             if (++count < homes.size()) {
-                sb.append("<gray> | </gray>");
+                message = message.append(Component.text(" | ", net.kyori.adventure.text.format.NamedTextColor.GRAY));
             }
         }
-
-        player.sendMessage(MM.deserialize(sb.toString()));
+        player.sendMessage(message);
         return true;
     }
 }

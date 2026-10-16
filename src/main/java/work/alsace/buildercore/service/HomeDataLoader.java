@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 import work.alsace.buildercore.BuilderCore;
@@ -46,19 +47,26 @@ public class HomeDataLoader {
             }
         }
 
-        this.userConfig = YamlConfiguration.loadConfiguration(userFile);
+        this.userConfig = new YamlConfiguration();
+        // 名称允许点号，内部路径改用 NUL 分隔，文件中的 YAML 结构保持不变。
+        userConfig.options().pathSeparator('\0');
+        try {
+            userConfig.load(userFile);
+        } catch (IOException | InvalidConfigurationException exception) {
+            BuilderCore.instance.getLogger().log(java.util.logging.Level.SEVERE, "无法加载位置数据: " + userFile, exception);
+        }
         ConfigurationSection homeSection = userConfig.getConfigurationSection("Home");
         if (homeSection != null) {
             for (String key : homeSection.getKeys(false)) {
-                String worldName = homeSection.getString(key + ".World");
+                String worldName = homeSection.getString(key + "\0World");
                 if (worldName == null) continue;
 
                 World world = Bukkit.getWorld(worldName);
-                double x = homeSection.getDouble(key + ".X");
-                double y = homeSection.getDouble(key + ".Y");
-                double z = homeSection.getDouble(key + ".Z");
-                float yaw = (float) homeSection.getDouble(key + ".Yaw");
-                float pitch = (float) homeSection.getDouble(key + ".Pitch");
+                double x = homeSection.getDouble(key + "\0X");
+                double y = homeSection.getDouble(key + "\0Y");
+                double z = homeSection.getDouble(key + "\0Z");
+                float yaw = (float) homeSection.getDouble(key + "\0Yaw");
+                float pitch = (float) homeSection.getDouble(key + "\0Pitch");
 
                 // 允许 Location 中的 World 暂时为 null（防止因世界未加载导致内存丢失）
                 homes.put(key.toLowerCase(), new Location(world, x, y, z, yaw, pitch));
@@ -93,12 +101,12 @@ public class HomeDataLoader {
         homes.put(key, location);
 
         Bukkit.getScheduler().runTaskAsynchronously(BuilderCore.instance, () -> {
-            userConfig.set("Home." + key + ".World", location.getWorld() != null ? location.getWorld().getName() : "");
-            userConfig.set("Home." + key + ".X", location.getX());
-            userConfig.set("Home." + key + ".Y", location.getY());
-            userConfig.set("Home." + key + ".Z", location.getZ());
-            userConfig.set("Home." + key + ".Yaw", location.getYaw());
-            userConfig.set("Home." + key + ".Pitch", location.getPitch());
+            userConfig.set("Home\0" + key + "\0World", location.getWorld() != null ? location.getWorld().getName() : "");
+            userConfig.set("Home\0" + key + "\0X", location.getX());
+            userConfig.set("Home\0" + key + "\0Y", location.getY());
+            userConfig.set("Home\0" + key + "\0Z", location.getZ());
+            userConfig.set("Home\0" + key + "\0Yaw", location.getYaw());
+            userConfig.set("Home\0" + key + "\0Pitch", location.getPitch());
             saveConfig();
         });
     }
@@ -108,7 +116,7 @@ public class HomeDataLoader {
         homes.remove(key);
 
         Bukkit.getScheduler().runTaskAsynchronously(BuilderCore.instance, () -> {
-            userConfig.set("Home." + key, null);
+            userConfig.set("Home\0" + key, null);
             saveConfig();
         });
     }

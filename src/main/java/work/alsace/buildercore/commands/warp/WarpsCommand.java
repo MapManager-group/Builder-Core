@@ -81,7 +81,7 @@ public class WarpsCommand implements CommandExecutor {
     private Component createClickableWarpComponent(String warp) {
         String realWarp = BuilderCore.instance.warpProfiles.get("warps").getRealWarpName(warp);
 
-        return MM.deserialize("<gold>" + warp)
+        return Component.text(warp, net.kyori.adventure.text.format.NamedTextColor.GOLD)
                 .clickEvent(ClickEvent.runCommand("/warp " + realWarp))
                 .hoverEvent(HoverEvent.showText(Component.text("点击快捷传送")));
     }

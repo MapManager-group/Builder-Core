@@ -8,8 +8,6 @@ import org.bukkit.entity.Player;
 import work.alsace.buildercore.BuilderCore;
 import work.alsace.buildercore.service.WarpDataLoader;
 
-import java.util.regex.Pattern;
-
 public class SetWarpCommand implements CommandExecutor {
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
@@ -30,24 +28,11 @@ public class SetWarpCommand implements CommandExecutor {
             Player player = (Player) sender;
             warpDataLoader = BuilderCore.instance.warpProfiles.get("warps");
             if (warpDataLoader.getWarp(warpName) != null) {
-                sender.sendMessage(MM.deserialize("<red>已经存在传送点" + warpName));
+                sender.sendMessage(MM.deserialize("<red>已经存在传送点" + MM.escapeTags(warpName)));
                 return false;
             }
-            String separator = BuilderCore.instance.getConfig().getString("illegal-characters");
-            Pattern pattern = null;
-            if (separator != null) {
-                pattern = Pattern.compile(separator);
-            }
-            if (pattern != null) {
-                for (String i : warpName.split(pattern.pattern())) {
-                    if (pattern.matcher(i).matches()) {
-                        sender.sendMessage(MM.deserialize("<red>传送点名称包含非法字符"));
-                        return false;
-                    }
-                }
-            }
             warpDataLoader.addWarp(warpName, alias, player.getLocation());
-            sender.sendMessage(MM.deserialize(String.format("<gray>成功设置传送点 %s", warpName)));
+            sender.sendMessage(MM.deserialize(String.format("<gray>成功设置传送点 %s", MM.escapeTags(warpName))));
         } else {
             sender.sendMessage(MM.deserialize("<gray>正确指令:\n<white>/setwarp <传送点> <gray>- 设置传送点"));
         }

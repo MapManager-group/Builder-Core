@@ -2,13 +2,11 @@ package work.alsace.buildercore.commands.warp;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import work.alsace.buildercore.BuilderCore;
 import work.alsace.buildercore.service.WarpDataLoader;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DelWarpCommand implements TabExecutor {
@@ -28,14 +26,12 @@ public class DelWarpCommand implements TabExecutor {
             String warpName = args[0];
             WarpDataLoader warpDataLoader = BuilderCore.instance.warpProfiles.get("warps");
             Location location = warpDataLoader.getWarp(warpName);
-            World warpWorld = location.getWorld();
-            if (warpWorld != null) {
-                warpDataLoader.delWarp(warpName);
-                sender.sendMessage(MM.deserialize(String.format("<gray>已删除传送点%s", warpName)));
-            } else {
-                sender.sendMessage(MM.deserialize("<red>传送点" + location.getWorld() + "不存在"));
+            if (location == null) {
+                sender.sendMessage(MM.deserialize("<red>传送点" + MM.escapeTags(warpName) + "不存在"));
                 return false;
             }
+            warpDataLoader.delWarp(warpName);
+            sender.sendMessage(MM.deserialize("<gray>已删除传送点" + MM.escapeTags(warpName)));
         } else {
             sender.sendMessage(MM.deserialize("<gray>正确指令:\n<white>/delwarp <传送点> <gray>- 删除传送点"));
         }
@@ -44,20 +40,10 @@ public class DelWarpCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String s, String[] args) {
-        if (args.length != 1)
-            return new ArrayList<>(0);
-        return new ArrayList<>(getAccessWarps((Player) sender));
-    }
-
-    private List<String> getAccessWarps(Player sender) {
-        List<String> warps = new ArrayList<>();
-        BuilderCore.instance.warpProfiles.get("warps").getWarps().forEach(warp -> {
-            Location location = BuilderCore.instance.warpProfiles.get("warps").getWarp(warp);
-            World world = location.getWorld();
-            if (world != null) {
-                warps.add(warp);
-            }
-        });
-        return warps;
+        if (args.length != 1 || !(sender instanceof Player))
+            return List.of();
+        return BuilderCore.instance.warpProfiles.get("warps").getWarps().stream()
+                .filter(name -> name.startsWith(args[0]))
+                .toList();
     }
 }

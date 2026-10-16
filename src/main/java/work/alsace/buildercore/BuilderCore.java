@@ -56,7 +56,6 @@ public class BuilderCore extends JavaPlugin {
     public final Map<String, WarpDataLoader> warpProfiles = new ConcurrentHashMap<>();
     public final Set<UUID> openChests = ConcurrentHashMap.newKeySet();
 
-    public List<String> illegalCharacters = new ArrayList<>();
     public static List<String> blockedCommands = List.of("/plugins", "/?", "/help", "/bukkit");
     public static String afkPrefix = "";
 
@@ -243,12 +242,6 @@ public class BuilderCore extends JavaPlugin {
     public void loadConfig() {
         saveDefaultConfig();
         reloadConfig();
-
-        illegalCharacters.clear();
-        List<String> illegals = getConfig().getStringList("illegal-characters");
-        for (String s : illegals) {
-            illegalCharacters.add(s.toLowerCase());
-        }
 
         File folder = new File(getDataFolder(), "userdata");
         if (!folder.exists()) {
