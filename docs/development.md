@@ -28,7 +28,7 @@ mvn clean package
 python3 src/test/check_teleport_access.py
 ```
 
-权限矩阵脚本要求已缓存 Maven 依赖，会离线编译并运行 `SelectedFixesCheck`（名称保存/重载、传送点删除、只读预览、速度、时间/天气、元数据与龙蛋开关）及 `TeleportAccessCheck` 的 Java 断言，覆盖角色、开关、服务未就绪/撤销、未登记世界和无 MMC API 的路径。脚本也运行 `CushionToolsCheck`，检查选区边界、地面搜索顺序、权限和背包备份/恢复（含损坏文件及保存失败）；换用已缓存的 Paper 26.3 API 及对应 Adventure 运行库，以 `java -ea` 运行并传入 `26.3` 参数，可额外检查三轴移动、左右键事件去重及 Paper 拆除事件拦截。坐垫实现集中在 `features/cushiontools/`，原 `CushionListener` 已替换。`mvn test` 不会自动执行这些 `*Check` 主方法。以上检查不替代真实 Paper 服务端上的命令、事件与其他插件集成验证。
+权限矩阵脚本要求已缓存 Maven 依赖，会离线编译并运行 `SelectedFixesCheck`（名称保存/重载、传送点删除、只读预览、速度、时间/天气、元数据与龙蛋开关）及 `TeleportAccessCheck` 的 Java 断言，覆盖角色、开关、服务未就绪/撤销、未登记世界和无 MMC API 的路径。脚本也运行 `CushionPlacementCheck`，覆盖右键放置、方块交互单独禁止、完整事件取消、样式与放置事件拦截；并运行 `CushionToolsCheck`，检查选区边界、地面搜索顺序、权限和背包备份/恢复（含损坏文件及保存失败）；换用已缓存的 Paper 26.3 API 及对应 Adventure 运行库，以 `java -ea` 运行并传入 `26.3` 参数，可额外检查三轴移动、左右键事件去重及 Paper 拆除事件拦截。坐垫实现集中在 `features/cushiontools/`，原 `CushionListener` 已替换。`mvn test` 不会自动执行这些 `*Check` 主方法。以上检查不替代真实 Paper 服务端上的命令、事件与其他插件集成验证。
 
 ## 数据文件
 

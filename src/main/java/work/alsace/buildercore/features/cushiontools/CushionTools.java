@@ -186,13 +186,24 @@ public final class CushionTools implements Listener, CommandExecutor {
     public void interact(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (!active(player)) return;
-        boolean blocked = event.getClickedBlock() != null && event.useInteractedBlock() == Event.Result.DENY;
+        boolean blocked = event.getClickedBlock() != null && event.useItemInHand() == Event.Result.DENY;
         event.setCancelled(true);
-        if (blocked || event.getHand() != EquipmentSlot.HAND || event.getAction().name().equals("PHYSICAL")) return;
+        if (event.getHand() != EquipmentSlot.HAND || event.getAction().name().equals("PHYSICAL")) return;
         CushionSession state = sessions.get(player.getUniqueId());
-        if (state.recovering || state.running || !CushionAccess.permitted(player)) return;
+        String unavailable = blocked ? "此处的工具交互已被保护规则拦截。"
+                : state.recovering ? "原背包等待恢复，请使用 /cushiontools 重试。"
+                : state.running ? "批量操作正在执行，请稍候。"
+                : !CushionAccess.permitted(player) ? "需要坐垫工具、放置、拆除和交互权限，旁观模式不可操作。" : null;
+        if (unavailable != null) {
+            player.sendActionBar(Component.text(unavailable));
+            return;
+        }
         boolean right = event.getAction().name().startsWith("RIGHT");
         int tool = tool(player);
+        if (tool < 0 || tool >= NAMES.length) {
+            player.sendActionBar(Component.text("请手持快捷栏中的坐垫工具；异常时可退出后重新进入工具模式。"));
+            return;
+        }
         if (tool == 6 && event.getClickedBlock() != null) {
             if (!once(player, state)) return;
             Location point = event.getClickedBlock().getLocation();
