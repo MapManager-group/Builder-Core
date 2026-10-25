@@ -28,6 +28,12 @@ public class TPAHandler {
      * @param isTpaHere 是否是 TPAHere (true 表示邀请目标到自己这里，false 表示自己传送过去)
      */
     public void sendTPARequest(Player sender, Player target, boolean isTpaHere) {
+        Player moving = isTpaHere ? target : sender;
+        Player destination = isTpaHere ? sender : target;
+        if (!TeleportAccess.canTeleport(plugin, moving, destination.getWorld(), false)) {
+            sendMsg(sender, "<red>传送玩家没有目标世界的进入权限，无法发送请求。");
+            return;
+        }
         tpaRequests.put(target.getUniqueId(), new TPARequest(sender.getUniqueId(), isTpaHere));
 
         if (isTpaHere) {
@@ -63,6 +69,15 @@ public class TPAHandler {
         Player sender = Bukkit.getPlayer(request.senderId());
         if (sender == null || !sender.isOnline()) {
             sendMsg(target, "<red>发送请求的玩家已离线。");
+            return;
+        }
+
+        Player moving = request.isTpaHere() ? target : sender;
+        Player destination = request.isTpaHere() ? sender : target;
+        if (!sender.hasPermission("buildercore.commands.tpa")
+                || !TeleportAccess.canTeleport(plugin, moving, destination.getWorld(), false)) {
+            sendMsg(target, "<red>传送权限已失效，无法接受请求。");
+            sendMsg(sender, "<red>传送权限已失效，请重新确认命令及目标世界的进入权限。");
             return;
         }
 

@@ -4,10 +4,11 @@ authors:
   - 'PuddingKC'
   - 'Hanamizu_'
   - 'CHuNan'
-version: ${version}
+version: ${project.version}
 softdepend:
   - 'PlaceholderAPI'
   - 'floodgate'
+  - 'MapManager-Core'
 description: 建筑服基础插件
 api-version: '1.20'
 permissions:
@@ -24,11 +25,47 @@ permissions:
       buildercore.commands.invsee: true
       buildercore.commands.vanish: true
       buildercore.commands.whois: true
+      buildercore.commands.tp.other: true
+      buildercore.commands.fly.other: true
+      buildercore.commands.gamemode.other: true
+      buildercore.commands.speed.other: true
+      buildercore.commands.ptime.other: true
+      buildercore.commands.pweather.other: true
+      buildercore.commands.sethome.other: true
+      buildercore.commands.delhome.other: true
+      buildercore.commands.endersee.*: true
+      buildercore.commands.rc: true
+      buildercore.afk.bypass: true
+      buildercore.blocked.bypass: true
+  buildercore.protect.*:
+    description: "全部建筑保护权限"
+    children:
+      buildercore.protect.break: true
+      buildercore.protect.place: true
+      buildercore.protect.interact: true
+      buildercore.protect.lectern: true
+      buildercore.protect.ignite: true
+      buildercore.protect.sign: true
+      buildercore.protect.item_frame: true
+      buildercore.protect.farmland: true
+      buildercore.protect.armor_stand: true
   buildercore.afk.bypass:
     description: 绕过自动AFK
     default: op
   buildercore.blocked.bypass:
     description: 绕过指令限制
+    default: op
+  buildercore.spectate.player:
+    description: 旁观其他玩家
+    default: true
+  buildercore.spectate.entity:
+    description: 旁观其他实体
+    default: true
+  buildercore.spectate.teleport:
+    description: 使用旁观模式传送
+    default: true
+  buildercore.commands.rc:
+    description: 刷新周边已加载区块
     default: op
   buildercore.pack.private:
     description: 独立世界权限，通常可用于私人地图，独立地图等
@@ -36,10 +73,15 @@ permissions:
       buildercore.protect.*: true
       buildercore.pack.teleport: true
       buildercore.commands.tp.player: true
-      buildercore.commands.tpa: true
       buildercore.aliases: true
+      buildercore.commands.twist: true
+      buildercore.commands.derot: true
+      buildercore.commands.cuboid: true
+      buildercore.commands.convex: true
+      buildercore.commands.undo: true
       buildercore.commands.advfly: true
       buildercore.commands.debugstick: true
+      buildercore.commands.cushiontools: true
       buildercore.commands.head: true
       buildercore.commands.nightvision: true
       buildercore.commands.noclip: true
@@ -56,20 +98,35 @@ permissions:
       buildercore.commands.scale: true
       buildercore.commands.reach: true
       buildercore.commands.speed: true
+      buildercore.menu.ability: true
+      buildercore.menu.armorcolor: true
+      buildercore.menu.banner: true
+      buildercore.menu.special: true
+      buildercore.ability.irondoor: true
+      buildercore.ability.terracotta: true
+      buildercore.commands.pweather: true
+      buildercore.commands.ptime: true
+      buildercore.commands.hat: true
 
   buildercore.pack.public:
     description: 公共地图权限，通常用于地皮等
     children:
       buildercore.protect.*: true
       buildercore.pack.teleport: true
-      buildercore.commands.tpa: true
       buildercore.aliases: true
+      buildercore.commands.twist: true
+      buildercore.commands.derot: true
+      buildercore.commands.cuboid: true
+      buildercore.commands.convex: true
+      buildercore.commands.undo: true
       buildercore.commands.advfly: true
       buildercore.commands.debugstick: true
+      buildercore.commands.cushiontools: true
       buildercore.commands.head: true
       buildercore.commands.nightvision: true
       buildercore.commands.noclip: true
       buildercore.commands.slab: true
+      buildercore.commands.endersee: true
       buildercore.commands.endersee.self: true
       buildercore.commands.itemcolor: true
       buildercore.commands.itemname: true
@@ -80,8 +137,16 @@ permissions:
       buildercore.commands.scale: true
       buildercore.commands.reach: true
       buildercore.commands.speed: true
+      buildercore.menu.ability: true
+      buildercore.menu.armorcolor: true
+      buildercore.menu.banner: true
+      buildercore.menu.special: true
+      buildercore.ability.irondoor: true
+      buildercore.ability.terracotta: true
       buildercore.commands.pweather: true
       buildercore.commands.ptime: true
+      buildercore.commands.hat: true
+
 
   buildercore.pack.teleport:
     description: 使用传送命令
@@ -96,6 +161,7 @@ permissions:
       buildercore.commands.warps: true
       buildercore.commands.tp.location: true
       buildercore.commands.tp: true
+      buildercore.commands.tpa: true
 
   buildercore.pack.warpset:
     description: 设置公共传送点
@@ -106,6 +172,41 @@ permissions:
 
 
 commands:
+  cushiontools:
+    description: 切换坐垫工具模式并恢复原背包
+    usage: /cushiontools
+  /p1:
+    description: WorldEdit 第一选区点快捷命令
+    permission: buildercore.aliases
+    aliases: [/1]
+  /p2:
+    description: WorldEdit 第二选区点快捷命令
+    permission: buildercore.aliases
+    aliases: [/2]
+  /pa:
+    description: WorldEdit 粘贴快捷命令
+    permission: buildercore.aliases
+  /s:
+    description: WorldEdit 设置快捷命令
+    permission: buildercore.aliases
+  /r:
+    description: WorldEdit 替换快捷命令
+    permission: buildercore.aliases
+  /f:
+    description: WorldEdit 翻转快捷命令
+    permission: buildercore.aliases
+  /c:
+    description: WorldEdit 复制快捷命令
+    permission: buildercore.aliases
+  buildertools:
+    description: 打开建筑工具菜单
+    aliases: [btools]
+  armorcolor:
+    description: 打开皮革护甲配色器
+    permission: buildercore.menu.armorcolor
+  banner:
+    description: 打开旗帜编辑器
+    permission: buildercore.menu.banner
   buildercore:
     description: 主命令
     permission: buildercore.admin
@@ -130,7 +231,7 @@ commands:
   pweather:
     permission: buildercore.commands.pweather
   time:
-    description: 设置所在世界或指定世界的时间
+    description: 设置玩家所在世界的时间
     permission: buildercore.commands.time
   ptime:
     description: 设置自己或指定玩家的客户端时间

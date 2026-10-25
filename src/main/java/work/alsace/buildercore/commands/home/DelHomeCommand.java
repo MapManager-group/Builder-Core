@@ -46,12 +46,12 @@ public class DelHomeCommand implements TabExecutor {
         var loader = target.loader();
 
         if (loader.getHome(homeName) == null) {
-            sendMsg(player, "<red>不存在传送点 <white>" + homeName + "</white>");
+            sendMsg(player, "<red>不存在传送点 <white>" + MM.escapeTags(homeName) + "</white>");
             return true;
         }
 
         loader.delHome(homeName);
-        sendMsg(player, "<gray>已成功删除传送点 <white>" + homeName + "</white>");
+        sendMsg(player, "<gray>已成功删除传送点 <white>" + MM.escapeTags(homeName) + "</white>");
         return true;
     }
 

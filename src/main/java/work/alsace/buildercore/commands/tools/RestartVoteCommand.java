@@ -1,7 +1,8 @@
 package work.alsace.buildercore.commands.tools;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listener {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
 
     //没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完
     //没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完
@@ -36,17 +38,17 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
 
     private List<String> players = new ArrayList<>();
 
-    private final String error = ChatColor.GRAY + "正确指令:\n§f/restart-vote <理由> §7- 发起重启投票\n§f/restart-vote #yes §7- 同意投票\n§f/restart-vote #no §7- 拒绝投票";
+    private final Component error = MM.deserialize("<gray>正确指令:\n<white>/restart-vote <理由> <gray>- 发起重启投票\n<white>/restart-vote #yes <gray>- 同意投票\n<white>/restart-vote #no <gray>- 拒绝投票");
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatColor.RED + "控制台无法执行该命令");
+            sender.sendMessage(MM.deserialize("<red>控制台无法执行该命令"));
             return false;
         }
 
         if (player.hasPermission("buildercore.commands.vote")) {
-            player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+            player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
             return false;
         }
 
@@ -60,9 +62,9 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
             if (!players.contains(player.getName())) {
                 yesVote ++;
                 players.remove(player.getName());
-                player.sendMessage(ChatColor.GREEN + "投票成功，当前同意数量：" + yesVote);
+                player.sendMessage(MM.deserialize("<green>投票成功，当前同意数量：" + yesVote));
             } else {
-                player.sendMessage(ChatColor.YELLOW + "你不在投票玩家池内或已经投票过了。");
+                player.sendMessage(MM.deserialize("<yellow>你不在投票玩家池内或已经投票过了。"));
             }
             return true;
         }
@@ -74,7 +76,7 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
         }
 
         if (inVote) {
-            player.sendMessage(ChatColor.YELLOW + "已经存在一个投票了，请等待当前投票结束。");
+            player.sendMessage(MM.deserialize("<yellow>已经存在一个投票了，请等待当前投票结束。"));
         } else {
             RunVote(args[0]);
         }
@@ -111,7 +113,7 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
         inVote = false;
         if (yesVote >= players.size() * 0.8) {
 
-            Bukkit.broadcastMessage(ChatColor.GREEN + "[投票重启] 投票通过，服务器将在两分钟后重启!");
+            Bukkit.broadcast(MM.deserialize("<green>[投票重启] 投票通过，服务器将在两分钟后重启!"));
 
             BukkitTask stopServer = new BukkitRunnable() {
                 int secondsLeft = 120;
@@ -121,7 +123,7 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
                         Bukkit.shutdown();
                     } else {
                         if (secondsLeft <= 20) {
-                            Bukkit.broadcastMessage(ChatColor.DARK_RED + "[投票重启] 服务器将在 " + secondsLeft + " 秒后重启!");
+                            Bukkit.broadcast(MM.deserialize("<dark_red>[投票重启] 服务器将在 " + secondsLeft + " 秒后重启!"));
                         }
                         secondsLeft--;
                     }
@@ -131,12 +133,12 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
             return;
         }
 
-        Bukkit.broadcastMessage(ChatColor.RED + "[投票重启] 投票同意玩家未达到全部玩家的80%，本次重启已取消。");
+        Bukkit.broadcast(MM.deserialize("<red>[投票重启] 投票同意玩家未达到全部玩家的80%，本次重启已取消。"));
     }
 
     //取消
     public void CancelVote(String playerName) {
-        Bukkit.broadcastMessage(ChatColor.RED + "[投票重启] 玩家 " + playerName + " 拒绝了重启投票，本次投票已自动终止。");
+        Bukkit.broadcast(MM.deserialize("<red>[投票重启] 玩家 " + playerName + " 拒绝了重启投票，本次投票已自动终止。"));
         if (countdownTask != null) {
             countdownTask.cancel();
             inVote = false;

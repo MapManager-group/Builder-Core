@@ -1,12 +1,11 @@
 // WarpsCommand.java
 package work.alsace.buildercore.commands.warp;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,14 +20,15 @@ import java.util.List;
 import java.util.Map;
 
 public class WarpsCommand implements CommandExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
+            sender.sendMessage(MM.deserialize("<red>该指令仅限玩家执行"));
             return false;
         }
         if (!sender.hasPermission("buildercore.commands.warps")) {
-            sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+            sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
             return false;
         }
 
@@ -38,23 +38,23 @@ public class WarpsCommand implements CommandExecutor {
         Map<String, List<String>> worldWarps = getWorldWarps(player);
 
         if (worldWarps.isEmpty()) {
-            player.sendMessage(ChatColor.RED + "没有可用的传送点");
+            player.sendMessage(MM.deserialize("<red>没有可用的传送点"));
             return false;
         }
 
-        player.sendMessage(ChatColor.GRAY + "可用传送点:");
+        player.sendMessage(MM.deserialize("<gray>可用传送点:"));
 
         for (Map.Entry<String, List<String>> entry : worldWarps.entrySet()) {
             String worldName = entry.getKey();
             List<String> warps = entry.getValue();
-            TextComponent message = new TextComponent(ChatColor.GRAY + worldName + ": ");
+            Component message = MM.deserialize("<gray>" + worldName + ": ");
             for (String warp : warps) {
-                TextComponent warpComponent = createClickableWarpComponent(warp);
-                message.addExtra(warpComponent);
-                message.addExtra(" §7| ");
+                Component warpComponent = createClickableWarpComponent(warp);
+                message = message.append(warpComponent);
+                message = message.append(MM.deserialize(" <gray>| "));
             }
 
-            player.spigot().sendMessage(message);
+            player.sendMessage(message);
         }
 
         return true;
@@ -73,20 +73,16 @@ public class WarpsCommand implements CommandExecutor {
             String worldName = world.getName();
             String alias = BuilderCore.instance.warpProfiles.get("warps").getWarpAlias(warp);
 
-            if (sender.hasPermission("multiverse.access." + worldName)) {
-                worldWarps.computeIfAbsent(worldName, k -> new ArrayList<>()).add(alias != null ? alias : warp);
-            }
+            worldWarps.computeIfAbsent(worldName, k -> new ArrayList<>()).add(alias != null ? alias : warp);
         });
         return worldWarps;
     }
 
-    private TextComponent createClickableWarpComponent(String warp) {
+    private Component createClickableWarpComponent(String warp) {
         String realWarp = BuilderCore.instance.warpProfiles.get("warps").getRealWarpName(warp);
 
-        TextComponent warpComponent = new TextComponent(ChatColor.GOLD + warp);
-        warpComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/warp " + realWarp));
-        TextComponent hoverText = new TextComponent("点击快捷传送");
-        warpComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hoverText}));
-        return warpComponent;
+        return Component.text(warp, net.kyori.adventure.text.format.NamedTextColor.GOLD)
+                .clickEvent(ClickEvent.runCommand("/warp " + realWarp))
+                .hoverEvent(HoverEvent.showText(Component.text("点击快捷传送")));
     }
 }

@@ -33,6 +33,8 @@ import work.alsace.buildercore.commands.warp.WarpsCommand;
 import work.alsace.buildercore.commands.weather.PWeatherCommand;
 import work.alsace.buildercore.commands.weather.WeatherCommand;
 import work.alsace.buildercore.listeners.*;
+import work.alsace.buildercore.features.BuilderTools;
+import work.alsace.buildercore.features.cushiontools.CushionTools;
 import work.alsace.buildercore.service.HomeDataLoader;
 import work.alsace.buildercore.service.TPAHandler;
 import work.alsace.buildercore.service.VelocityMessenger;
@@ -42,7 +44,6 @@ import work.alsace.buildercore.utils.*;
 import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 
 public class BuilderCore extends JavaPlugin {
 
@@ -55,7 +56,6 @@ public class BuilderCore extends JavaPlugin {
     public final Map<String, WarpDataLoader> warpProfiles = new ConcurrentHashMap<>();
     public final Set<UUID> openChests = ConcurrentHashMap.newKeySet();
 
-    public List<String> illegalCharacters = new ArrayList<>();
     public static List<String> blockedCommands = List.of("/plugins", "/?", "/help", "/bukkit");
     public static String afkPrefix = "";
 
@@ -68,6 +68,8 @@ public class BuilderCore extends JavaPlugin {
     private DataBaseManager databaseManager;
     private LiteDataBaseManager liteDataBaseManager;
     private SerializeInventory serializeInventory;
+    private BuilderTools builderTools;
+    private CushionTools cushionTools;
 
     private String host;
     private String dataBase;
@@ -92,6 +94,8 @@ public class BuilderCore extends JavaPlugin {
         }
         registerCommands();
         registerListeners();
+        builderTools = new BuilderTools(this);
+        builderTools.register();
         Bukkit.getScheduler().runTaskTimer(this, () -> new NoClipUtil().checkBlock(), 1L, 1L);
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
@@ -110,6 +114,7 @@ public class BuilderCore extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (cushionTools != null) cushionTools.close();
         homeProfiles.clear();
         warpProfiles.clear();
         if (agreement) {
@@ -215,6 +220,8 @@ public class BuilderCore extends JavaPlugin {
         pm.registerEvents(new Protect(), this);
         pm.registerEvents(new PlayerListener(this), this);
         pm.registerEvents(new BlockListener(), this);
+        cushionTools = new CushionTools(this);
+        cushionTools.register();
         pm.registerEvents(new Misc(), this);
         pm.registerEvents(new AdvanceFlyCommand(), this);
         pm.registerEvents(new SpawnListener(), this);
@@ -235,12 +242,6 @@ public class BuilderCore extends JavaPlugin {
     public void loadConfig() {
         saveDefaultConfig();
         reloadConfig();
-
-        illegalCharacters.clear();
-        List<String> illegals = getConfig().getStringList("illegal-characters");
-        for (String s : illegals) {
-            illegalCharacters.add(s.toLowerCase());
-        }
 
         File folder = new File(getDataFolder(), "userdata");
         if (!folder.exists()) {

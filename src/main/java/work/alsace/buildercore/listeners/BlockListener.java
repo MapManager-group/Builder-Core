@@ -3,6 +3,7 @@ package work.alsace.buildercore.listeners;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.block.data.type.Slab.Type;
@@ -13,15 +14,54 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.Bukkit;
 
 import java.util.HashSet;
 import java.util.Set;
 
 public class BlockListener implements Listener {
     public static Set<Player> slabs = new HashSet<>();
+    private static final Set<String> ADMIN_BLOCKS = Set.of(
+            "COMMAND_BLOCK", "CHAIN_COMMAND_BLOCK", "REPEATING_COMMAND_BLOCK",
+            "JIGSAW", "STRUCTURE_BLOCK", "STRUCTURE_VOID", "BARRIER",
+            "TEST_BLOCK", "TEST_INSTANCE_BLOCK", "LIGHT");
 
     public BlockListener() {
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onAdminBlockInteract(PlayerInteractEvent event) {
+        Block clicked = event.getClickedBlock();
+        if (clicked == null || event.getHand() != EquipmentSlot.HAND) return;
+        Player player = event.getPlayer();
+        if (event.getAction() == Action.LEFT_CLICK_BLOCK && ADMIN_BLOCKS.contains(clicked.getType().name())) {
+            event.setCancelled(true);
+            if (!player.hasPermission("buildercore.protect.break")) return;
+            BlockBreakEvent breakEvent = new BlockBreakEvent(clicked, player);
+            Bukkit.getPluginManager().callEvent(breakEvent);
+            if (!breakEvent.isCancelled()) clicked.setType(Material.AIR);
+            return;
+        }
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        ItemStack item = player.getInventory().getItemInMainHand();
+        if (ADMIN_BLOCKS.contains(clicked.getType().name())) event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
+        if (!ADMIN_BLOCKS.contains(item.getType().name()) || !player.hasPermission("buildercore.protect.place")) return;
+        Block target = clicked.getRelative(event.getBlockFace());
+        if (!target.isReplaceable()) return;
+        event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
+        BlockState replaced = target.getState();
+        target.setType(item.getType(), false);
+        BlockPlaceEvent placeEvent = new BlockPlaceEvent(target, replaced, clicked, item, player, true, EquipmentSlot.HAND);
+        Bukkit.getPluginManager().callEvent(placeEvent);
+        if (placeEvent.isCancelled() || !placeEvent.canBuild()) {
+            replaced.update(true, false);
+        } else if (player.getGameMode() != org.bukkit.GameMode.CREATIVE) {
+            item.setAmount(item.getAmount() - 1);
+        }
     }
 
     @EventHandler

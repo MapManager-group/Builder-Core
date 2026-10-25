@@ -1,14 +1,16 @@
 package work.alsace.buildercore.commands.alias;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CuboidCommand implements CommandExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    private final String error = ChatColor.GRAY + "正确指令:\n§f//convex §7- 快捷执行创世神sel指令";
+    private final Component error = MM.deserialize("<gray>正确指令:\n<white>//convex <gray>- 快捷执行创世神sel指令");
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (sender instanceof Player player) {
             if (!player.hasPermission("buildercore.aliases")) {

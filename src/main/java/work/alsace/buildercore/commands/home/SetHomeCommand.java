@@ -6,10 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import work.alsace.buildercore.BuilderCore;
 import work.alsace.buildercore.service.HomeTarget;
-
-import java.util.regex.Pattern;
 
 public class SetHomeCommand implements CommandExecutor {
 
@@ -46,27 +43,20 @@ public class SetHomeCommand implements CommandExecutor {
         var loader = target.loader();
 
         if (loader.getHome(homeName) != null) {
-            sendMsg(player, "<red>已经存在名为 <white>" + homeName + "</white> 的传送点");
+            sendMsg(player, "<red>已经存在名为 <white>" + MM.escapeTags(homeName) + "</white> 的传送点");
             return true;
         }
 
+        if (!target.isOther()) {
+            loader.calculateMaxHomes();
+        }
         if (!target.isOther() && loader.getHomes().size() >= loader.getMaxHomes()) {
             sendMsg(player, "<red>你设置的家数量已达上限 (" + loader.getMaxHomes() + ")");
             return true;
         }
 
-        // 非法字符检查
-        String illegalRegex = BuilderCore.instance.getConfig().getString("illegal-characters");
-        if (illegalRegex != null && !illegalRegex.isEmpty()) {
-            Pattern pattern = Pattern.compile(illegalRegex);
-            if (pattern.matcher(homeName).find()) {
-                sendMsg(player, "<red>传送点名称包含非法字符");
-                return true;
-            }
-        }
-
         loader.addHome(homeName, player.getLocation());
-        sendMsg(player, "<gray>成功设置传送点 <white>" + homeName + "</white>");
+        sendMsg(player, "<gray>成功设置传送点 <white>" + MM.escapeTags(homeName) + "</white>");
         return true;
     }
 

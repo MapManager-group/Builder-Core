@@ -1,7 +1,7 @@
 package work.alsace.buildercore.commands.warp;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.*;
@@ -13,45 +13,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WarpCommand implements TabExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "该指令仅限玩家执行");
+            sender.sendMessage(MM.deserialize("<red>该指令仅限玩家执行"));
             return false;
         }
         if (!sender.hasPermission("buildercore.commands.warp")) {
-            sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+            sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
             return false;
         }
         if (args.length == 1) {
             String warpName = args[0];
             WarpDataLoader warpDataLoader = BuilderCore.instance.warpProfiles.get("warps");
-            if (warpName == null) {
-                sender.sendMessage(ChatColor.RED + "传送点" + warpName + "不存在");
-                return false;
-            }
             Location location = warpDataLoader.getWarp(warpName);
             if (location == null) {
-                sender.sendMessage(ChatColor.RED + "传送点" + warpName + "不存在");
+                sender.sendMessage(MM.deserialize("<red>传送点" + MM.escapeTags(warpName) + "不存在"));
                 return false;
             }
             World warpWorld = location.getWorld();
             if (warpWorld != null && Bukkit.getWorld(warpWorld.getName()) != null) {
-                if (sender.hasPermission("multiverse.access." + warpWorld.getName())) {
-                    Player player = (Player) sender;
-                    player.teleport(location);
-                    sender.sendMessage(ChatColor.GRAY + "已传送至" + warpName);
-                } else {
-                    sender.sendMessage(ChatColor.RED + "你没有权限传送至" + warpName);
-                    return false;
-                }
+                Player player = (Player) sender;
+                player.teleport(location);
+                sender.sendMessage(MM.deserialize("<gray>已传送至" + MM.escapeTags(warpName)));
             } else {
-                sender.sendMessage(ChatColor.RED + "世界不存在或未加载");
+                sender.sendMessage(MM.deserialize("<red>世界不存在或未加载"));
                 //warpDataLoader.delWarp(warpName);
                 return false;
             }
         } else {
-            sender.sendMessage(ChatColor.GRAY + "正确指令:\n§f/warp <传送点> §7- 传送至指定传送点");
+            sender.sendMessage(MM.deserialize("<gray>正确指令:\n<white>/warp <传送点> <gray>- 传送至指定传送点"));
         }
         return true;
     }
@@ -70,9 +62,7 @@ public class WarpCommand implements TabExecutor {
             Location location = BuilderCore.instance.warpProfiles.get("warps").getWarp(warp);
             World world = location.getWorld();
             if (world != null) {
-                if (sender.hasPermission("multiverse.access." + world.getName())) {
-                    warps.add(warp);
-                }
+                warps.add(warp);
             }
         });
         return warps;

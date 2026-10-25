@@ -22,6 +22,7 @@ public class DataBaseManager {
 
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:mysql://" + host + "/" + database + "?useSSL=false&allowPublicKeyRetrieval=true&characterEncoding=utf8");
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         config.setUsername(username);
         config.setPassword(password);
 

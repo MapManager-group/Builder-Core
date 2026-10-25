@@ -1,10 +1,12 @@
-#homes/warps可用字符
-illegal-characters: ^[A-Za-z][A-Za-z0-9]*$
 #开启玩家必须强制阅读用户协议方可进入
 agree:
   agreement: false
   url-title: "洛林·方屿服务器用户协议"
   url: "https://xxxxx.xxx.xxx"
+# TP/TPA 的 MMC v4 权限检查；/buildercore reload 后生效。
+# 关闭或未安装 MMC：只检查命令权限；开启：TP 需建筑角色，TPA 需进入权限。
+teleport:
+  check-mmc-permissions: true
 #可以返回的位置
 backHistory: 5
 #用户协议数据库配置
@@ -17,3 +19,38 @@ database:
 afk:
   threshold: 300 #自动afk时间
   placeholder: "[AFK]" #papi变量
+
+# 建筑环境开关；重载 /buildercore reload 后生效
+building-settings:
+  disable-redstone: false
+  disable-gravity-physics: false
+  disable-physics: false
+  disable-entity-explode: true
+  disable-block-explode: true
+  disable-leaves-decay: true
+  disable-farmland-trample: true
+  disable-dragon-egg-teleport: true
+
+# /buildertools special 展示的物品
+special-items:
+  - COMMAND_BLOCK
+  - CHAIN_COMMAND_BLOCK
+  - REPEATING_COMMAND_BLOCK
+  - COMMAND_BLOCK_MINECART
+  - JIGSAW
+  - STRUCTURE_BLOCK
+  - STRUCTURE_VOID
+  - BARRIER
+  - DEBUG_STICK
+  - TEST_BLOCK
+  - TEST_INSTANCE_BLOCK
+  - LIGHT
+  - KNOWLEDGE_BOOK
+  - POTION
+  - SPLASH_POTION
+  - LINGERING_POTION
+  - TIPPED_ARROW
+  - PETRIFIED_OAK_SLAB
+  - 'item_frame[entity_data={id:"item_frame",Invisible:1b},item_name="隐形物品展示框"]'
+
+worldedit-extra-aliases: true

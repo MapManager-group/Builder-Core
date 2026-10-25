@@ -1,6 +1,6 @@
 package work.alsace.buildercore.commands.players;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -9,12 +9,13 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 public class HatCommand implements CommandExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
     public HatCommand() {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(ChatColor.RED + "该指令仅限玩家使用");
+            sender.sendMessage(MM.deserialize("<red>该指令仅限玩家使用"));
         } else {
             PlayerInventory inventory = player.getInventory();
             ItemStack item = inventory.getItemInMainHand();

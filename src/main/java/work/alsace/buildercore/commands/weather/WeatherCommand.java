@@ -1,6 +1,7 @@
 package work.alsace.buildercore.commands.weather;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.World;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
@@ -10,14 +11,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class WeatherCommand implements TabExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    private final String error = ChatColor.GRAY + "正确指令:\n§f/weather <天气> §7- 设置你当前世界的天气";
+    private final Component error = MM.deserialize("<gray>正确指令:\n<white>/weather <天气> <gray>- 设置你当前世界的天气");
     private static final List<String> weathers = Arrays.asList("clear", "rain", "thunder");
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (strings.length == 1 && sender instanceof Player player) {
             if (!player.hasPermission("buildercore.commands.weather")) {
-                player.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+                player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
                 return false;
             }
             World world = player.getWorld();
@@ -25,19 +27,19 @@ public class WeatherCommand implements TabExecutor {
                 case "clear" -> {
                     world.setStorm(false);
                     world.setThundering(false);
-                    player.sendMessage("已将当前世界天气设置为 §f晴天");
+                    player.sendMessage(MM.deserialize("已将当前世界天气设置为 <white>晴天"));
                     return true;
                 }
                 case "rain" -> {
                     world.setStorm(true);
                     world.setThundering(false);
-                    player.sendMessage("已将当前世界天气设置为 §f雨天");
+                    player.sendMessage(MM.deserialize("已将当前世界天气设置为 <white>雨天"));
                     return true;
                 }
                 case "thunder" -> {
-                    world.setStorm(false);
+                    world.setStorm(true);
                     world.setThundering(true);
-                    player.sendMessage("已将当前世界天气设置为 §f雷暴");
+                    player.sendMessage(MM.deserialize("已将当前世界天气设置为 <white>雷暴"));
                     return true;
                 }
                 default -> {

@@ -1,14 +1,16 @@
 package work.alsace.buildercore.commands.alias;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class DerotCommand implements CommandExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    private final String error = ChatColor.GRAY + "正确指令:\n§f//derot [轴线 X,Y,Z] [度数] §7- 快捷执行创世神deform指令";
+    private final Component error = MM.deserialize("<gray>正确指令:\n<white>//derot [轴线 X,Y,Z] [度数] <gray>- 快捷执行创世神deform指令");
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
         if (strings.length == 2 && sender instanceof Player player) {
             if (!player.hasPermission("buildercore.aliases")) {

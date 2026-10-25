@@ -1,10 +1,9 @@
 package work.alsace.buildercore.commands.itemEdit;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,33 +14,34 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class ItemNbtCommand implements CommandExecutor {
+    private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    private final String error = ChatColor.GRAY + "正确指令:\n§f/itemnbt §7- 获取手中物品的详细信息";
+    private final Component error = MM.deserialize("<gray>正确指令:\n<white>/itemnbt <gray>- 获取手中物品的详细信息");
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] strings) {
         if (sender instanceof Player player) {
             if (!sender.hasPermission("buildercore.commands.itemnbt")) {
-                sender.sendMessage(ChatColor.RED + "你没有使用该命令的权限");
+                sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
                 return false;
             }
 
             ItemStack itemInHand = player.getInventory().getItemInMainHand();
             if (itemInHand.getType().isAir()) {
-                player.sendMessage(ChatColor.RED + "你手中没有物品");
+                player.sendMessage(MM.deserialize("<red>你手中没有物品"));
                 return false;
             }
 
-            TextComponent Component = new TextComponent("§7物品NBT: §a" + itemInHand.getItemMeta().toString());
-            Component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, itemInHand.getItemMeta().toString()));
-            TextComponent hoverText = new TextComponent("点击复制");
-            Component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new BaseComponent[]{hoverText}));
+            String nbt = itemInHand.getItemMeta().toString();
+            Component nbtMessage = MM.deserialize("<gray>物品NBT: ").append(Component.text(nbt, net.kyori.adventure.text.format.NamedTextColor.GREEN))
+                    .clickEvent(ClickEvent.copyToClipboard(nbt))
+                    .hoverEvent(HoverEvent.showText(Component.text("点击复制")));
 
-            player.sendMessage("§7物品信息");
-            player.sendMessage("§7物品ID: §f" + itemInHand.getType());
-            player.sendMessage("§7物品名称: §f" + Objects.requireNonNull(itemInHand.getItemMeta()).getDisplayName());
-            player.spigot().sendMessage(Component);
+            player.sendMessage(MM.deserialize("<gray>物品信息"));
+            player.sendMessage(MM.deserialize("<gray>物品ID: <white>" + itemInHand.getType()));
+            player.sendMessage(MM.deserialize("<gray>物品名称: <white>" + Objects.requireNonNull(itemInHand.getItemMeta()).getDisplayName()));
+            player.sendMessage(nbtMessage);
             if (itemInHand.getItemMeta().hasCustomModelData()) {
-                player.sendMessage("§7CustomModelData: §f" + itemInHand.getItemMeta().getCustomModelData());
+                player.sendMessage(MM.deserialize("<gray>CustomModelData: <white>" + itemInHand.getItemMeta().getCustomModelData()));
             }
             return true;
         }

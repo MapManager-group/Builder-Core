@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import work.alsace.buildercore.BuilderCore;
 import work.alsace.buildercore.service.TPAHandler;
+import work.alsace.buildercore.service.TeleportAccess;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +39,8 @@ public abstract class AbstractTPACommand implements TabExecutor {
         String prefix = args[0].toLowerCase();
         return Bukkit.getOnlinePlayers().stream()
                 .filter(p -> !p.equals(player))
+                .filter(p -> TeleportAccess.canTeleport(plugin, isTpaHere ? p : player,
+                        isTpaHere ? player.getWorld() : p.getWorld(), false))
                 .map(Player::getName)
                 .filter(name -> name.toLowerCase().startsWith(prefix))
                 .toList();
