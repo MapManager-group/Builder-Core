@@ -26,6 +26,7 @@ public abstract class AbstractTPAResponseCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sender.sendMessage(MM.deserialize("<red>该指令仅限玩家执行"));
             return true;

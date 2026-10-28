@@ -24,16 +24,18 @@ public class TPHereCommand implements TabExecutor {
             return Collections.emptyList();
         }
 
-        String prefix = args[0].toLowerCase();
+        String prefix = args[0].toLowerCase(java.util.Locale.ROOT);
         return Bukkit.getOnlinePlayers().stream()
                 .filter(target -> TeleportAccess.canTeleport(BuilderCore.instance, target, player.getWorld(), true))
+                .filter(candidate -> !(sender instanceof Player viewer) || viewer.canSee(candidate))
                 .map(Player::getName)
-                .filter(name -> name.toLowerCase().startsWith(prefix))
+                .filter(name -> name.toLowerCase(java.util.Locale.ROOT).startsWith(prefix))
                 .toList();
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, args)) return true;
         if (!(sender instanceof Player commander)) {
             sendMsg(sender, "<red>该指令仅限玩家执行");
             return true;
@@ -66,8 +68,8 @@ public class TPHereCommand implements TabExecutor {
         }
 
         // 异步传送
-        target.teleportAsync(commander.getLocation()).thenAccept(success -> {
-            if (success) {
+        target.teleportAsync(commander.getLocation()).whenComplete((success, error) -> {
+            if (error == null && Boolean.TRUE.equals(success)) {
                 sendMsg(target, "<white>" + commander.getName() + "</white> <gray>将你传送到了他的位置");
                 sendMsg(commander, "<gray>已将 <white>" + target.getName() + "</white> 传送到你的位置");
             } else {

@@ -36,18 +36,20 @@ public abstract class AbstractTPACommand implements TabExecutor {
             return Collections.emptyList();
         }
 
-        String prefix = args[0].toLowerCase();
+        String prefix = args[0].toLowerCase(java.util.Locale.ROOT);
         return Bukkit.getOnlinePlayers().stream()
                 .filter(p -> !p.equals(player))
                 .filter(p -> TeleportAccess.canTeleport(plugin, isTpaHere ? p : player,
                         isTpaHere ? player.getWorld() : p.getWorld(), false))
+                .filter(candidate -> !(sender instanceof Player viewer) || viewer.canSee(candidate))
                 .map(Player::getName)
-                .filter(name -> name.toLowerCase().startsWith(prefix))
+                .filter(name -> name.toLowerCase(java.util.Locale.ROOT).startsWith(prefix))
                 .toList();
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sendMsg(sender, "<red>该指令仅限玩家执行");
             return true;

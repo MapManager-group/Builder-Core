@@ -64,6 +64,7 @@ public final class BuilderTools implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sender.sendMessage("仅玩家可使用此命令");
             return true;
@@ -83,7 +84,7 @@ public final class BuilderTools implements Listener, CommandExecutor {
             return true;
         }
         String mode = command.getName().equalsIgnoreCase("buildertools")
-                ? (args.length == 0 ? "ability" : args[0].toLowerCase()) : command.getName().toLowerCase();
+                ? (args.length == 0 ? "ability" : args[0].toLowerCase(java.util.Locale.ROOT)) : command.getName().toLowerCase(java.util.Locale.ROOT);
         String permission = switch (mode) {
             case "ability" -> "buildercore.menu.ability";
             case "armorcolor" -> "buildercore.menu.armorcolor";
@@ -210,7 +211,7 @@ public final class BuilderTools implements Listener, CommandExecutor {
         Inventory inventory = menu("special", Math.max(9, Math.min(54, ((configured.size() + 8) / 9) * 9)), "特殊物品");
         for (String name : configured) {
             try {
-                inventory.addItem(Bukkit.getItemFactory().createItemStack(name.toLowerCase()));
+                inventory.addItem(Bukkit.getItemFactory().createItemStack(name.toLowerCase(java.util.Locale.ROOT)));
             } catch (IllegalArgumentException exception) {
                 plugin.getLogger().warning("无效的特殊物品: " + name);
             }
@@ -223,6 +224,14 @@ public final class BuilderTools implements Listener, CommandExecutor {
         if (!(event.getView().getTopInventory().getHolder() instanceof MenuHolder holder)
                 || !(event.getWhoClicked() instanceof Player player)) return;
         event.setCancelled(true);
+        String permission = switch (holder.kind) {
+            case "ability" -> "buildercore.menu.ability";
+            case "armor" -> "buildercore.menu.armorcolor";
+            case "banner" -> "buildercore.menu.banner";
+            case "special" -> "buildercore.menu.special";
+            default -> "";
+        };
+        if (!player.hasPermission(permission)) return;
         if (event.getRawSlot() < 0 || event.getRawSlot() >= event.getView().getTopInventory().getSize()) return;
         int slot = event.getRawSlot();
         switch (holder.kind) {

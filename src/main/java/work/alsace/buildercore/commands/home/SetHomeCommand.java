@@ -18,6 +18,7 @@ public class SetHomeCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sendMsg(sender, "<red>该指令仅限玩家执行");
             return true;
@@ -55,7 +56,13 @@ public class SetHomeCommand implements CommandExecutor {
             return true;
         }
 
-        loader.addHome(homeName, player.getLocation());
+        try {
+            loader.addHome(homeName, player.getLocation());
+        } catch (IllegalStateException exception) {
+            work.alsace.buildercore.BuilderCore.instance.getLogger().log(java.util.logging.Level.SEVERE, "位置数据保存失败", exception);
+            sender.sendMessage(MM.deserialize("<red>保存失败，原文件已保留，请联系管理员查看日志。"));
+            return true;
+        }
         sendMsg(player, "<gray>成功设置传送点 <white>" + MM.escapeTags(homeName) + "</white>");
         return true;
     }

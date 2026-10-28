@@ -17,6 +17,7 @@ public class PWeatherCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender cmdSender, @NotNull Command cmd, @NotNull String s, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(cmdSender, cmd, s, args)) return true;
         if (!(cmdSender instanceof Player)) {
             cmdSender.sendMessage(MM.deserialize("<red>该命令只能由玩家执行"));
             return false;
@@ -34,7 +35,7 @@ public class PWeatherCommand implements TabExecutor {
             return false;
         }
 
-        String weather = args[0].toLowerCase();
+        String weather = args[0].toLowerCase(java.util.Locale.ROOT);
         if (!weathers.contains(weather)) {
             player.sendMessage(MM.deserialize("<red>请输入有效的天气类型: clear, rain, reset"));
             return false;
@@ -89,7 +90,7 @@ public class PWeatherCommand implements TabExecutor {
         if (args.length == 2 && cmdSender instanceof Player player
                 && player.hasPermission("buildercore.commands.pweather")
                 && player.hasPermission("buildercore.commands.pweather.other")) {
-            return player.getServer().getOnlinePlayers().stream().map(Player::getName).toList();
+            return player.getServer().getOnlinePlayers().stream().filter(player::canSee).map(Player::getName).toList();
         }
         return Collections.emptyList();
     }

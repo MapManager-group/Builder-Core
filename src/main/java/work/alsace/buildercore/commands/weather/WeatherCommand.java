@@ -17,6 +17,7 @@ public class WeatherCommand implements TabExecutor {
     private static final List<String> weathers = Arrays.asList("clear", "rain", "thunder");
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, s, strings)) return true;
         if (strings.length == 1 && sender instanceof Player player) {
             if (!player.hasPermission("buildercore.commands.weather")) {
                 player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));

@@ -16,6 +16,7 @@ public class WarpCommand implements TabExecutor {
     private static final MiniMessage MM = MiniMessage.miniMessage();
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, commandLabel, args)) return true;
         if (!(sender instanceof Player)) {
             sender.sendMessage(MM.deserialize("<red>该指令仅限玩家执行"));
             return false;
@@ -35,7 +36,10 @@ public class WarpCommand implements TabExecutor {
             World warpWorld = location.getWorld();
             if (warpWorld != null && Bukkit.getWorld(warpWorld.getName()) != null) {
                 Player player = (Player) sender;
-                player.teleport(location);
+                if (!player.teleport(location)) {
+                    sender.sendMessage(MM.deserialize("<red>传送失败，请检查目标位置或保护规则。"));
+                    return false;
+                }
                 sender.sendMessage(MM.deserialize("<gray>已传送至" + MM.escapeTags(warpName)));
             } else {
                 sender.sendMessage(MM.deserialize("<red>世界不存在或未加载"));
@@ -50,9 +54,10 @@ public class WarpCommand implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String s, String[] args) {
-        if (args.length != 1)
+        if (args.length != 1 || !(sender instanceof Player))
             return new ArrayList<>(0);
-        return new ArrayList<>(getAccessWarps((Player) sender));
+        return getAccessWarps((Player) sender).stream()
+                .filter(name -> name.regionMatches(true, 0, args[0], 0, args[0].length())).toList();
 
     }
 

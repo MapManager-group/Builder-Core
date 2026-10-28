@@ -23,6 +23,7 @@ public class HomeCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sendMsg(sender, "<red>该指令仅限玩家执行");
             return true;
@@ -55,12 +56,13 @@ public class HomeCommand implements TabExecutor {
             return true;
         }
 
-        player.teleportAsync(loc);
-        if (target.isOther()) {
-            sendMsg(player, "<gray>已传送至玩家 <white>" + target.ownerName() + "</white> 的家 <white>" + MM.escapeTags(target.homeName()) + "</white>");
-        } else {
-            sendMsg(player, "<gray>已传送至家 <white>" + MM.escapeTags(target.homeName()) + "</white>");
-        }
+        player.teleportAsync(loc).whenComplete((success, error) -> {
+            if (error != null || !Boolean.TRUE.equals(success)) {
+                sendMsg(player, "<red>传送失败，请检查目标位置或保护规则。");
+            } else if (target.isOther()) {
+                sendMsg(player, "<gray>已传送至玩家 <white>" + target.ownerName() + "</white> 的家 <white>" + MM.escapeTags(target.homeName()) + "</white>");
+            } else sendMsg(player, "<gray>已传送至家 <white>" + MM.escapeTags(target.homeName()) + "</white>");
+        });
 
         return true;
     }
@@ -74,7 +76,7 @@ public class HomeCommand implements TabExecutor {
             String[] parts = input.split(":", 2);
             HomeTarget target = HomeTarget.parse(player, input, "buildercore.commands.home.other");
             if (target != null && target.loader() != null) {
-                String prefix = parts[1].toLowerCase();
+                String prefix = parts[1].toLowerCase(java.util.Locale.ROOT);
                 return target.loader().getHomes().stream()
                         .filter(h -> h.startsWith(prefix))
                         .map(h -> parts[0] + ":" + h)
@@ -83,7 +85,7 @@ public class HomeCommand implements TabExecutor {
         } else {
             var loader = BuilderCore.instance.homeProfiles.get(player.getUniqueId());
             if (loader != null) {
-                String prefix = input.toLowerCase();
+                String prefix = input.toLowerCase(java.util.Locale.ROOT);
                 return loader.getHomes().stream()
                         .filter(h -> h.startsWith(prefix))
                         .toList();

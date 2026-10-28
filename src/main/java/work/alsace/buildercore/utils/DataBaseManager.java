@@ -16,6 +16,7 @@ public class DataBaseManager {
 
     private final Plugin plugin;
     private HikariDataSource dataSource;
+    private CompletableFuture<Void> ready;
 
     public DataBaseManager(Plugin plugin, String host, String database, String username, String password) {
         this.plugin = plugin;
@@ -34,14 +35,15 @@ public class DataBaseManager {
 
         try {
             this.dataSource = new HikariDataSource(config);
-            createTable();
+            ready = createTable();
         } catch (Exception e) {
             plugin.getLogger().log(Level.SEVERE, "数据库连接初始化失败！", e);
+            ready = CompletableFuture.failedFuture(e);
         }
     }
 
-    private void createTable() {
-        CompletableFuture.runAsync(() -> {
+    private CompletableFuture<Void> createTable() {
+        return CompletableFuture.runAsync(() -> {
             String sql = """
                     CREATE TABLE IF NOT EXISTS player_agreement (
                         player_uuid VARCHAR(36) NOT NULL PRIMARY KEY,
@@ -53,12 +55,13 @@ public class DataBaseManager {
                 statement.execute();
             } catch (SQLException e) {
                 plugin.getLogger().log(Level.SEVERE, "创建 player_agreement 数据表失败！", e);
+                throw new java.util.concurrent.CompletionException(e);
             }
         });
     }
 
     public CompletableFuture<Boolean> hasPlayerAgreed(UUID playerUUID) {
-        return CompletableFuture.supplyAsync(() -> {
+        return ready.thenApplyAsync(ignored -> {
             String sql = "SELECT agreed FROM player_agreement WHERE player_uuid = ?";
             try (Connection connection = dataSource.getConnection();
                  PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -70,13 +73,14 @@ public class DataBaseManager {
                 }
             } catch (SQLException e) {
                 plugin.getLogger().log(Level.SEVERE, "查询玩家协议状态失败: " + playerUUID, e);
+                throw new java.util.concurrent.CompletionException(e);
             }
             return false;
         });
     }
 
     public CompletableFuture<Void> setPlayerAgreed(UUID playerUUID, boolean agreed) {
-        return CompletableFuture.runAsync(() -> {
+        return ready.thenRunAsync(() -> {
             // 使用 ON DUPLICATE KEY UPDATE 解决重复插入主键的问题
             String sql = """
                     INSERT INTO player_agreement (player_uuid, agreed) VALUES (?, ?)
@@ -88,12 +92,13 @@ public class DataBaseManager {
                 statement.executeUpdate();
             } catch (SQLException e) {
                 plugin.getLogger().log(Level.SEVERE, "更新玩家协议状态失败: " + playerUUID, e);
+                throw new java.util.concurrent.CompletionException(e);
             }
         });
     }
 
     public CompletableFuture<Void> delPlayerAgreed(UUID playerUUID) {
-        return CompletableFuture.runAsync(() -> {
+        return ready.thenRunAsync(() -> {
             String sql = "DELETE FROM player_agreement WHERE player_uuid = ?";
             try (Connection connection = dataSource.getConnection();
                  PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -101,6 +106,7 @@ public class DataBaseManager {
                 statement.executeUpdate();
             } catch (SQLException e) {
                 plugin.getLogger().log(Level.SEVERE, "删除玩家协议记录失败: " + playerUUID, e);
+                throw new java.util.concurrent.CompletionException(e);
             }
         });
     }

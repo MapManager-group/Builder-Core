@@ -25,6 +25,7 @@ public class AgreeCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sender.sendMessage(MM.deserialize("<red>只有玩家可以使用这个命令！"));
             return true;
@@ -32,19 +33,20 @@ public class AgreeCommand implements CommandExecutor {
 
         UUID playerUUID = player.getUniqueId();
 
-        databaseManager.hasPlayerAgreed(playerUUID).thenAccept(hasAgreed -> {
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                if (!player.isOnline()) return;
-
-                if (!hasAgreed) {
-                    databaseManager.setPlayerAgreed(playerUUID, true);
-                    plugin.hasAgree.put(player.getName(), false); // 设为 false 或从拦截列表中移除
+        if (!plugin.hasAgree.getOrDefault(player.getName(), true)) {
+            player.sendMessage(MM.deserialize("<yellow>你已经同意过用户协议！"));
+            return true;
+        }
+        databaseManager.setPlayerAgreed(playerUUID, true).whenComplete((ignored, error) ->
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (!player.isOnline()) return;
+                    if (error != null) {
+                        player.sendMessage(MM.deserialize("<red>协议保存失败，请稍后重试或联系管理员。"));
+                        return;
+                    }
+                    plugin.hasAgree.put(player.getName(), false);
                     player.sendMessage(MM.deserialize("<green>您已经同意用户协议，现在可以正常游玩！"));
-                } else {
-                    player.sendMessage(MM.deserialize("<yellow>你已经同意过用户协议！"));
-                }
-            });
-        });
+                }));
 
         return true;
     }

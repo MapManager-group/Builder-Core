@@ -27,6 +27,7 @@ public class ChestListener implements Listener {
 
     @EventHandler
     public void onPlayerRightClickAir(PlayerInteractEvent event) {
+        if (event.useItemInHand() == org.bukkit.event.Event.Result.DENY) return;
         Player player = event.getPlayer();
         if (!event.getAction().equals(Action.RIGHT_CLICK_AIR))
             return;
@@ -35,6 +36,8 @@ public class ChestListener implements Listener {
             return;
         if (!player.hasPermission("buildercore.service.quickopen"))
             return;
+        if (event.getHand() == org.bukkit.inventory.EquipmentSlot.OFF_HAND
+                && isContainer(player.getInventory().getItemInMainHand().getType())) return;
         if (item.getType().getKey().getKey().contains("shulker_box")) {
             BlockStateMeta meta = (BlockStateMeta) item.getItemMeta();
             ShulkerBox box = (ShulkerBox) meta.getBlockState();
@@ -52,6 +55,10 @@ public class ChestListener implements Listener {
             player.openInventory(player.getEnderChest()).setTitle("末影箱");
             BuilderCore.instance.openChests.add(player.getUniqueId());
         }
+    }
+
+    private boolean isContainer(Material type) {
+        return type == Material.ENDER_CHEST || type.name().endsWith("SHULKER_BOX");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

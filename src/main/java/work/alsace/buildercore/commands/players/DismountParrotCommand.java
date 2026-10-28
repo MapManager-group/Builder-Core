@@ -19,6 +19,7 @@ public class DismountParrotCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, args)) return true;
         // 1. 检查发送者是否为玩家
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("只有玩家才能执行此命令！", NamedTextColor.RED));
@@ -32,8 +33,8 @@ public class DismountParrotCommand implements CommandExecutor {
         }
 
         // 3. 安全获取左右肩膀的 EntitySnapshot
-        EntitySnapshot leftShoulder = player.getShoulderEntityLeft().createSnapshot();
-        EntitySnapshot rightShoulder = player.getShoulderEntityRight().createSnapshot();
+        EntitySnapshot leftShoulder = player.getShoulderEntityLeft() == null ? null : player.getShoulderEntityLeft().createSnapshot();
+        EntitySnapshot rightShoulder = player.getShoulderEntityRight() == null ? null : player.getShoulderEntityRight().createSnapshot();
 
         boolean hasLeft = leftShoulder != null && leftShoulder.getEntityType() == EntityType.PARROT;
         boolean hasRight = rightShoulder != null && rightShoulder.getEntityType() == EntityType.PARROT;

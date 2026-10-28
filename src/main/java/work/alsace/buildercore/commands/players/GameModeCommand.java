@@ -23,6 +23,7 @@ public class GameModeCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, args)) return true;
         if (args.length < 1 || args.length > 2) {
             sendMsg(sender, USAGE);
             return true;
@@ -49,8 +50,8 @@ public class GameModeCommand implements TabExecutor {
             }
 
             target.setGameMode(gameMode);
-            sendMsg(target, "<gray>你的游戏模式已被设置为 <white>" + gameMode.name().toLowerCase() + "</white>");
-            sendMsg(sender, "<gray>已将玩家 <white>" + target.getName() + "</white> 的游戏模式设置为 <white>" + gameMode.name().toLowerCase() + "</white>");
+            sendMsg(target, "<gray>你的游戏模式已被设置为 <white>" + gameMode.name().toLowerCase(java.util.Locale.ROOT) + "</white>");
+            sendMsg(sender, "<gray>已将玩家 <white>" + target.getName() + "</white> 的游戏模式设置为 <white>" + gameMode.name().toLowerCase(java.util.Locale.ROOT) + "</white>");
             return true;
         }
 
@@ -66,24 +67,25 @@ public class GameModeCommand implements TabExecutor {
         }
 
         player.setGameMode(gameMode);
-        sendMsg(player, "<gray>已将你的游戏模式设置为 <white>" + gameMode.name().toLowerCase() + "</white>");
+        sendMsg(player, "<gray>已将你的游戏模式设置为 <white>" + gameMode.name().toLowerCase(java.util.Locale.ROOT) + "</white>");
         return true;
     }
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 1 && sender.hasPermission("buildercore.commands.gamemode")) {
-            String prefix = args[0].toLowerCase();
+            String prefix = args[0].toLowerCase(java.util.Locale.ROOT);
             return MODE_SUGGESTIONS.stream()
                     .filter(m -> m.startsWith(prefix))
                     .toList();
         }
 
         if (args.length == 2 && sender.hasPermission("buildercore.commands.gamemode.other")) {
-            String prefix = args[1].toLowerCase();
+            String prefix = args[1].toLowerCase(java.util.Locale.ROOT);
             return Bukkit.getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .filter(name -> name.toLowerCase().startsWith(prefix))
+                    .filter(candidate -> !(sender instanceof Player viewer) || viewer.canSee(candidate))
+                .map(Player::getName)
+                    .filter(name -> name.toLowerCase(java.util.Locale.ROOT).startsWith(prefix))
                     .toList();
         }
 
@@ -91,7 +93,7 @@ public class GameModeCommand implements TabExecutor {
     }
 
     private GameMode parseGameMode(String input) {
-        return switch (input.toLowerCase()) {
+        return switch (input.toLowerCase(java.util.Locale.ROOT)) {
             case "creative", "c", "1" -> GameMode.CREATIVE;
             case "survival", "s", "0" -> GameMode.SURVIVAL;
             case "adventure", "a", "2" -> GameMode.ADVENTURE;

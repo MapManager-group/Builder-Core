@@ -12,6 +12,7 @@ public class NightvisionCommand implements CommandExecutor {
     private static final MiniMessage MM = MiniMessage.miniMessage();
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, args)) return true;
         if (sender instanceof Player player) {
             if (!player.hasPermission("buildercore.commands.nightvision")) {
                 player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));

@@ -21,6 +21,7 @@ public class DelHomeCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sendMsg(sender, "<red>该指令仅限玩家执行");
             return true;
@@ -50,7 +51,13 @@ public class DelHomeCommand implements TabExecutor {
             return true;
         }
 
-        loader.delHome(homeName);
+        try {
+            loader.delHome(homeName);
+        } catch (IllegalStateException exception) {
+            work.alsace.buildercore.BuilderCore.instance.getLogger().log(java.util.logging.Level.SEVERE, "位置数据保存失败", exception);
+            sender.sendMessage(MM.deserialize("<red>保存失败，原文件已保留，请联系管理员查看日志。"));
+            return true;
+        }
         sendMsg(player, "<gray>已成功删除传送点 <white>" + MM.escapeTags(homeName) + "</white>");
         return true;
     }
@@ -61,7 +68,7 @@ public class DelHomeCommand implements TabExecutor {
 
         HomeTarget target = HomeTarget.parse(player, args[0], "buildercore.commands.delhome.other");
         if (target != null && target.loader() != null) {
-            String prefix = target.homeName().toLowerCase();
+            String prefix = target.homeName().toLowerCase(java.util.Locale.ROOT);
             return target.loader().getHomes().stream()
                     .filter(h -> h.startsWith(prefix))
                     .map(h -> target.isOther() ? target.ownerName() + ":" + h : h)

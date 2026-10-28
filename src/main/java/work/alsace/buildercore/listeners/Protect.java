@@ -92,14 +92,7 @@ public class Protect implements Listener {
 
     @EventHandler
     public void onHangingBreakByEntity(HangingBreakByEntityEvent e) {
-        Player player = null;
-        if (e.getRemover() instanceof Player) {
-            player = (Player)e.getRemover();
-        } else if (e.getRemover() instanceof Projectile projectile) {
-            if (projectile.getShooter() instanceof Player) {
-                player = (Player)projectile.getShooter();
-            }
-        }
+        Player player = attackingPlayer(e.getRemover());
 
         if (player != null) {
             if (isSword(player)) {
@@ -116,30 +109,30 @@ public class Protect implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        Player player = null;
-        if (e.getDamager() instanceof Player) {
-            player = (Player) e.getDamager();
-        } else if (e.getDamager() instanceof Projectile projectile) {
-            if (projectile.getShooter() instanceof Player) {
-                player = (Player) projectile.getShooter();
-            }
+        Player player = attackingPlayer(e.getDamager());
+        if (player == null) return;
+        if (isSword(player)) {
+            e.setCancelled(true);
+            return;
         }
-        if (player != null) {
-            if (isSword(player)) {
-                e.setCancelled(true);
-                return;
-            }
-
-            if (e.getEntity().getType().toString().toUpperCase().contains("ITEM_FRAME") && !player.hasPermission("buildercore.protect.item_frame")) {
-                e.setCancelled(true);
-                player.sendMessage(Component.text("你没有权限破坏展示框").color(NamedTextColor.RED));
-            }
+        String permission;
+        String message;
+        if (e.getEntity() instanceof org.bukkit.entity.ItemFrame) {
+            permission = "buildercore.protect.item_frame";
+            message = "你没有权限破坏展示框";
+        } else if (e.getEntity() instanceof org.bukkit.entity.ArmorStand) {
+            permission = "buildercore.protect.armor_stand";
+            message = "你没有权限破坏盔甲架";
+        } else return;
+        if (!player.hasPermission(permission)) {
+            e.setCancelled(true);
+            player.sendMessage(Component.text(message, NamedTextColor.RED));
         }
     }
 
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
-        if (!e.getPlayer().hasPermission("buildercore.protect.item_frame") && e.getRightClicked().getType().toString().toUpperCase().contains("ITEM_FRAME")) {
+        if (!e.getPlayer().hasPermission("buildercore.protect.item_frame") && e.getRightClicked().getType().toString().toUpperCase(java.util.Locale.ROOT).contains("ITEM_FRAME")) {
             e.setCancelled(true);
             e.getPlayer().sendMessage(Component.text("你没有权限放置展示框").color(NamedTextColor.RED));
         }
@@ -191,35 +184,23 @@ public class Protect implements Listener {
         }
     }
 
-    @EventHandler
-    public void onArmorEntityDamageByEntity(EntityDamageByEntityEvent e) {
-        Player player = null;
-        if (e.getDamager() instanceof Player) {
-            player = (Player) e.getDamager();
-        } else if (e.getDamager() instanceof Projectile projectile) {
-            if (projectile.getShooter() instanceof Player) {
-                player = (Player) projectile.getShooter();
-            }
-        }
-        if (player != null) {
-            if (isSword(player)) {
-                e.setCancelled(true);
-                return;
-            }
-
-            if (e.getEntity().getType().toString().toUpperCase().contains("ARMOR_STAND") && !player.hasPermission("buildercore.protect.armor_stand")) {
-                e.setCancelled(true);
-                player.sendMessage(Component.text("你没有权限破坏盔甲架").color(NamedTextColor.RED));
-            }
-        }
-    }
-
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onPlayerInteractSword(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (isSword(player)) {
             event.setCancelled(true);
         }
+    }
+
+    /** 兼容旧调用入口，实体伤害统一由 onEntityDamageByEntity 处理。 */
+    public void onArmorEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        onEntityDamageByEntity(event);
+    }
+
+    private Player attackingPlayer(org.bukkit.entity.Entity entity) {
+        if (entity instanceof Player player) return player;
+        if (entity instanceof Projectile projectile && projectile.getShooter() instanceof Player player) return player;
+        return null;
     }
 
     private boolean isSword(Player player) {

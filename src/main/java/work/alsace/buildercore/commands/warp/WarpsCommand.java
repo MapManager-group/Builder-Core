@@ -23,6 +23,7 @@ public class WarpsCommand implements CommandExecutor {
     private static final MiniMessage MM = MiniMessage.miniMessage();
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, commandLabel, args)) return true;
         if (!(sender instanceof Player)) {
             sender.sendMessage(MM.deserialize("<red>该指令仅限玩家执行"));
             return false;

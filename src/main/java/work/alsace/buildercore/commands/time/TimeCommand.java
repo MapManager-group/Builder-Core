@@ -21,6 +21,7 @@ public class TimeCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, s, strings)) return true;
         if (!(sender instanceof Player player)) {
             sender.sendMessage(MM.deserialize("<red>该命令仅限玩家执行"));
             return false;
@@ -75,7 +76,7 @@ public class TimeCommand implements TabExecutor {
     }
 
     static long getTimeFromKeyword(String keyword) {
-        switch (keyword.toLowerCase()) {
+        switch (keyword.toLowerCase(java.util.Locale.ROOT)) {
             case "sunrise" -> {
                 return 21000;
             }

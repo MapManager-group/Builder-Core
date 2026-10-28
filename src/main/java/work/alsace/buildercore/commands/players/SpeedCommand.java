@@ -20,127 +20,50 @@ public class SpeedCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
-        if (strings.length == 1 && sender instanceof Player player) {
-            if (!player.hasPermission("buildercore.commands.speed")) {
-                player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
-                return false;
-            }
-            try {
-                float speed = Float.parseFloat(strings[0]);
-                if (!Float.isFinite(speed) || speed > 10 || speed < 0.1F) {
-                    player.sendMessage(error);
-                    return false;
-                }
-                if (player.isFlying()) {
-                    player.setFlySpeed(speed / 10F);
-                    player.sendMessage(MM.deserialize("<gray>已将你的 <white>飞行 <gray>速度设置为 <white>" + speed));
-                } else {
-                    player.setWalkSpeed(speed / 10F);
-                    player.sendMessage(MM.deserialize("<gray>已将你的 <white>步行 <gray>速度设置为 <white>" + speed));
-                }
-                return true;
-            } catch (NumberFormatException e) {
-                player.sendMessage(error);
-                return false;
-            }
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, s, strings)) return true;
+        SpeedChange change = parseChange(sender, strings);
+        if (change == null) return false;
+        Player target = change.player();
+        if (change.flying()) target.setFlySpeed(change.speed() / 10F);
+        else target.setWalkSpeed(change.speed() / 10F);
+        String type = change.flying() ? "飞行" : "步行";
+        if (strings.length == 3) sender.sendMessage(MM.deserialize("<gray>已将玩家 <white>" + target.getName() + " <gray>的 <white>" + type + " <gray>速度设置为 <white>" + change.speed()));
+        target.sendMessage(MM.deserialize("<gray>已将你的 <white>" + type + " <gray>速度设置为 <white>" + change.speed()));
+        return true;
+    }
+
+    private record SpeedChange(Player player, boolean flying, float speed) { }
+
+    private SpeedChange parseChange(CommandSender sender, String[] args) {
+        Player target = target(sender, args);
+        if (target == null) return null;
+        try {
+            boolean fly = args.length == 1 ? target.isFlying() : switch (args[0]) {
+                case "walk" -> false;
+                case "fly" -> true;
+                default -> throw new IllegalArgumentException();
+            };
+            float speed = Float.parseFloat(args[args.length == 1 ? 0 : 1]);
+            if (!Float.isFinite(speed) || speed < 0.1F || speed > 10) throw new IllegalArgumentException();
+            return new SpeedChange(target, fly, speed);
+        } catch (IllegalArgumentException exception) {
+            sender.sendMessage(error);
+            return null;
         }
+    }
 
-        if (strings.length == 2 && sender instanceof Player player) {
-            if (!player.hasPermission("buildercore.commands.speed")) {
-                player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
-                return false;
-            }
-            switch (strings[0]) {
-                case "walk" -> {
-                    try {
-                        float speed = Float.parseFloat(strings[1]);
-                        if (!Float.isFinite(speed) || speed > 10 || speed < 0.1F) {
-                            player.sendMessage(error);
-                            return false;
-                        }
-                        player.setWalkSpeed(speed / 10F);
-                        player.sendMessage(MM.deserialize("<gray>已将你的 <white>步行 <gray>速度设置为 <white>" + speed));
-                        return true;
-                    } catch (NumberFormatException e) {
-                        player.sendMessage(error);
-                        return false;
-                    }
-                }
-                case "fly" -> {
-                    try {
-                        float speed = Float.parseFloat(strings[1]);
-                        if (!Float.isFinite(speed) || speed > 10 || speed < 0.1F) {
-                            player.sendMessage(error);
-                            return false;
-                        }
-                        player.setFlySpeed(speed / 10F);
-                        player.sendMessage(MM.deserialize("<gray>已将你的 <white>飞行 <gray>速度设置为 <white>" + speed));
-                        return true;
-                    } catch (NumberFormatException e) {
-                        player.sendMessage(error);
-                        return false;
-                    }
-                }
-                default -> {
-                    player.sendMessage(error);
-                    return false;
-                }
-            }
+    private Player target(CommandSender sender, String[] args) {
+        if (args.length < 1 || args.length > 3 || args.length < 3 && !(sender instanceof Player)) {
+            sender.sendMessage(error);
+            return null;
         }
-
-        if (strings.length == 3) {
-            if (!sender.hasPermission("buildercore.commands.speed.other")) {
-                sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
-                return false;
-            }
-
-            Player player = Bukkit.getPlayer(strings[2]);
-            if (player == null || !player.isOnline()) {
-                sender.sendMessage(MM.deserialize("<red>指定的玩家不在线或不存在"));
-                return false;
-            }
-
-            switch (strings[0]) {
-                case "walk" -> {
-                    try {
-                        float speed = Float.parseFloat(strings[1]);
-                        if (!Float.isFinite(speed) || speed > 10 || speed < 0.1F) {
-                            sender.sendMessage(error);
-                            return false;
-                        }
-                        player.setWalkSpeed(speed / 10F);
-                        sender.sendMessage(MM.deserialize("<gray>已将玩家 <white>" + player.getName() + " <gray>的 <white>步行 <gray>速度设置为 <white>" + speed));
-                        player.sendMessage(MM.deserialize("<gray>已将你的 <white>步行 <gray>速度设置为 <white>" + speed));
-                        return true;
-                    } catch (NumberFormatException e) {
-                        sender.sendMessage(error);
-                        return false;
-                    }
-                }
-                case "fly" -> {
-                    try {
-                        float speed = Float.parseFloat(strings[1]);
-                        if (!Float.isFinite(speed) || speed > 10 || speed < 0.1F) {
-                            sender.sendMessage(error);
-                            return false;
-                        }
-                        player.setFlySpeed(speed / 10F);
-                        sender.sendMessage(MM.deserialize("<gray>已将玩家 <white>" + player.getName() + " <gray>的 <white>飞行 <gray>速度设置为 <white>" + speed));
-                        player.sendMessage(MM.deserialize("<gray>已将你的 <white>飞行 <gray>速度设置为 <white>" + speed));
-                        return true;
-                    } catch (NumberFormatException e) {
-                        sender.sendMessage(error);
-                        return false;
-                    }
-                }
-                default -> {
-                    sender.sendMessage(error);
-                    return false;
-                }
-            }
+        if (!sender.hasPermission(args.length == 3 ? "buildercore.commands.speed.other" : "buildercore.commands.speed")) {
+            sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
+            return null;
         }
-        sender.sendMessage(error);
-        return false;
+        Player target = args.length == 3 ? Bukkit.getPlayer(args[2]) : (Player) sender;
+        if (target == null) sender.sendMessage(MM.deserialize("<red>指定的玩家不在线或不存在"));
+        return target;
     }
 
     @Override
@@ -154,7 +77,7 @@ public class SpeedCommand implements TabExecutor {
         if (strings.length == 3 && sender.hasPermission("buildercore.commands.speed.other")) {
             List<String> list = new ArrayList<>();
             for (Player p : Bukkit.getOnlinePlayers()) {
-                list.add(p.getName());
+                if (!(sender instanceof Player viewer) || viewer.canSee(p)) list.add(p.getName());
             }
             return list;
         }

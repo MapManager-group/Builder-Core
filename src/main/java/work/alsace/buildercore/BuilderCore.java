@@ -96,7 +96,8 @@ public class BuilderCore extends JavaPlugin {
         registerListeners();
         builderTools = new BuilderTools(this);
         builderTools.register();
-        Bukkit.getScheduler().runTaskTimer(this, () -> new NoClipUtil().checkBlock(), 1L, 1L);
+        registerCompletions();
+        Bukkit.getScheduler().runTaskTimer(this, new NoClipUtil()::checkBlock, 1L, 1L);
 
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new VelocityMessenger();
@@ -117,16 +118,19 @@ public class BuilderCore extends JavaPlugin {
         if (cushionTools != null) cushionTools.close();
         homeProfiles.clear();
         warpProfiles.clear();
-        if (agreement) {
-            if (databaseManager != null) {
-                databaseManager.closeDataSource();
-            }
-            if (liteDataBaseManager != null) {
-                liteDataBaseManager.disconnect();
-            }
-        }
+        if (databaseManager != null) databaseManager.closeDataSource();
+        if (liteDataBaseManager != null) liteDataBaseManager.disconnect();
 
         getLogger().info("BuilderCore 插件已成功卸载。");
+    }
+
+    private void registerCompletions() {
+        getDescription().getCommands().keySet().forEach(name -> {
+            PluginCommand command = getCommand(name);
+            TabCompleter delegate = command.getTabCompleter();
+            if (delegate == null && command.getExecutor() instanceof TabCompleter completer) delegate = completer;
+            command.setTabCompleter(new work.alsace.buildercore.commands.CommandCompletion(this, delegate));
+        });
     }
 
     private void registerCommands() {
@@ -140,7 +144,9 @@ public class BuilderCore extends JavaPlugin {
         registerCmd("pweather", new PWeatherCommand());
         registerCmd("head", new HeadCommand());
         registerCmd("night", new NightvisionCommand());
-        registerCmd("advfly", new AdvanceFlyCommand());
+        AdvanceFlyCommand advanceFly = new AdvanceFlyCommand();
+        registerCmd("advfly", advanceFly);
+        getServer().getPluginManager().registerEvents(advanceFly, this);
         registerCmd("debugstick", new DebugStickCommand());
         registerCmd("slab", new SlabCommand());
         registerCmd("noclip", new NoClipCommand());
@@ -223,7 +229,6 @@ public class BuilderCore extends JavaPlugin {
         cushionTools = new CushionTools(this);
         cushionTools.register();
         pm.registerEvents(new Misc(), this);
-        pm.registerEvents(new AdvanceFlyCommand(), this);
         pm.registerEvents(new SpawnListener(), this);
         pm.registerEvents(new CatListener(), this);
         pm.registerEvents(new HorseListener(), this);
@@ -233,9 +238,8 @@ public class BuilderCore extends JavaPlugin {
 
         if (pm.isPluginEnabled("PlaceholderAPI")) {
             new Placeholder(this).register();
-            pm.registerEvents(new AFKListener(this), this);
+            new AFKListener(this);
         }
-
         getLogger().info("所有监听器注册完毕。");
     }
 
@@ -257,7 +261,10 @@ public class BuilderCore extends JavaPlugin {
 
         ConfigurationSection agreeSec = getConfig().getConfigurationSection("agree");
         if (agreeSec != null) {
-            agreement = agreeSec.getBoolean("agreement", false);
+            boolean requested = agreeSec.getBoolean("agreement", false);
+            if (tpaHandler != null && requested != agreement) {
+                getLogger().warning("协议开关变更需要重启服务器；本次重载保留当前运行状态。");
+            } else agreement = requested;
             urlTitle = agreeSec.getString("url-title", "");
             url = agreeSec.getString("url", "");
         }
@@ -284,8 +291,11 @@ public class BuilderCore extends JavaPlugin {
     private void loadPlayerAgreementStatusAsync() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             UUID playerUUID = player.getUniqueId();
+            hasAgree.put(player.getName(), true);
             databaseManager.hasPlayerAgreed(playerUUID).thenAccept(hasAgreed -> {
-                hasAgree.put(player.getName(), !hasAgreed);
+                Bukkit.getScheduler().runTask(this, () -> {
+                    if (player.isOnline() && !Boolean.FALSE.equals(hasAgree.get(player.getName()))) hasAgree.put(player.getName(), !hasAgreed);
+                });
             });
         }
     }

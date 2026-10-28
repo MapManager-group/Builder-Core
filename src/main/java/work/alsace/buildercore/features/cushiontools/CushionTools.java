@@ -65,6 +65,7 @@ public final class CushionTools implements Listener, CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, args)) return true;
         if (!(sender instanceof Player player)) { sender.sendMessage("仅玩家可使用此命令"); return true; }
         if (active(player) || backups.exists(player.getUniqueId())) { restore(player); return true; }
         if (!available) { tell(player, "坐垫工具未能初始化，请查看服务器启动日志中的 API 检测错误。"); return true; }

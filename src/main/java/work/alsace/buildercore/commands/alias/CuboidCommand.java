@@ -10,8 +10,9 @@ import org.bukkit.entity.Player;
 public class CuboidCommand implements CommandExecutor {
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    private final Component error = MM.deserialize("<gray>正确指令:\n<white>//convex <gray>- 快捷执行创世神sel指令");
+    private final Component error = MM.deserialize("<gray>正确指令:\n<white>//cuboid <gray>- 快捷执行创世神sel指令");
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, s, strings)) return true;
         if (sender instanceof Player player) {
             if (!player.hasPermission("buildercore.aliases")) {
                 player.sendMessage(error);

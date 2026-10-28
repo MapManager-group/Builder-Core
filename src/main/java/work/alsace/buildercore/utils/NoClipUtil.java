@@ -11,19 +11,13 @@ public class NoClipUtil {
     public static Set<Player> noclip = new HashSet<>();
 
     public void checkBlock() {
-        Iterator<Player> var1 = noclip.iterator();
-
-        while (true) {
-            Player id;
-            do {
-                do {
-                    if (!var1.hasNext()) {
-                        return;
-                    }
-
-                    id = var1.next();
-                } while (id == null);
-            } while (!id.isOnline());
+        Iterator<Player> players = noclip.iterator();
+        while (players.hasNext()) {
+            Player id = players.next();
+            if (id == null || !id.isOnline()) {
+                players.remove();
+                continue;
+            }
 
             boolean noClip;
             if (id.getGameMode() == GameMode.CREATIVE) {

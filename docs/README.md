@@ -12,4 +12,5 @@ BuilderCore 是面向 Minecraft 建筑服务器的 Paper 插件，提供建筑�
 | [安装](installation.md) | 运行要求、安装步骤、配置与重载 |
 | [权限配置](permissions.md) | 权限包、建筑保护和家数量 |
 | [插件集成](integrations.md) | MapManager v4、PlaceholderAPI、代理消息与用户协议 |
-| [开发](development.md) | 编译、检查、数据文件和已知问题 |
+| [代码审查与风险](audit.md) | 本次修复、保留的权限边界与验证范围 |
+| [开发](development.md) | 编译、检查、数据文件与错误处理 |

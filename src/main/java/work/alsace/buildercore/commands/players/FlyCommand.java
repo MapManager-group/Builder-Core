@@ -11,6 +11,7 @@ public class FlyCommand implements CommandExecutor {
     private static final MiniMessage MM = MiniMessage.miniMessage();
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, s, strings)) return true;
         if (strings.length == 0 && sender instanceof Player player) {
             if (!player.hasPermission("buildercore.commands.fly")) {
                 player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));

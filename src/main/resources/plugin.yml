@@ -173,207 +173,267 @@ permissions:
 
 commands:
   cushiontools:
+    usage: '/cushiontools'
     description: 切换坐垫工具模式并恢复原背包
-    usage: /cushiontools
   /p1:
+    usage: '//p1 [坐标]'
     description: WorldEdit 第一选区点快捷命令
     permission: buildercore.aliases
     aliases: [/1]
   /p2:
+    usage: '//p2 [坐标]'
     description: WorldEdit 第二选区点快捷命令
     permission: buildercore.aliases
     aliases: [/2]
   /pa:
+    usage: '//pa [WorldEdit 参数]'
     description: WorldEdit 粘贴快捷命令
     permission: buildercore.aliases
   /s:
+    usage: '//s <方块> [WorldEdit 参数]'
     description: WorldEdit 设置快捷命令
     permission: buildercore.aliases
   /r:
+    usage: '//r [源方块] <目标方块> [WorldEdit 参数]'
     description: WorldEdit 替换快捷命令
     permission: buildercore.aliases
   /f:
+    usage: '//f [方向]'
     description: WorldEdit 翻转快捷命令
     permission: buildercore.aliases
   /c:
+    usage: '//c [WorldEdit 参数]'
     description: WorldEdit 复制快捷命令
     permission: buildercore.aliases
   buildertools:
+    usage: '/buildertools [ability|armorcolor|banner|special|rc]'
     description: 打开建筑工具菜单
     aliases: [btools]
   armorcolor:
+    usage: '/armorcolor'
     description: 打开皮革护甲配色器
     permission: buildercore.menu.armorcolor
   banner:
+    usage: '/banner'
     description: 打开旗帜编辑器
     permission: buildercore.menu.banner
   buildercore:
+    usage: '/buildercore help [页码或命令] | info | reload'
     description: 主命令
     permission: buildercore.admin
   agree:
+    usage: '/agree'
     description: 同意用户协议
   disagree:
+    usage: '/disagree'
     description: 不同意用户协议
   fly:
+    usage: '/fly [玩家]'
     description: 设置自己或指定玩家的飞行状态
     permission: buildercore.commands.fly
   speed:
+    usage: '/speed <速度 0.1–10> 或 /speed <walk|fly> <速度> [玩家]'
     description: 设置自己或指定玩家的移动速度
     permission: buildercore.commands.speed
   gamemode:
+    usage: '/gamemode <creative|survival|adventure|spectator|c|s|a|sp|0|1|2|3> [玩家]'
     description: 设置自己或指定玩家的游戏模式
     permission: buildercore.commands.gamemode
     aliases:
       - 'gm'
   weather:
+    usage: '/weather <clear|rain|thunder>'
     description: 设置所在世界的天气
     permission: buildercore.commands.weather
   pweather:
+    description: 设置自己或指定玩家的客户端天气
+    usage: '/pweather <clear|rain|reset> [玩家]'
     permission: buildercore.commands.pweather
   time:
+    usage: '/time <时间> 或 /time <set|add> <数值>'
     description: 设置玩家所在世界的时间
     permission: buildercore.commands.time
   ptime:
+    usage: '/ptime <时间|reset> [玩家]'
     description: 设置自己或指定玩家的客户端时间
     permission: buildercore.commands.ptime
   back:
+    usage: '/back [步数]'
     description: 返回上一个位置
     permission: buildercore.commands.back
   tp:
+    usage: '/tp <玩家> 或 /tp <玩家A> <玩家B> 或 /tp <x> <y> <z> 或 /tp <玩家或@s> <x> <y> <z>'
     description: 传送到指定玩家或坐标
     permission: buildercore.commands.tp
   tpignore:
+    usage: '/tpignore'
     description: 忽略传送请求
     permission: buildercore.commands.tpignore
   tpa:
+    usage: '/tpa <玩家>'
     description: 向玩家发送传送请求
     permission: buildercore.commands.tpa
   tpahere:
+    usage: '/tpahere <玩家>'
     description: 向玩家发送传送请求
     permission: buildercore.commands.tpa
   tpaccept:
+    usage: '/tpaccept'
     description: 同意请求
     permission: buildercore.commands.tpa
   tpdeny:
+    usage: '/tpdeny'
     description: 拒绝请求
     permission: buildercore.commands.tpa
   home:
+    usage: '/home <名称或玩家:名称>'
     description: 传送到指定家
     permission: buildercore.commands.home
   homes:
+    usage: '/homes'
     description: 查看家
     permission: buildercore.commands.homes
   sethome:
+    usage: '/sethome <名称或玩家:名称>'
     description: 设置家
     permission: buildercore.commands.sethome
   delhome:
+    usage: '/delhome <名称或玩家:名称>'
     description: 删除家
     permission: buildercore.commands.delhome
   hat:
+    usage: '/hat'
     description: 戴上手上的物品
     permission: buildercore.commands.hat
   head:
+    usage: '/head <玩家名称>'
     description: 获取指定玩家的皮肤头颅
     permission: buildercore.commands.head
     aliases:
       - 'skull'
   warps:
+    usage: '/warps'
     description: 查看传送点
     permission: buildercore.commands.warps
   warp:
+    usage: '/warp <名称或别名>'
     description: 传送到指定传送点
     permission: buildercore.commands.warp
   delwarp:
+    usage: '/delwarp <名称或别名>'
     description: 删除传送点
     permission: buildercore.commands.delwarp
   setwarp:
+    usage: '/setwarp <名称> [别名]'
     description: 设置传送点
     permission: buildercore.commands.setwarp
   night:
+    usage: '/night'
     description: 获取永久夜视效果
     permission: buildercore.commands.nightvision
     aliases:
       - 'nv'
       - 'n'
   noclip:
+    usage: '/noclip'
     description: 开关自动穿墙
     permission: buildercore.commands.noclip
     aliases:
       - 'nc'
   advfly:
+    usage: '/advfly'
     description: 开关更好的飞行
     permission: buildercore.commands.advfly
     aliases:
       - 'af'
   slab:
+    usage: '/slab'
     description: 开关半砖破坏
     permission: buildercore.commands.slab
     aliases:
       - 'sb'
   debugstick:
+    usage: '/debugstick'
     description: 获取调试棒
     permission: buildercore.commands.debugstick
     aliases:
       - 'dbs'
   /twist:
+    usage: '//twist <x|y|z> <度数>'
     description: 快捷执行创世神deform指令
     permission: buildercore.commands.twist
   /scale:
+    usage: '//scale <非零倍数>'
     description: 快捷执行创世神deform指令
     permission: buildercore.commands.scale
   /derot:
+    usage: '//derot <x|y|z> <度数>'
     description: 快捷执行创世神deform指令
     permission: buildercore.commands.derot
   /cuboid:
+    usage: '//cuboid'
     description: 快捷执行创世神sel指令
     permission: buildercore.commands.cuboid
     aliases:
       - '/cub'
   /convex:
+    usage: '//convex'
     description: 快捷执行创世神sel指令
     permission: buildercore.commands.convex
     aliases:
       - '/con'
   undo:
+    usage: '/undo'
     description: 快捷执行创世神undo指令
     permission: buildercore.commands.undo
     aliases:
       - 'u'
   afk:
+    usage: '/afk'
     description: 进入暂离状态
   whois:
+    usage: '/whois <玩家>'
     description: 查询指定玩家信息
     permission: buildercore.commands.whois
   itemname:
+    usage: '/itemname <名称，支持 & 颜色代码>'
     description: 修改手中物品名称
     permission: buildercore.commands.itemname
     aliases:
       - 'iname'
   itemnbt:
+    usage: '/itemnbt'
     description: 获取手中物品的详细信息
     permission: buildercore.commands.itemnbt
     aliases:
       - 'inbt'
   itemcolor:
+    usage: '/itemcolor <六位十六进制 RGB，可带 #>'
     description: 修改手中皮革物品颜色
     permission: buildercore.commands.itemcolor
     aliases:
       - 'icolor'
   tphere:
+    usage: '/tphere <玩家>'
     description: 将指定玩家传送到你的位置
     permission: buildercore.commands.tphere
   reach:
+    usage: '/reach [距离 0–64，默认 4.5]'
     description: 修改自己的方块交互距离
     permission: buildercore.commands.reach
   scale:
+    usage: '/scale [倍数 0.0625–16，默认 1]'
     description: 修改自己的尺寸倍数
     permission: buildercore.commands.scale
   vanish:
+    usage: '/vanish'
     description: 进入隐身状态
     permission: buildercore.commands.vanish
   invsee:
+    usage: '/invsee <玩家>'
     description: 查看目标玩家的背包
     permission: buildercore.commands.invsee
   endersee:
+    usage: '/endersee [玩家]'
     description: 查看目标目标玩家的末影箱
     permission: buildercore.commands.endersee

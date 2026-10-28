@@ -17,6 +17,7 @@ public class HeadCommand implements CommandExecutor {
     private final Component error = MM.deserialize("<gray>正确指令:\n<white>/head <玩家名称> <gray>- 获取指定玩家的皮肤头颅");
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, strings)) return true;
         if (strings.length == 1 && sender instanceof Player player) {
             if (!player.hasPermission("buildercore.commands.head")) {
                 player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));

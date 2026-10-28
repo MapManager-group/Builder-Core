@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import work.alsace.buildercore.BuilderCore;
-import work.alsace.buildercore.service.HomeDataLoader;
 
 public record HomeTarget(String ownerName, String homeName, HomeDataLoader loader, boolean isOther) {
 
@@ -13,6 +12,7 @@ public record HomeTarget(String ownerName, String homeName, HomeDataLoader loade
             String[] parts = input.split(":", 2);
             String targetUser = parts[0];
             String homeName = parts[1];
+            if (targetUser.isEmpty() || homeName.isEmpty()) return null;
 
             OfflinePlayer targetPlayer = Bukkit.getOfflinePlayerIfCached(targetUser);
             if (targetPlayer == null) {
@@ -23,10 +23,13 @@ public record HomeTarget(String ownerName, String homeName, HomeDataLoader loade
                 return null;
             }
 
-            HomeDataLoader loader = BuilderCore.instance.homeProfiles.computeIfAbsent(
-                    targetPlayer.getUniqueId(),
-                    HomeDataLoader::new
-            );
+            HomeDataLoader loader;
+            try {
+                loader = BuilderCore.instance.homeProfiles.computeIfAbsent(targetPlayer.getUniqueId(), HomeDataLoader::new);
+            } catch (IllegalStateException exception) {
+                BuilderCore.instance.getLogger().log(java.util.logging.Level.SEVERE, "无法读取玩家的家数据: " + targetUser, exception);
+                return null;
+            }
 
             return new HomeTarget(targetUser, homeName, loader, true);
         } else {

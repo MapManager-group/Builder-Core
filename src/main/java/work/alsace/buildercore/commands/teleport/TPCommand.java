@@ -30,21 +30,23 @@ public class TPCommand implements TabExecutor {
             return Collections.emptyList();
         }
 
-        String prefix = args[0].toLowerCase();
+        String prefix = args[0].toLowerCase(java.util.Locale.ROOT);
         return getAccessPlayers(player).stream()
+                .filter(candidate -> !(sender instanceof Player viewer) || viewer.canSee(candidate))
                 .map(Player::getName)
-                .filter(name -> name.toLowerCase().startsWith(prefix))
+                .filter(name -> name.toLowerCase(java.util.Locale.ROOT).startsWith(prefix))
                 .toList(); // Java 16+ 原生 toList()
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, label, args)) return true;
         switch (args.length) {
             case 1 -> handleSelfToPlayer(sender, args[0]);
             case 2 -> handlePlayerToPlayer(sender, args[0], args[1]);
             case 3 -> handleSelfToLocation(sender, args[0], args[1], args[2]);
             case 4 -> handlePlayerToLocation(sender, args[0], args[1], args[2], args[3]);
-            default -> sendMsg(sender, "<red>参数错误，正确用法：/tp [玩家|x] [目标玩家|y] [z] [玩家]</red>");
+            default -> sendMsg(sender, "<red>参数错误，正确用法：/tp <玩家>、/tp <玩家A> <玩家B>、/tp <x> <y> <z>、/tp <玩家或@s> <x> <y> <z></red>");
         }
         return true;
     }
@@ -96,7 +98,7 @@ public class TPCommand implements TabExecutor {
         }
 
         if (teleportAfterDelay(commander, target)) {
-            sendMsg(sender, "<gray>已将 <white>" + commander.getName() + "</white> 传送至 <white>" + target.getName() + "</white>");
+            sendMsg(sender, "<gray>正在将 <white>" + commander.getName() + "</white> 传送至 <white>" + target.getName() + "</white>");
         }
     }
 
@@ -118,8 +120,7 @@ public class TPCommand implements TabExecutor {
                         sendMsg(commander, "<red>你没有目标世界的建筑权限，无法直接传送");
                         return;
                     }
-                    commander.teleportAsync(loc);
-                    sendMsg(commander, String.format("<gray>已将 %s 传送至 (%.2f, %.2f, %.2f)", commander.getName(), loc.getX(), loc.getY(), loc.getZ()));
+                    teleportToLocation(commander, commander, loc);
                 },
                 () -> sendMsg(commander, "<red>输入坐标有误，请重新输入")
         );
@@ -154,11 +155,17 @@ public class TPCommand implements TabExecutor {
                         sendMsg(sender, "<red>目标玩家没有目标世界的建筑权限，无法直接传送");
                         return;
                     }
-                    target.teleportAsync(loc);
-                    sendMsg(sender, String.format("<gray>已将 %s 传送至 (%.2f, %.2f, %.2f)", target.getName(), loc.getX(), loc.getY(), loc.getZ()));
+                    teleportToLocation(sender, target, loc);
                 },
                 () -> sendMsg(sender, "<red>输入坐标有误，请重新输入")
         );
+    }
+
+    private void teleportToLocation(CommandSender sender, Player target, Location location) {
+        target.teleportAsync(location).whenComplete((success, error) -> {
+            if (error != null || !Boolean.TRUE.equals(success)) sendMsg(sender, "<red>传送失败，请检查目标位置或保护规则。");
+            else sendMsg(sender, String.format("<gray>已将 %s 传送至 (%.2f, %.2f, %.2f)", target.getName(), location.getX(), location.getY(), location.getZ()));
+        });
     }
 
     // 解析坐标
@@ -169,6 +176,7 @@ public class TPCommand implements TabExecutor {
             double y = parseCoordinate(yStr, origin.getY());
             double z = parseCoordinate(zStr, origin.getZ());
 
+            if (!Double.isFinite(x) || !Double.isFinite(y) || !Double.isFinite(z)) return Optional.empty();
             return Optional.of(new Location(target.getWorld(), x, y, z, origin.getYaw(), origin.getPitch()));
         } catch (NumberFormatException e) {
             return Optional.empty();
@@ -216,10 +224,10 @@ public class TPCommand implements TabExecutor {
                     sendMsg(fromPlayer, "<red>你没有目标世界的建筑权限，无法直接传送");
                     return;
                 }
-                fromPlayer.teleportAsync(toPlayer.getLocation()).thenAccept(success -> {
-                    if (success) {
+                fromPlayer.teleportAsync(toPlayer.getLocation()).whenComplete((success, error) -> {
+                    if (error == null && Boolean.TRUE.equals(success)) {
                         sendMsg(fromPlayer, "<gray>你已成功传送到 <white>" + toPlayer.getName() + "</white> 身边！");
-                    }
+                    } else sendMsg(fromPlayer, "<red>传送失败，请检查目标位置或保护规则。");
                 });
             }
         }, 20L);

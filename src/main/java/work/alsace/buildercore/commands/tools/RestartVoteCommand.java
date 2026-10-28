@@ -22,10 +22,6 @@ import java.util.List;
 public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listener {
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    //没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完
-    //没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完
-    //没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完
-    //没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完没写完
 
     private final BuilderCore plugin;
     public RestartVoteCommand(BuilderCore plugin) {
@@ -34,6 +30,7 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
 
     private boolean inVote;
     private int yesVote;
+    private int requiredVotes;
     private BukkitTask countdownTask;
 
     private List<String> players = new ArrayList<>();
@@ -42,12 +39,13 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, s, args)) return true;
         if (!(sender instanceof Player player)) {
             sender.sendMessage(MM.deserialize("<red>控制台无法执行该命令"));
             return false;
         }
 
-        if (player.hasPermission("buildercore.commands.vote")) {
+        if (!player.hasPermission("buildercore.commands.vote")) {
             player.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
             return false;
         }
@@ -59,9 +57,8 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
 
         //同意
         if (args[0].equalsIgnoreCase("#yes") && inVote) {
-            if (!players.contains(player.getName())) {
+            if (players.remove(player.getName())) {
                 yesVote ++;
-                players.remove(player.getName());
                 player.sendMessage(MM.deserialize("<green>投票成功，当前同意数量：" + yesVote));
             } else {
                 player.sendMessage(MM.deserialize("<yellow>你不在投票玩家池内或已经投票过了。"));
@@ -94,6 +91,7 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
             players.add(player.getName());
         }
 
+        requiredVotes = Math.max(1, (int) Math.ceil(players.size() * 0.8));
         countdownTask = new BukkitRunnable() {
             int secondsLeft = 180;
             @Override
@@ -111,7 +109,7 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
     //检查
     public void CheckVote() {
         inVote = false;
-        if (yesVote >= players.size() * 0.8) {
+        if (yesVote >= requiredVotes) {
 
             Bukkit.broadcast(MM.deserialize("<green>[投票重启] 投票通过，服务器将在两分钟后重启!"));
 
@@ -147,7 +145,8 @@ public class RestartVoteCommand implements CommandExecutor, TabCompleter, Listen
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
-        return List.of();
+        if (args.length != 1 || !sender.hasPermission("buildercore.commands.vote")) return List.of();
+        return List.of("#yes", "#no").stream().filter(value -> value.startsWith(args[0])).toList();
     }
 
     @EventHandler

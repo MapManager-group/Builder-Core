@@ -14,6 +14,7 @@ public class HatCommand implements CommandExecutor {
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sender.sendMessage(MM.deserialize("<red>该指令仅限玩家使用"));
         } else {

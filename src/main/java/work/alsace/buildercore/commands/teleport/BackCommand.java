@@ -28,16 +28,16 @@ public class BackCommand implements TabExecutor, Listener {
 
     private final Map<UUID, Deque<Location>> locationHistory = new ConcurrentHashMap<>();
 
+    private final Map<UUID, Location> returning = new java.util.HashMap<>();
+
     public BackCommand(BuilderCore plugin) {
         this.plugin = plugin;
-        // 注册玩家离线监听器，用于清除内存缓存
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @Override
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         if (args.length == 1) {
-            // 提供 1 到 maxHistory 的步数补全提示
             int max = Math.max(1, plugin.backHistory);
             return java.util.stream.IntStream.rangeClosed(1, max)
                     .mapToObj(String::valueOf)
@@ -49,6 +49,7 @@ public class BackCommand implements TabExecutor, Listener {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sendMsg(sender, "<red>该命令只能由玩家使用");
             return true;
@@ -86,24 +87,41 @@ public class BackCommand implements TabExecutor, Listener {
             return true;
         }
 
-        // 出栈指定步数
+        if (returning.containsKey(player.getUniqueId())) {
+            sendMsg(player, "<red>正在返回，请稍候");
+            return true;
+        }
+        var positions = history.descendingIterator();
+        java.util.Set<Location> consumed = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
         Location targetLocation = null;
         for (int i = 0; i < backSteps; i++) {
-            targetLocation = history.pollLast(); // 弹出最新入栈的位置
+            targetLocation = positions.next();
+            consumed.add(targetLocation);
         }
-
-        if (targetLocation != null) {
-            final int finalSteps = backSteps;
-            player.teleportAsync(targetLocation).thenAccept(success -> {
-                if (success) {
-                    sendMsg(player, "<gray>已返回到之前的第 <white>" + finalSteps + "</white> 个位置");
-                } else {
-                    sendMsg(player, "<red>传送失败，请稍后再试");
-                }
-            });
+        if (targetLocation.getWorld() == null) {
+            sendMsg(player, "<red>目标世界未加载，位置记录已保留");
+            return true;
         }
+        final int steps = backSteps;
+        returning.put(player.getUniqueId(), targetLocation);
+        player.teleportAsync(targetLocation).whenComplete((success, error) -> {
+            Runnable finish = () -> {
+                returning.remove(player.getUniqueId());
+                if (error == null && Boolean.TRUE.equals(success)) {
+                    history.removeIf(consumed::contains);
+                    sendMsg(player, "<gray>已返回到之前的第 <white>" + steps + "</white> 个位置");
+                } else sendMsg(player, "<red>传送失败，位置记录已保留");
+            };
+            if (org.bukkit.Bukkit.isPrimaryThread()) finish.run();
+            else plugin.getServer().getScheduler().runTask(plugin, finish);
+        });
 
         return true;
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onTeleport(org.bukkit.event.player.PlayerTeleportEvent event) {
+        if (!java.util.Objects.equals(returning.get(event.getPlayer().getUniqueId()), event.getTo())) addToHistory(event.getPlayer());
     }
 
     /**
@@ -116,7 +134,6 @@ public class BackCommand implements TabExecutor, Listener {
         Deque<Location> history = locationHistory.computeIfAbsent(uuid, k -> new ArrayDeque<>());
         history.addLast(currentLocation);
 
-        // 维持栈大小不超出限制
         int maxHistory = Math.max(1, plugin.backHistory);
         while (history.size() > maxHistory) {
             history.pollFirst();
@@ -129,6 +146,7 @@ public class BackCommand implements TabExecutor, Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         locationHistory.remove(event.getPlayer().getUniqueId());
+        returning.remove(event.getPlayer().getUniqueId());
     }
 
     private void sendMsg(CommandSender sender, String miniMessageText) {

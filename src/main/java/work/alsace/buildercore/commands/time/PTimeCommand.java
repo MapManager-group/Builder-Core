@@ -19,6 +19,7 @@ public class PTimeCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, s, strings)) return true;
         if (strings.length != 1 && strings.length != 2) {
             sender.sendMessage(error);
             return false;
@@ -81,7 +82,7 @@ public class PTimeCommand implements TabExecutor {
         if (strings.length == 2 && sender.hasPermission("buildercore.commands.ptime.other")) {
             List<String> list = new ArrayList<>();
             for (Player p : Bukkit.getOnlinePlayers()) {
-                list.add(p.getName());
+                if (!(sender instanceof Player viewer) || viewer.canSee(p)) list.add(p.getName());
             }
             return list;
         }

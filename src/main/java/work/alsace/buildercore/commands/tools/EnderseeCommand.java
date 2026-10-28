@@ -15,6 +15,7 @@ public class EnderseeCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("该命令仅限玩家执行").color(NamedTextColor.RED));
             return true;

@@ -36,7 +36,9 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onAdminBlockInteract(PlayerInteractEvent event) {
         Block clicked = event.getClickedBlock();
-        if (clicked == null || event.getHand() != EquipmentSlot.HAND) return;
+        if (clicked == null || event.getHand() != EquipmentSlot.HAND
+                || event.useItemInHand() == org.bukkit.event.Event.Result.DENY
+                || event.getPlayer().getGameMode() == org.bukkit.GameMode.SPECTATOR) return;
         Player player = event.getPlayer();
         if (event.getAction() == Action.LEFT_CLICK_BLOCK && ADMIN_BLOCKS.contains(clicked.getType().name())) {
             event.setCancelled(true);
@@ -66,45 +68,35 @@ public class BlockListener implements Listener {
 
     @EventHandler
     public void onBlockPhysics(BlockFadeEvent event) {
-        if (event.getBlock().getType().name().contains("CORAL")) {
-            event.setCancelled(true);
-        }
+        preventCoralDecay(event);
+    }
 
+    static void preventCoralDecay(BlockFadeEvent event) {
+        if (event.getBlock().getType().name().contains("CORAL")) event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerInteractLight(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block == null || block.getType() != Material.LIGHT || event.getAction() != Action.RIGHT_CLICK_BLOCK
+                || event.getHand() != EquipmentSlot.HAND || event.useItemInHand() == org.bukkit.event.Event.Result.DENY
+                || event.getPlayer().getGameMode() == org.bukkit.GameMode.SPECTATOR
+                || !event.getPlayer().hasPermission("buildercore.protect.interact")
+                || !event.getPlayer().hasPermission("buildercore.protect.place")) return;
+        Levelled data = (Levelled) block.getBlockData();
+        data.setLevel((data.getLevel() + 1) % (data.getMaximumLevel() + 1));
+        block.setBlockData(data, true);
+        event.setCancelled(true);
     }
 
     @EventHandler(
-            priority = EventPriority.MONITOR
-    )
-    public void onPlayerInteractLight(PlayerInteractEvent e) {
-        if (e.getClickedBlock() != null) {
-            if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock().getType().name().equalsIgnoreCase("light")) {
-                Block block = e.getClickedBlock();
-                Levelled levelled = (Levelled) block.getBlockData();
-                int level = levelled.getLevel();
-                if (level >= 0 && level < 15) {
-                    levelled.setLevel(level + 1);
-                } else if (level == 15) {
-                    levelled.setLevel(0);
-                }
-
-                e.setCancelled(true);
-                block.setBlockData(levelled, true);
-            }
-        }
-    }
-
-    @EventHandler(
-            priority = EventPriority.MONITOR
+            priority = EventPriority.MONITOR, ignoreCancelled = true
     )
     public void onBlockBreak(BlockBreakEvent e) {
         if (!e.isCancelled() && slabs.contains(e.getPlayer()) && e.getPlayer().hasPermission("buildercore.commands.slab")) {
             Material type = e.getPlayer().getInventory().getItemInMainHand().getType();
-            if (type.toString().toLowerCase().contains("slab")) {
-                if (e.isCancelled()) {
-                    return;
-                }
-
-                if (e.getBlock().getType().toString().toLowerCase().contains("slab")) {
+            if (type.toString().toLowerCase(java.util.Locale.ROOT).contains("slab")) {
+                if (e.getBlock().getType().toString().toLowerCase(java.util.Locale.ROOT).contains("slab")) {
                     Slab blockData;
                     if (this.isTop(e.getPlayer(), e.getBlock())) {
                         blockData = (Slab) e.getBlock().getBlockData();
@@ -128,15 +120,8 @@ public class BlockListener implements Listener {
     }
 
     private boolean isTop(Player player, Block block) {
-        Location start = player.getEyeLocation().clone();
-
-        while (!start.getBlock().equals(block) && start.distance(player.getEyeLocation()) < 6.0) {
-            start.add(player.getLocation().getDirection().multiply(0.05));
-        }
-        if (start.getY() > 0) {
-            return start.getY() % 1.0 > 0.5;
-        } else {
-            return Math.abs(start.getY()) % 1.0 < 0.5;
-        }
+        Location eye = player.getEyeLocation();
+        var hit = block.rayTrace(eye, eye.getDirection(), 64, org.bukkit.FluidCollisionMode.NEVER);
+        return hit != null && hit.getHitPosition().getY() - block.getY() > 0.5;
     }
 }

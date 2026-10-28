@@ -8,7 +8,7 @@
 
 ## 安装步骤
 
-1. 将编译得到的 `BuilderCore-2.2.0-snapshot.jar` 放入服务端 `plugins` 目录，编译方法见[开发](development.md#编译)。
+1. 将编译得到的 `BuilderCore-2.2.1-snapshot.jar` 放入服务端 `plugins` 目录，编译方法见[开发](development.md#编译)。
 2. 启动后编辑 `plugins/BuilderCore/config.yml`。
 3. 用权限插件授予所需[权限包](permissions.md)，另行设置家数量。
 4. 安装所需的[集成插件](integrations.md)。
@@ -21,7 +21,7 @@
 | --- | --- | --- |
 | `backHistory` | `5` | `/back` 内存历史上限，实际至少为 1；重载后生效 |
 | `teleport.check-mmc-permissions` | `true` | TP/TPA 的 MMC v4 权限检查；重载后生效 |
-| `afk.threshold` | `300` | 自动 AFK 阈值，单位秒；任务每 60 秒检查一次，需 PlaceholderAPI |
+| `afk.threshold` | `300` | 自动 AFK 阈值，单位秒；任务每 60 秒检查一次，沿用原有 PlaceholderAPI 启用条件 |
 | `afk.placeholder` | `[AFK]` | `%buildercore_afk%` 的暂离文本，支持 `&` 颜色代码；重载后生效 |
 | `agree.agreement` | `false` | 用户协议功能；切换后需重启，以同步命令注册和数据库初始化 |
 | `agree.url-title` / `agree.url` | 示例标题 / 示例 URL | 协议链接标题及地址，启用前替换 |

@@ -12,6 +12,7 @@ public class InvseeCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, args)) return true;
         if (!sender.hasPermission("buildercore.commands.invsee")) {
             sender.sendMessage(Component.text("你没有使用该命令的权限").color(NamedTextColor.RED));
             return true;

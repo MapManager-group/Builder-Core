@@ -18,6 +18,7 @@ public class HomesCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, cmd, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sender.sendMessage(MM.deserialize("<red>该指令仅限玩家执行"));
             return true;
@@ -34,6 +35,7 @@ public class HomesCommand implements CommandExecutor {
             return true;
         }
 
+        loader.calculateMaxHomes();
         Set<String> homes = loader.getHomes();
         Component message = MM.deserialize("<gray>你的家 (" + homes.size() + "/" + (loader.getMaxHomes() == Integer.MAX_VALUE ? "∞" : loader.getMaxHomes()) + "): ");
         int count = 0;

@@ -25,6 +25,7 @@ public class DisagreeCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, args)) return true;
         if (!(sender instanceof Player player)) {
             sender.sendMessage(MM.deserialize("<red>只有玩家可以使用这个命令！"));
             return true;
@@ -32,7 +33,7 @@ public class DisagreeCommand implements CommandExecutor {
 
         UUID playerUUID = player.getUniqueId();
 
-        databaseManager.delPlayerAgreed(playerUUID).thenRun(() -> {
+        databaseManager.delPlayerAgreed(playerUUID).whenComplete((ignored, error) -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (player.isOnline()) {
                     player.kick(MM.deserialize("<red>您必须阅读并同意 <yellow>" + plugin.getUrlTitle() + "</yellow> 才能使用服务器的服务！"));

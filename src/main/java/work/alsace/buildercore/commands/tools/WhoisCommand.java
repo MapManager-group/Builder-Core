@@ -17,6 +17,7 @@ public class WhoisCommand implements CommandExecutor {
     private final Component error = MM.deserialize("<gray>正确指令:\n<white>/whois <玩家> <gray>- 查询指定玩家信息");
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, s, strings)) return true;
         if (strings.length == 1 && sender.hasPermission("buildercore.commands.whois")) {
             Player player = sender.getServer().getPlayer(strings[0]);
             if (player == null) {
@@ -31,7 +32,7 @@ public class WhoisCommand implements CommandExecutor {
 
             sender.sendMessage(MM.deserialize("<gray>用户名: <white>" + player.getName()));
             sender.sendMessage(uuidMessage);
-            sender.sendMessage(MM.deserialize("<gray>IP地址: <white>" + player.getAddress().getHostString()));
+            sender.sendMessage(MM.deserialize("<gray>IP地址: <white>" + (player.getAddress() == null ? "未知" : player.getAddress().getHostString())));
             sender.sendMessage(MM.deserialize("<gray>OP权限: <white>" + player.isOp()));
             sender.sendMessage(MM.deserialize("<gray>游戏模式: <white>" + player.getGameMode()));
             sender.sendMessage(MM.deserialize("<gray>坐标位置: <white>X:" + Math.floor(location.getX()) + " Y:" + Math.floor(location.getY()) + " Z:" + Math.floor(location.getZ())));

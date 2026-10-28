@@ -19,7 +19,7 @@ public class VelocityMessenger implements PluginMessageListener {
         Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, channel);
         Bukkit.getMessenger().registerIncomingPluginChannel(plugin, channel, this);
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             for (Player player : Bukkit.getOnlinePlayers()) {
                 sendPluginMessage(player,
                         "%multiverse_world_alias%",

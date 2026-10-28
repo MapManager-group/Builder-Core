@@ -16,13 +16,14 @@ import java.util.*;
 
 public class AdvanceFlyCommand implements CommandExecutor, Listener {
     private static final MiniMessage MM = MiniMessage.miniMessage();
-    private static final List<String> slower = new ArrayList();
-    private static final List<String> slower2 = new ArrayList();
-    public static Set<Player> enabledPlayers = new HashSet();
-    private final HashMap<String, Double> lastVelocity = new HashMap();
+    private static final List<String> slower = new ArrayList<>();
+    private static final List<String> slower2 = new ArrayList<>();
+    public static Set<Player> enabledPlayers = new HashSet<>();
+    private final HashMap<String, Double> lastVelocity = new HashMap<>();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, s, strings)) return true;
         if (!(sender instanceof Player player)) {
             return false;
         }
@@ -44,7 +45,15 @@ public class AdvanceFlyCommand implements CommandExecutor, Listener {
         return true;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler
+    public void onQuit(org.bukkit.event.player.PlayerQuitEvent event) {
+        String name = event.getPlayer().getName();
+        slower.remove(name);
+        slower2.remove(name);
+        lastVelocity.remove(name);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent e) {
         if (e.getPlayer().isFlying()) {
             if (!enabledPlayers.contains(e.getPlayer())) {

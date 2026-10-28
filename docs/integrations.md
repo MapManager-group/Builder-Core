@@ -15,7 +15,7 @@
 
 ## PlaceholderAPI 与代理消息
 
-启用 PlaceholderAPI 后注册 `%buildercore_afk%`：暂离时返回 `afk.placeholder`，否则返回空字符串。自动 AFK 根据移动事件更新活动时间，移动或转动视角会取消暂离；聊天和执行命令不更新该计时。`buildercore.afk.bypass` 默认 OP 拥有。手动 `/afk` 始终可用并广播状态变化，自动 AFK 不广播。
+启用 PlaceholderAPI 后注册 `%buildercore_afk%`：暂离时返回 `afk.placeholder`，否则返回空字符串。自动 AFK 同样在启用 PlaceholderAPI 时注册，根据移动事件更新活动时间，移动或转动视角会取消暂离；聊天和执行命令不更新该计时。`buildercore.afk.bypass` 默认 OP 拥有。手动 `/afk` 始终可用并广播状态变化，自动 AFK 不广播。
 
 同时每秒通过插件消息通道 `alsace:meta` 依次发送三个 UTF 字符串（`%multiverse_world_alias%`、`%vault_prefix%`、`%vault_suffix%` 的解析结果）及一个 AFK 布尔值。服务端本插件没有直接修改 Tab 列表，代理端需另有接收实现；相关占位符还需对应的 PlaceholderAPI 扩展及数据提供插件。
 
@@ -23,7 +23,7 @@
 
 默认关闭。启用前填写协议标题/URL 和 MySQL 连接信息，并确认账号具有数据库权限。MySQL 与 SQLite JDBC 驱动已打包到插件 JAR，无需另装驱动。
 
-启用后，未同意玩家会收到协议链接及按钮，禁止移动坐标、聊天和其他命令，允许转动视角；`/agree` 写入同意记录并解除限制，`/disagree` 删除记录并踢出玩家。协议确认记录保存在 MySQL 的 `player_agreement` 表。
+启用后，未同意玩家会收到协议链接及按钮，禁止移动坐标、聊天和其他命令，允许转动视角；查询期间也保持限制；`/agree` 等待同意记录保存成功后才解除限制，保存失败会提示重试，`/disagree` 删除记录并踢出玩家。协议确认记录保存在 MySQL 的 `player_agreement` 表。
 
 启用协议也会连接本地 `inventory.db` 并建表，但当前没有将背包/位置保存与恢复接入玩家事件，不能据此宣称支持背包同步或跨服背包恢复。
 

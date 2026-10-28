@@ -19,12 +19,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import work.alsace.buildercore.BuilderCore;
 import work.alsace.buildercore.commands.builderTools.AdvanceFlyCommand;
-import work.alsace.buildercore.commands.teleport.BackCommand;
 import work.alsace.buildercore.service.HomeDataLoader;
 import work.alsace.buildercore.utils.DataBaseManager;
 import work.alsace.buildercore.utils.NoClipUtil;
 
-import java.util.Objects;
 import java.util.UUID;
 
 public class PlayerListener implements Listener {
@@ -43,16 +41,20 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         UUID playerUUID = player.getUniqueId();
 
+        if (plugin.agreement) plugin.hasAgree.put(player.getName(), true);
         BlockListener.slabs.add(player);
-        plugin.homeProfiles.put(playerUUID, new HomeDataLoader(playerUUID));
+        loadHomes(player);
 
         if (plugin.agreement && databaseManager != null) {
-            databaseManager.hasPlayerAgreed(playerUUID).thenAccept(hasAgreed -> {
+            databaseManager.hasPlayerAgreed(playerUUID).whenComplete((hasAgreed, error) -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
-                    if (!player.isOnline()) return;
+                    if (!player.isOnline() || Boolean.FALSE.equals(plugin.hasAgree.get(player.getName()))) return;
 
+                    if (error != null) {
+                        player.sendMessage(Component.text("协议状态读取失败，请输入 /agree 重试或联系管理员。", NamedTextColor.RED));
+                        return;
+                    }
                     if (!hasAgreed) {
-                        // 标记为未同意
                         plugin.hasAgree.put(player.getName(), true);
 
                         if (!player.hasPlayedBefore()) {
@@ -64,7 +66,6 @@ public class PlayerListener implements Listener {
 
                         sendAgreementMessage(player);
                     } else {
-                        // 标记为已同意
                         plugin.hasAgree.put(player.getName(), false);
                     }
                 });
@@ -91,9 +92,7 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        // 直接读取内存中的 hasAgree 标志位，效率极高且不涉及数据库
         if (plugin.agreement && Boolean.TRUE.equals(plugin.hasAgree.get(player.getName()))) {
-            // 只在位置变化（XYZ）时取消，允许玩家旋转视角
             if (event.getFrom().getX() != event.getTo().getX() ||
                     event.getFrom().getY() != event.getTo().getY() ||
                     event.getFrom().getZ() != event.getTo().getZ()) {
@@ -106,8 +105,8 @@ public class PlayerListener implements Listener {
     public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         if (plugin.agreement && Boolean.TRUE.equals(plugin.hasAgree.get(player.getName()))) {
-            String message = event.getMessage().toLowerCase();
-            if (!message.startsWith("/agree") && !message.startsWith("/disagree")) {
+            String message = event.getMessage().split(" ", 2)[0].toLowerCase(java.util.Locale.ROOT);
+            if (!java.util.Set.of("/agree", "/disagree", "/buildercore:agree", "/buildercore:disagree").contains(message)) {
                 event.setCancelled(true);
                 player.sendMessage(Component.text("您必须先同意用户协议才能使用其他命令！请输入 /agree 进行同意。", NamedTextColor.RED));
             }
@@ -129,17 +128,11 @@ public class PlayerListener implements Listener {
             event.setCancelled(true);
         }
 
-        // 记录传送历史位置以支持 /back
-        if (plugin.getCommand("back") != null && plugin.getCommand("back").getExecutor() instanceof BackCommand backCommand) {
-            backCommand.addToHistory(event.getPlayer());
-        }
     }
 
+    /** 踢出可能被其他插件取消；状态统一在实际退出时清理。 */
     @EventHandler
-    public void onPlayerKick(PlayerKickEvent event) {
-        plugin.homeProfiles.remove(event.getPlayer().getUniqueId());
-        plugin.hasAgree.remove(event.getPlayer().getName());
-    }
+    public void onPlayerKick(PlayerKickEvent event) { }
 
     @EventHandler
     public void onPrepareAnvil(PrepareAnvilEvent event) {
@@ -148,7 +141,6 @@ public class PlayerListener implements Listener {
 
         ItemMeta meta = item.getItemMeta();
         if (meta != null && meta.hasDisplayName()) {
-            // 使用 Adventure LegacySerializer 解析包含 & 色彩代码和 Hex 的字符串
             String rawName = LegacyComponentSerializer.legacyAmpersand().serialize(meta.displayName());
             Component formattedName = LegacyComponentSerializer.legacyAmpersand().deserialize(rawName);
 
@@ -169,6 +161,16 @@ public class PlayerListener implements Listener {
     public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
         if (event.getEntity() instanceof Player) {
             event.setCancelled(true);
+        }
+    }
+
+    private void loadHomes(Player player) {
+        try {
+            plugin.homeProfiles.put(player.getUniqueId(), new HomeDataLoader(player.getUniqueId()));
+        } catch (IllegalStateException exception) {
+            plugin.homeProfiles.remove(player.getUniqueId());
+            plugin.getLogger().log(java.util.logging.Level.SEVERE, "无法加载家的数据: " + player.getUniqueId(), exception);
+            player.sendMessage(Component.text("家的数据读取失败，原文件已保留，请联系管理员。", NamedTextColor.RED));
         }
     }
 

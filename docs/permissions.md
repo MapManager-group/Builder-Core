@@ -37,4 +37,4 @@
 
 ## 家数量
 
-设置自己的家之前会重新计算配额，权限变更立即用于下一次设置；现有家不会因配额减少而被删除。家数量需要另外授予 `buildercore.home.max.<数量>`（例如 `buildercore.home.max.3`）或 `buildercore.home.max.unlimited`。没有数量节点时，源码计算结果为 0；权限包不默认设定容量。
+只统计值为 true 的数量权限，否定节点不授予容量。设置自己的家之前会重新计算配额，权限变更立即用于下一次设置；现有家不会因配额减少而被删除。家数量需要另外授予 `buildercore.home.max.<数量>`（例如 `buildercore.home.max.3`）或 `buildercore.home.max.unlimited`。没有数量节点时，源码计算结果为 0；权限包不默认设定容量。

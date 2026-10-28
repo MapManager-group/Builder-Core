@@ -9,8 +9,9 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 public class HorseListener implements Listener {
 
-    @EventHandler
+    @EventHandler(priority = org.bukkit.event.EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
+        if (event.getHand() != org.bukkit.inventory.EquipmentSlot.HAND) return;
         Player player = event.getPlayer();
         if (player.getInventory().getItemInMainHand().getType() == Material.DEBUG_STICK && player.hasPermission("buildercore.protect.place") && player.isSneaking()) {
             if (event.getRightClicked() instanceof Horse horse) {

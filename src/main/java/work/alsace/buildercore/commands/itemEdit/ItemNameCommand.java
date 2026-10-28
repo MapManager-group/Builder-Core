@@ -15,6 +15,7 @@ public class ItemNameCommand implements CommandExecutor {
     private final Component error = MM.deserialize("<gray>正确指令:\n<white>/itemname <物品名称> <gray>- 修改手中物品名称");
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, strings)) return true;
         if (strings.length == 1 && sender instanceof Player player) {
             if (!sender.hasPermission("buildercore.commands.itemname")) {
                 sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));

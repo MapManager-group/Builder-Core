@@ -13,9 +13,10 @@ import org.jetbrains.annotations.NotNull;
 public class ItemColorCommand implements CommandExecutor {
     private static final MiniMessage MM = MiniMessage.miniMessage();
 
-    private final Component error = MM.deserialize("<gray>正确指令:\n<white>/itemcolor <16位颜色代码> <gray>- 修改手中物品(皮革)的颜色");
+    private final Component error = MM.deserialize("<gray>正确指令:\n<white>/itemcolor <六位十六进制颜色> <gray>- 修改手中物品(皮革)的颜色");
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, strings)) return true;
 
         if (strings.length == 1 && sender instanceof Player player) {
             if (!sender.hasPermission("buildercore.commands.itemcolor")) {
@@ -29,21 +30,16 @@ public class ItemColorCommand implements CommandExecutor {
                 return false;
             }
 
-            if (!isValidColorCode(strings[0].replace("#",""))) {
+            String color = strings[0].replace("#", "");
+            if (!isValidColorCode(color)) {
                 player.sendMessage(MM.deserialize("<red>无效的颜色代码"));
                 return false;
             }
 
             if (itemInHand.getItemMeta() instanceof LeatherArmorMeta leatherMeta) {
-                try {
-                    int colorCode = Integer.parseInt(strings[0].replace("#",""), 16);
-                    leatherMeta.setColor(org.bukkit.Color.fromRGB(colorCode));
-                    itemInHand.setItemMeta(leatherMeta);
-                    player.sendMessage(MM.deserialize("<gray>物品颜色已成功修改"));
-                } catch (NumberFormatException e) {
-                    player.sendMessage(MM.deserialize("<red>无效的颜色代码"));
-                    return false;
-                }
+                leatherMeta.setColor(org.bukkit.Color.fromRGB(Integer.parseInt(color, 16)));
+                itemInHand.setItemMeta(leatherMeta);
+                player.sendMessage(MM.deserialize("<gray>物品颜色已成功修改"));
             } else {
                 player.sendMessage(MM.deserialize("<red>该物品不能修改颜色"));
             }

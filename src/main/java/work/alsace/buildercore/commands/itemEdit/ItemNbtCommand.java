@@ -19,6 +19,7 @@ public class ItemNbtCommand implements CommandExecutor {
     private final Component error = MM.deserialize("<gray>正确指令:\n<white>/itemnbt <gray>- 获取手中物品的详细信息");
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, label, strings)) return true;
         if (sender instanceof Player player) {
             if (!sender.hasPermission("buildercore.commands.itemnbt")) {
                 sender.sendMessage(MM.deserialize("<red>你没有使用该命令的权限"));
@@ -38,7 +39,7 @@ public class ItemNbtCommand implements CommandExecutor {
 
             player.sendMessage(MM.deserialize("<gray>物品信息"));
             player.sendMessage(MM.deserialize("<gray>物品ID: <white>" + itemInHand.getType()));
-            player.sendMessage(MM.deserialize("<gray>物品名称: <white>" + Objects.requireNonNull(itemInHand.getItemMeta()).getDisplayName()));
+            player.sendMessage(MM.deserialize("<gray>物品名称: <white>" + MM.escapeTags(itemInHand.getItemMeta().getDisplayName())));
             player.sendMessage(nbtMessage);
             if (itemInHand.getItemMeta().hasCustomModelData()) {
                 player.sendMessage(MM.deserialize("<gray>CustomModelData: <white>" + itemInHand.getItemMeta().getCustomModelData()));

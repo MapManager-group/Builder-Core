@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class TPAHandler {
+public class TPAHandler implements org.bukkit.event.Listener {
 
     private final BuilderCore plugin;
     private final Map<UUID, TPARequest> tpaRequests = new ConcurrentHashMap<>();
@@ -18,6 +18,8 @@ public class TPAHandler {
 
     public TPAHandler(BuilderCore plugin) {
         this.plugin = plugin;
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> tpaRequests.values().removeIf(TPARequest::isExpired), 1200L, 1200L);
     }
 
     /**
@@ -81,18 +83,19 @@ public class TPAHandler {
             return;
         }
 
-        // 根据请求类型执行异步传送
         if (request.isTpaHere()) {
             sendMsg(target, "<green>你已接受请求，正在传送至 <white>" + sender.getName() + "</white> 身边...");
             sendMsg(sender, "<green><white>" + target.getName() + "</white> 接受了你的邀请，正在传送...");
-
-            target.teleportAsync(sender.getLocation());
         } else {
             sendMsg(target, "<green>你接受了 <white>" + sender.getName() + "</white> 的传送请求。");
             sendMsg(sender, "<green><white>" + target.getName() + "</white> 接受了你的传送请求，正在传送...");
-
-            sender.teleportAsync(target.getLocation());
         }
+        moving.teleportAsync(destination.getLocation()).whenComplete((success, error) -> {
+            if (error != null || !Boolean.TRUE.equals(success)) {
+                sendMsg(moving, "<red>传送失败，请检查目标位置或保护规则。");
+                sendMsg(destination, "<red>此次传送未完成，请重新发送请求。");
+            }
+        });
     }
 
     public void denyTPA(Player target) {
@@ -110,6 +113,13 @@ public class TPAHandler {
         if (sender != null && sender.isOnline()) {
             sendMsg(sender, "<red>" + target.getName() + " 拒绝了你的传送请求。");
         }
+    }
+
+    @org.bukkit.event.EventHandler
+    public void onQuit(org.bukkit.event.player.PlayerQuitEvent event) {
+        UUID id = event.getPlayer().getUniqueId();
+        tpaRequests.remove(id);
+        tpaRequests.values().removeIf(request -> request.senderId().equals(id));
     }
 
     private void sendMsg(Player player, String miniMessageText) {

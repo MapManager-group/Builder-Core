@@ -12,6 +12,7 @@ public class DebugStickCommand implements CommandExecutor {
     private static final MiniMessage MM = MiniMessage.miniMessage();
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] strings) {
+        if (work.alsace.buildercore.commands.CommandHelp.requested(sender, command, s, strings)) return true;
         if (!(sender instanceof Player)) {
             return false;
         } else if (!sender.hasPermission("buildercore.commands.debugstick")) {
